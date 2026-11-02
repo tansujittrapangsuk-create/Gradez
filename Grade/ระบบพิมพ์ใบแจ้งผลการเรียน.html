@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบพิมพ์ใบแจ้งผลการเรียน ปพ.5 - โรงเรียนบ้านสันดาบ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e40af;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --secondary: #0f766e;
+      --accent: #d97706;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    @font-face {
+      font-family: 'TH Sarabun PSK';
+      src: local('TH Sarabun PSK'), local('THSarabunPSK'), local('TH Sarabun New'), local('THSarabunNew'), local('Sarabun');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'TH Sarabun PSK';
+      src: local('TH Sarabun PSK Bold'), local('THSarabunPSK-Bold'), local('THSarabunPSK Bold'), local('TH Sarabun New Bold'), local('THSarabunNew-Bold');
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    body {
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+      background-color: #f1f5f9;
+      color: var(--gray-800);
+      line-height: 1.35;
+      font-size: 16pt;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ส่วนหัว */
+    .app-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #0369a1 100%);
+      color: white;
+      padding: 1rem 1.5rem;
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-logo-img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      background: white;
+      border-radius: 10px;
+      padding: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand-text h1 {
+      font-family: 'Prompt', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-text p {
+      font-size: 0.85rem;
+      opacity: 0.95;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.925rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+      border: 1px solid transparent;
+      font-family: 'Prompt', 'Sarabun', sans-serif;
+    }
+
+    .btn-primary {
+      background-color: #2563eb;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background-color: #059669;
+      color: white;
+    }
+    .btn-success:hover {
+      background-color: #047857;
+      transform: translateY(-1px);
+    }
+
+    .btn-cloud {
+      background-color: #0284c7;
+      color: white;
+    }
+    .btn-cloud:hover {
+      background-color: #0369a1;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: white;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .btn-outline:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.85rem;
+      font-size: 0.85rem;
+    }
+
+    /* โครงสร้างหน้าจอหลัก */
+    .app-main {
+      max-width: 1400px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .app-main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* แถบด้านข้าง */
+    .sidebar {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+      position: sticky;
+      top: 90px;
+      max-height: calc(100vh - 110px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-section {
+      padding: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .sidebar-title {
+      font-family: 'Prompt', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .class-select {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--gray-300);
+      font-size: 0.95rem;
+      font-family: 'Prompt', 'Sarabun', sans-serif;
+      background-color: var(--gray-50);
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--gray-800);
+      transition: all 0.2s;
+    }
+    .class-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--gray-300);
+      font-size: 0.9rem;
+      font-family: 'Sarabun', sans-serif;
+      margin-top: 0.5rem;
+    }
+    .search-box:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .student-list {
+      overflow-y: auto;
+      flex: 1;
+      padding: 0.5rem;
+    }
+
+    .student-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 0.25rem;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+    .student-item:hover {
+      background-color: var(--gray-100);
+    }
+    .student-item.active {
+      background-color: var(--primary-light);
+      border-color: #bfdbfe;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .student-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .student-no-badge {
+      width: 28px;
+      height: 28px;
+      background: var(--gray-200);
+      color: var(--gray-700);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .student-item.active .student-no-badge {
+      background: #2563eb;
+      color: white;
+    }
+
+    .student-meta {
+      font-size: 0.78rem;
+      color: var(--gray-600);
+    }
+
+    .batch-print-box {
+      padding: 0.85rem 1rem;
+      background: var(--gray-50);
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* พื้นที่แสดงผลเนื้อหา */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* แถบเครื่องมือ */
+    .preview-toolbar {
+      background: white;
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .tab-btn {
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      border: none;
+      background: none;
+      font-family: 'Prompt', sans-serif;
+      font-size: 0.925rem;
+      font-weight: 500;
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* สรุปสถิติประจำห้อง */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .stat-card {
+      background: white;
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+    }
+    .stat-title {
+      font-size: 0.825rem;
+      color: var(--gray-600);
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+    }
+    .stat-value {
+      font-family: 'Prompt', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    /* กรอบแสดงตัวอย่างบนจอภาพ */
+    .report-preview-wrapper {
+      display: flex;
+      justify-content: center;
+      background: #94a3b8;
+      padding: 2rem 1rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.1);
+    }
+
+    /* หน้าใบแจ้งผลการเรียน A4 ฟอนต์ TH Sarabun PSK ขนาด 16 pt (ปรับระยะให้พอดี 1 หน้า A4 100%) */
+    .report-card-page {
+      width: 210mm;
+      min-height: 285mm;
+      max-width: 210mm;
+      box-sizing: border-box;
+      background: white;
+      padding: 4mm 10mm 3mm 10mm;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      color: black;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+      font-size: 15pt;
+      line-height: 1.08;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .rc-header {
+      text-align: center;
+      margin-bottom: 2px;
+    }
+
+    .rc-school-emblem {
+      height: 0.8in;
+      width: auto;
+      margin: 0 auto 2px auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .rc-title-main {
+      font-size: 16pt;
+      font-weight: bold;
+      margin-bottom: 0;
+      line-height: 1.08;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+    }
+
+    .rc-school-name {
+      font-size: 15pt;
+      font-weight: bold;
+      margin-bottom: 0;
+      line-height: 1.08;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+    }
+
+    .rc-class-year {
+      font-size: 15pt;
+      font-weight: bold;
+      margin-bottom: 1px;
+      line-height: 1.08;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+    }
+
+    .rc-student-banner {
+      font-size: 15pt;
+      font-weight: bold;
+      border-top: 1px dashed #444;
+      border-bottom: 1px dashed #444;
+      padding: 1px 0;
+      margin: 1px 0 1px 0;
+      display: flex;
+      justify-content: space-between;
+      line-height: 1.08;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+    }
+
+    .rc-section-title {
+      font-size: 15pt;
+      font-weight: bold;
+      margin: 1px 0 1px 0;
+      line-height: 1.08;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+    }
+
+    /* ตาราง */
+    .rc-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1px;
+      font-size: 15pt;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+    }
+
+    .rc-table th, 
+    .rc-table td {
+      border: 1px solid #000;
+      padding: 0.3px 2.5px;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 1.02;
+      font-size: 15pt;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+    }
+
+    .rc-table th {
+      background-color: #f8fafc;
+      font-weight: bold;
+    }
+
+    .rc-table td.text-left {
+      text-align: left;
+      padding-left: 6px;
+    }
+
+    .rc-table td.text-right {
+      text-align: right;
+      padding-right: 6px;
+    }
+
+    .rc-table tr.bg-gray {
+      background-color: #f1f5f9;
+      font-weight: bold;
+    }
+
+    /* หมายเหตุท้ายตาราง */
+    .rc-table-note {
+      font-size: 14pt;
+      color: #dc2626;
+      font-weight: bold;
+      margin: 1px 0 1px 2px;
+      line-height: 1.05;
+      text-align: left;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+    }
+
+    .score-danger {
+      color: #dc2626 !important;
+      font-weight: bold !important;
+    }
+
+    /* ส่วนประเมิน */
+    .rc-eval-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 1px;
+      font-size: 15pt;
+      line-height: 1.05;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+    }
+
+    .rc-eval-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 15pt;
+      line-height: 1.08;
+    }
+
+    .rc-eval-label {
+      font-weight: normal;
+      flex: 1;
+      font-size: 15pt;
+    }
+
+    .rc-eval-options {
+      display: inline-flex;
+      gap: 0.6rem;
+      font-size: 15pt;
+    }
+
+    .rc-opt {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      user-select: none;
+      padding: 0 3px;
+      border-radius: 4px;
+      font-size: 15pt;
+      transition: all 0.15s ease;
+    }
+    .rc-opt:hover {
+      background-color: #dbeafe;
+      color: #1e40af;
+      box-shadow: 0 0 0 1px #93c5fd;
+    }
+
+    .rc-opt.active {
+      font-weight: bold;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .rc-opt.active::before {
+      content: "✔ ";
+      color: #000;
+      font-weight: bold;
+    }
+
+    .table-eval-select {
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 3px 6px;
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+      background: white;
+      color: var(--gray-800);
+      cursor: pointer;
+    }
+    .table-eval-select:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+
+    /* ส่วนกรอกความคิดเห็นครูด้านบนตัวอย่าง */
+    .comment-editor-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-left: 5px solid var(--primary);
+      border-radius: 8px;
+      padding: 0.85rem 1.1rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .comment-editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .top-comment-textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1.5px solid var(--gray-300);
+      border-radius: 6px;
+      padding: 0.6rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--gray-900);
+      background-color: #fafbfc;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 58px;
+      transition: all 0.2s;
+    }
+    .top-comment-textarea:focus {
+      background-color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+      outline: none;
+    }
+    .table-comment-input {
+      width: 100%;
+      padding: 5px 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+      background: #fafafa;
+      box-sizing: border-box;
+      transition: all 0.15s;
+    }
+    .table-comment-input:focus {
+      background: white;
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.15);
+    }
+
+    /* ส่วนกรอกความคิดเห็นครู บนกระดาษ ปพ.5 */
+    .rc-notes-box {
+      margin-top: 1px;
+      font-size: 15pt;
+      line-height: 1.08;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+    }
+
+    .rc-notes-input-wrapper {
+      position: relative;
+      margin-top: 1px;
+    }
+
+    .rc-notes-input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px dashed #cbd5e1;
+      border-bottom: 1.5px dotted #334155;
+      background: #f8fafc;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+      font-size: 15pt;
+      color: black;
+      outline: none;
+      padding: 1px 4px;
+      line-height: 1.08;
+      resize: vertical;
+      border-radius: 4px;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .rc-notes-input:focus {
+      background-color: #fefce8;
+      border-color: #2563eb;
+      border-style: solid;
+      border-width: 1.5px;
+    }
+    .rc-notes-input::placeholder {
+      color: #94a3b8;
+      font-style: italic;
+      font-size: 13pt;
+    }
+
+    .rc-printed-comment {
+      font-size: 15pt;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+      line-height: 1.08;
+      border-bottom: 1px dotted #333;
+      padding-bottom: 0;
+      margin-bottom: 0px;
+    }
+    .rc-dotted-line {
+      letter-spacing: 1.5px;
+      color: #555;
+      font-size: 12.5pt;
+      line-height: 1.0;
+      margin: 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .print-only {
+      display: none;
+    }
+
+    /* แถบคำแนะนำสำเร็จรูป */
+    .comment-preset-bar {
+      margin-top: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: #f8fafc;
+      border: 1px dashed var(--gray-300);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+    }
+
+    .preset-pill {
+      background: white;
+      border: 1px solid var(--gray-300);
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+      font-size: 14pt;
+      transition: all 0.15s;
+    }
+    .preset-pill:hover {
+      background: var(--primary-light);
+      border-color: #93c5fd;
+      color: var(--primary);
+    }
+
+    /* ส่วนท้ายกระดาษและลายเซ็น (ป้องกันการแยกหน้า 100%) */
+    .rc-footer-signatures {
+      margin-top: 2px;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
+    .rc-approval-date {
+      text-align: center;
+      margin: 1px 0 6pt 0;
+      font-size: 15pt;
+      line-height: 1.15;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
+    .rc-signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      text-align: center;
+      gap: 1.2rem;
+      margin-top: 2px;
+      margin-bottom: 6pt;
+      font-size: 15pt;
+      line-height: 1.25;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
+    .rc-director-signature {
+      text-align: center;
+      margin-top: 6pt;
+      font-size: 15pt;
+      line-height: 1.25;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
+    .sig-dots {
+      margin-bottom: 6pt;
+      font-size: 13pt;
+      line-height: 1.15;
+    }
+    .sig-name {
+      margin-bottom: 4pt;
+      font-size: 15pt;
+      line-height: 1.2;
+    }
+    .sig-title {
+      font-size: 13.5pt;
+      color: #000;
+      line-height: 1.2;
+    }
+
+    /* ตารางภาพรวม */
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      overflow-x: auto;
+      padding: 1.25rem;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    .data-table th, .data-table td {
+      padding: 0.65rem 0.75rem;
+      border: 1px solid var(--gray-200);
+      text-align: left;
+    }
+    .data-table th {
+      background-color: var(--gray-50);
+      font-weight: 600;
+      color: var(--gray-700);
+      position: sticky;
+      top: 0;
+    }
+    .data-table tr:hover {
+      background-color: var(--gray-50);
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-success { background: #dcfce7; color: #15803d; }
+    .badge-primary { background: #dbeafe; color: #1d4ed8; }
+    .badge-warning { background: #fef3c7; color: #b45309; }
+
+    /* การแจ้งเตือน Toast */
+    .toast-notify {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0f172a;
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      font-size: 0.9rem;
+      display: none;
+      z-index: 1000;
+      font-family: 'Prompt', sans-serif;
+    }
+
+    #batchPrintContainer {
+      display: none;
+    }
+
+    /* รูปแบบการพิมพ์ A4 (พอดี 1 หน้า A4 100% ไม่ล้นไปหน้าที่ 2) */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 3mm 8mm 2mm 8mm;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body {
+        font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif !important;
+        background: white !important;
+        color: black !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 15pt !important;
+      }
+
+      .report-card-page {
+        font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif !important;
+        font-size: 15pt !important;
+        line-height: 1.05 !important;
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 194mm !important;
+        max-height: 288mm !important;
+        overflow: hidden !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      .rc-table-note {
+        color: #dc2626 !important;
+        font-size: 13.5pt !important;
+        font-weight: bold !important;
+        line-height: 1.02 !important;
+      }
+
+      .score-danger {
+        color: #dc2626 !important;
+        font-weight: bold !important;
+      }
+
+      .app-header,
+      .sidebar,
+      .preview-toolbar,
+      .stats-grid,
+      .table-container,
+      .comment-preset-bar,
+      .toast-notify,
+      .comment-editor-card,
+      .no-print {
+        display: none !important;
+      }
+
+      .report-preview-wrapper {
+        display: block !important;
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+      }
+
+      .print-only {
+        display: block !important;
+      }
+
+      .rc-opt {
+        cursor: default !important;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+      .rc-opt.active {
+        font-weight: bold !important;
+        text-decoration: underline !important;
+        text-underline-offset: 3px !important;
+      }
+      .rc-opt.active::before {
+        content: "✔ " !important;
+        color: black !important;
+        font-weight: bold !important;
+      }
+
+      .app-main {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: none !important;
+      }
+
+      .rc-notes-input {
+        border-bottom: 1px dotted #555 !important;
+        background: transparent !important;
+        color: black !important;
+      }
+      .rc-notes-input::placeholder {
+        color: transparent !important;
+      }
+
+      /* สำหรับพิมพ์รายบุคคล (พิมพ์คนนี้ หรือกด Ctrl+P โดยอัตโนมัติ) */
+      body:not(.print-batch) #singlePrintCard {
+        display: block !important;
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 194mm !important;
+        max-height: 288mm !important;
+        overflow: hidden !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      body:not(.print-batch) #batchPrintContainer {
+        display: none !important;
+      }
+
+      /* สำหรับพิมพ์ทั้งห้องพร้อมกัน */
+      body.print-batch #singlePrintCard,
+      body.print-batch .report-preview-wrapper,
+      body.print-batch #tabPreviewContent {
+        display: none !important;
+      }
+      body.print-batch #batchPrintContainer {
+        display: block !important;
+      }
+      body.print-batch .report-card-page {
+        display: block !important;
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 194mm !important;
+        max-height: 288mm !important;
+        overflow: hidden !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      body.print-batch .report-card-page:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- แถบส่วนหัว -->
+  <header class="app-header no-print">
+    <div class="header-content">
+      <div class="brand">
+        <img class="brand-logo-img" src="logo.png" alt="ตราโรงเรียนบ้านสันดาบ">
+        <div class="brand-text">
+          <h1>ระบบพิมพ์ใบแจ้งผลการเรียน ปพ.5</h1>
+          <p>โรงเรียนบ้านสันดาบ สำนักงานเขตพื้นที่การศึกษาประถมศึกษาสมุทรสาคร (ปีการศึกษา 2569)</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-cloud btn-sm" onclick="syncFromCloud()" id="btnSync">
+          🔄 ซิงค์การประเมินจาก BSD-EVAL
+        </button>
+        <button class="btn btn-primary" onclick="printCurrentStudent()">
+          🖨 พิมพ์ใบแจ้งผลการเรียน (คนนี้)
+        </button>
+        <button class="btn btn-success" onclick="printAllStudentsInClass()">
+          📑 พิมพ์ทั้งห้องพร้อมกัน (<span id="btnBatchCount">0</span> คน)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- หน้าจอหลัก -->
+  <main class="app-main">
+    
+    <!-- แถบด้านข้าง -->
+    <aside class="sidebar no-print">
+      <div class="sidebar-section">
+        <div class="sidebar-title">
+          <span>เลือกระดับชั้นเรียน</span>
+          <span class="badge badge-primary" id="totalClassBadge">6 ระดับชั้น</span>
+        </div>
+        <select id="classSelect" class="class-select" onchange="onClassChange()">
+          <!-- ตัวเลือกระดับชั้น -->
+        </select>
+        <input type="text" id="searchStudent" class="search-box" placeholder="🔍 ค้นหาด้วยชื่อ สกุล หรือเลขที่นักเรียน..." oninput="filterStudents()">
+      </div>
+
+      <div class="sidebar-section" style="padding-bottom: 0.5rem; background: var(--gray-50);">
+        <div class="sidebar-title" style="margin-bottom: 0;">
+          <span>รายชื่อนักเรียน (<span id="studentListCount">0</span> คน)</span>
+        </div>
+      </div>
+
+      <div class="student-list" id="studentList">
+        <!-- รายชื่อนักเรียน -->
+      </div>
+
+      <div class="batch-print-box">
+        <button class="btn btn-success" style="width: 100%;" onclick="printAllStudentsInClass()">
+          🖨 สั่งพิมพ์ใบแจ้งผลฯ ทั้งห้อง
+        </button>
+      </div>
+    </aside>
+
+    <!-- พื้นที่แสดงผลเนื้อหา -->
+    <section class="content-area">
+
+      <!-- แถบเครื่องมือด้านบน -->
+      <div class="preview-toolbar no-print">
+        <div class="toolbar-left">
+          <button class="tab-btn active" id="tabPreview" onclick="switchTab('preview')">📄 ตัวอย่างใบแจ้งผลการเรียน (แบบปรับใหม่ A4)</button>
+          <button class="tab-btn" id="tabOverview" onclick="switchTab('overview')">📊 ตารางสรุปคะแนน ปพ.5 ทั้งชั้นเรียน</button>
+        </div>
+        <div class="toolbar-right" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <select id="quickStudentSelect" onchange="selectStudent(parseInt(this.value))" style="font-family: inherit; font-size: 0.85rem; padding: 4px 8px; border-radius: 6px; border: 1.5px solid #2563eb; background: white; color: #1e3a8a; font-weight: 600; cursor: pointer;" title="เลือกนักเรียนรายบุคคลเพื่อดูและพิมพ์">
+            <!-- รายชื่อนักเรียนรายบุคคล -->
+          </select>
+          <button class="btn btn-outline btn-sm" style="color: var(--gray-700); border-color: var(--gray-300);" onclick="nextStudent(-1)" title="นักเรียนคนก่อนหน้า">
+            ◀ คนก่อนหน้า
+          </button>
+          <button class="btn btn-outline btn-sm" style="color: var(--gray-700); border-color: var(--gray-300);" onclick="nextStudent(1)" title="นักเรียนคนถัดไป">
+            คนถัดไป ▶
+          </button>
+          <button class="btn btn-primary" onclick="printCurrentStudent()" style="font-weight: 700; padding: 5px 16px; box-shadow: 0 2px 4px rgba(37,99,235,0.3);" title="สั่งพิมพ์ใบแจ้งผลการเรียนคนนี้ (พอดี 1 หน้า A4)">
+            🖨 พิมพ์คนนี้ (A4 1 หน้า)
+          </button>
+        </div>
+      </div>
+
+      <!-- สรุปสถิติประจำห้อง -->
+      <div class="stats-grid no-print">
+        <div class="stat-card">
+          <div class="stat-title">ระดับชั้นเรียน</div>
+          <div class="stat-value" id="statClass" style="font-size: 1.15rem; color: var(--primary);">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">จำนวนนักเรียนทั้งหมด</div>
+          <div class="stat-value" id="statTotalStudents">0 คน</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">คะแนนเฉลี่ยทั้งห้อง (เต็ม 50 คะแนน)</div>
+          <div class="stat-value" id="statClassAvg">0.00</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">แหล่งข้อมูลการประเมิน ข้อ 3-5</div>
+          <div class="stat-value" id="statEvalSource" style="font-size: 1.05rem; color: var(--secondary);">เชื่อมโยงผลประเมินแล้ว</div>
+        </div>
+      </div>
+
+      <!-- แท็บที่ 1: ตัวอย่างใบแจ้งผลการเรียน -->
+      <div id="tabPreviewContent">
+
+        <!-- กล่องพิมพ์ความคิดเห็น/ข้อเสนอแนะของครูประจำชั้น (เด่นชัด สะดวก บันทึกอัตโนมัติ) -->
+        <div class="comment-editor-card no-print">
+          <div class="comment-editor-header">
+            <div>
+              <span style="font-weight: 700; font-size: 1.05rem; color: #1e3a8a;">✏️ ช่องพิมพ์ ความคิดเห็น/ ข้อเสนอแนะของครูประจำชั้น (ข้อ 6)</span>
+              <span id="commentTargetStudent" style="font-size: 0.95rem; color: #0284c7; margin-left: 0.5rem; font-weight: 600;"></span>
+            </div>
+            <div style="display: flex; gap: 0.6rem; align-items: center;">
+              <span style="font-size: 0.82rem; color: #059669; font-weight: 600;">💾 บันทึกอัตโนมัติ</span>
+              <button type="button" class="btn btn-outline btn-sm" style="padding: 2px 10px; font-size: 0.78rem; border-color: #cbd5e1;" onclick="clearCurrentComment()">ล้างข้อความ</button>
+            </div>
+          </div>
+          <div style="margin-top: 0.5rem;">
+            <textarea id="topCommentInput" class="top-comment-textarea" rows="2" 
+              placeholder="พิมพ์ข้อคิดเห็นหรือข้อเสนอแนะของครูประจำชั้นที่นี่... (จะแสดงในใบแจ้งผลการเรียนและบันทึกอัตโนมัติทันที)"
+              oninput="onTopCommentChange(this.value)"></textarea>
+          </div>
+          <div class="comment-preset-bar" style="margin-top: 0.5rem;">
+            <span style="font-weight: 600; color: var(--gray-700);">💡 เลือกข้อความสำเร็จรูป:</span>
+            <button type="button" class="preset-pill" onclick="insertPresetComment('ตั้งใจเรียนดี มีความรับผิดชอบ และมีวินัยในตนเอง')">ตั้งใจเรียนดี มีความรับผิดชอบ</button>
+            <button type="button" class="preset-pill" onclick="insertPresetComment('ผลการเรียนดีเด่น มีความกระตือรือร้นในการเรียนรู้อย่างสม่ำเสมอ')">ผลการเรียนดีเด่น มีความกระตือรือร้น</button>
+            <button type="button" class="preset-pill" onclick="insertPresetComment('มีมารยาทเรียบร้อย มีจิตสาธารณะ และเข้ากับเพื่อนร่วมชั้นได้เป็นอย่างดี')">มีมารยาทดี มีจิตสาธารณะ</button>
+            <button type="button" class="preset-pill" onclick="insertPresetComment('ตั้งใจและส่งงานตรงเวลา มีความมุ่งมั่นในการเรียน')">ส่งงานตรงเวลา มีความมุ่งมั่น</button>
+            <button type="button" class="preset-pill" onclick="insertPresetComment('ควรฝึกฝนและทบทวนทักษะการอ่านและการคิดคำนวณเพิ่มเติม')">ควรฝึกฝนการอ่าน/คิดคำนวณ</button>
+            <button type="button" class="preset-pill" onclick="insertPresetComment('ควรเพิ่มความตั้งใจและมีสมาธิในการเรียนให้มากขึ้น')">ควรเพิ่มความตั้งใจและสมาธิ</button>
+          </div>
+        </div>
+
+        <div class="report-preview-wrapper">
+          <div class="report-card-page" id="singlePrintCard">
+            <!-- เรนเดอร์ใบแจ้งผลการเรียน -->
+          </div>
+        </div>
+      </div>
+
+      <!-- แท็บที่ 2: ตารางสรุปภาพรวมทั้งห้อง -->
+      <div id="tabOverviewContent" style="display: none;">
+        <div class="table-container">
+          <h2 style="font-family: 'Prompt'; font-size: 1.1rem; margin-bottom: 1rem; color: var(--gray-800);">
+            ตารางสรุปผลสัมฤทธิ์ทางการเรียน ผลการประเมิน (BSD-EVAL) และเวลาเรียน ภาคเรียนที่ 1
+          </h2>
+          <table class="data-table" id="overviewTable">
+            <!-- เรนเดอร์ข้อมูลตาราง -->
+          </table>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- คอนเทนเนอร์สำหรับพิมพ์ทุกคนพร้อมกัน -->
+  <div id="batchPrintContainer"></div>
+
+  <!-- กล่องแจ้งเตือน Toast -->
+  <div class="toast-notify" id="toastBox">เชื่อมต่อและอัปเดตข้อมูลสำเร็จ</div>
+
+  <!-- โหลดข้อมูล -->
+  <script src="data.js"></script>
+  <script>
+    const CLOUD_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzNqS-ZKsCmhv_5BviEPblIQ8_9TNqV5bvF4XLf1UOM6Zb4Q2etuGH3uSBX_aDFMvZd0g/exec';
+
+    let currentClassIndex = 0;
+    let currentStudentIndex = 0;
+    let currentSearchTerm = "";
+
+    function fmtNum(val) {
+      if (val === null || val === undefined) return "";
+      return String(val);
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      box.textContent = msg;
+      box.style.display = 'block';
+      setTimeout(() => { box.style.display = 'none'; }, 3000);
+    }
+
+    // จัดการความคิดเห็นครูประจำชั้นใน localStorage
+    function getTeacherComment(studentId) {
+      try {
+        return localStorage.getItem('teacher_comment_' + studentId) || '';
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function saveTeacherComment(studentId, commentText) {
+      try {
+        localStorage.setItem('teacher_comment_' + studentId, commentText);
+      } catch (e) {}
+    }
+
+    function onCommentChange(studentId, val) {
+      saveTeacherComment(studentId, val);
+      const topInput = document.getElementById('topCommentInput');
+      if (topInput) topInput.value = val;
+      syncPrintCommentDisplay(studentId, val);
+      renderStudentList();
+    }
+
+    function onTopCommentChange(val) {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      if (!cls || !cls.Students) return;
+      const student = cls.Students[currentStudentIndex];
+      if (!student) return;
+      saveTeacherComment(student.StudentId, val);
+      const cardInput = document.getElementById('commentInput_' + student.StudentId);
+      if (cardInput) cardInput.value = val;
+      syncPrintCommentDisplay(student.StudentId, val);
+      renderStudentList();
+    }
+
+    function onTableCommentInput(studentId, val) {
+      saveTeacherComment(studentId, val);
+      const cls = PORPHOR_DATA[currentClassIndex];
+      if (cls && cls.Students) {
+        const currentStudent = cls.Students[currentStudentIndex];
+        if (currentStudent && String(currentStudent.StudentId) === String(studentId)) {
+          const topInput = document.getElementById('topCommentInput');
+          if (topInput) topInput.value = val;
+          const cardInput = document.getElementById('commentInput_' + studentId);
+          if (cardInput) cardInput.value = val;
+          syncPrintCommentDisplay(studentId, val);
+        }
+      }
+      renderStudentList();
+    }
+
+    function syncPrintCommentDisplay(studentId, val) {
+      const printDisplay = document.getElementById('printComment_' + studentId);
+      if (printDisplay) {
+        if (val && val.trim()) {
+          printDisplay.innerHTML = `<div class="rc-printed-comment">${val}</div><div class="rc-dotted-line">...................................................................................................................................................................................</div>`;
+        } else {
+          printDisplay.innerHTML = `<div class="rc-dotted-line">...................................................................................................................................................................................</div><div class="rc-dotted-line">...................................................................................................................................................................................</div>`;
+        }
+      }
+    }
+
+    function updateTopCommentBox() {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      if (!cls || !cls.Students) return;
+      const student = cls.Students[currentStudentIndex];
+      if (!student) return;
+      
+      const targetLabel = document.getElementById('commentTargetStudent');
+      if (targetLabel) {
+        targetLabel.textContent = `(เลขที่ ${student.No} : ${student.FullName})`;
+      }
+      const topInput = document.getElementById('topCommentInput');
+      if (topInput) {
+        topInput.value = getTeacherComment(student.StudentId);
+      }
+    }
+
+    function insertPresetComment(text) {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      if (!cls || !cls.Students) return;
+      const student = cls.Students[currentStudentIndex];
+      if (!student) return;
+      
+      let currentVal = getTeacherComment(student.StudentId).trim();
+      let newVal = text;
+      if (currentVal && !currentVal.includes(text)) {
+        newVal = currentVal + " " + text;
+      }
+      
+      saveTeacherComment(student.StudentId, newVal);
+      
+      const topInput = document.getElementById('topCommentInput');
+      if (topInput) topInput.value = newVal;
+      
+      const cardInput = document.getElementById('commentInput_' + student.StudentId);
+      if (cardInput) cardInput.value = newVal;
+      
+      syncPrintCommentDisplay(student.StudentId, newVal);
+      renderStudentList();
+      showToast('บันทึกข้อเสนอแนะเรียบร้อยแล้ว');
+    }
+
+    function clearCurrentComment() {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      if (!cls || !cls.Students) return;
+      const student = cls.Students[currentStudentIndex];
+      if (!student) return;
+      
+      saveTeacherComment(student.StudentId, '');
+      const topInput = document.getElementById('topCommentInput');
+      if (topInput) topInput.value = '';
+      const cardInput = document.getElementById('commentInput_' + student.StudentId);
+      if (cardInput) cardInput.value = '';
+      syncPrintCommentDisplay(student.StudentId, '');
+      renderStudentList();
+      showToast('ล้างข้อเสนอแนะแล้ว');
+    }
+
+    // จัดการผลการประเมิน ข้อ 3-5 (อ่าน คิดเขียน, สมรรถนะ, คุณลักษณะ) ให้คลิกเลือกได้
+    function getStudentEval(student, type) {
+      if (!student) return '';
+      try {
+        const stored = localStorage.getItem('eval_' + student.StudentId + '_' + type);
+        if (stored) return stored;
+      } catch (e) {}
+      return student.Evaluations?.[type] || 'ดี';
+    }
+
+    function setStudentEvaluation(studentId, type, rating) {
+      try {
+        localStorage.setItem('eval_' + studentId + '_' + type, rating);
+      } catch (e) {}
+
+      // อัปเดตข้อมูลในหน่วยความจำ
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      classesList.forEach(cls => {
+        const st = cls.Students.find(s => String(s.StudentId) === String(studentId));
+        if (st) {
+          if (!st.Evaluations) st.Evaluations = {};
+          st.Evaluations[type] = rating;
+        }
+      });
+
+      renderCurrentStudent();
+      renderOverviewTable();
+      
+      const typeLabels = {
+        Reading: 'การอ่าน คิดวิเคราะห์ เขียน',
+        Competency: 'สมรรถนะสำคัญ',
+        Character: 'คุณลักษณะอันพึงประสงค์'
+      };
+      const label = typeLabels[type] || type;
+      showToast(`บันทึก ${label} เป็น "${rating}" เรียบร้อย`);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof PORPHOR_DATA !== 'undefined' && PORPHOR_DATA && !Array.isArray(PORPHOR_DATA) && Array.isArray(PORPHOR_DATA.value)) {
+        PORPHOR_DATA = PORPHOR_DATA.value;
+      }
+      if (typeof PORPHOR_DATA === 'undefined' || !PORPHOR_DATA || PORPHOR_DATA.length === 0) {
+        alert("ไม่พบข้อมูล PORPHOR_DATA กรุณาตรวจสอบไฟล์ data.js");
+        return;
+      }
+      populateClassSelect();
+      loadClass(0);
+    });
+
+    function populateClassSelect() {
+      const select = document.getElementById('classSelect');
+      select.innerHTML = '';
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      classesList.forEach((cls, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = cls.ClassName + ' (' + cls.Students.length + ' คน)';
+        if (idx === currentClassIndex) opt.selected = true;
+        select.appendChild(opt);
+      });
+      select.value = currentClassIndex;
+      document.getElementById('totalClassBadge').textContent = classesList.length + ' ระดับชั้น';
+    }
+
+    function onClassChange() {
+      const select = document.getElementById('classSelect');
+      currentClassIndex = parseInt(select.value, 10);
+      currentStudentIndex = 0;
+      loadClass(currentClassIndex);
+    }
+
+    function loadClass(clsIdx) {
+      currentClassIndex = clsIdx;
+      const cls = PORPHOR_DATA[clsIdx];
+
+      document.getElementById('statClass').textContent = cls.ClassName;
+      document.getElementById('statTotalStudents').textContent = cls.Students.length + ' คน';
+      document.getElementById('btnBatchCount').textContent = cls.Students.length;
+
+      let totalScoreSum = 0;
+      let totalAttPct = 0;
+      cls.Students.forEach(s => {
+        totalScoreSum += s.AverageScore || 0;
+        totalAttPct += s.Attendance?.Percent || 0;
+      });
+      const avgScore = cls.Students.length > 0 ? (totalScoreSum / cls.Students.length).toFixed(2) : "0.00";
+      document.getElementById('statClassAvg').textContent = avgScore;
+
+      renderStudentList();
+      renderCurrentStudent();
+      renderOverviewTable();
+      updateTopCommentBox();
+      updateQuickStudentSelect();
+    }
+
+    function updateQuickStudentSelect() {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      const sel = document.getElementById('quickStudentSelect');
+      if (!sel) return;
+      sel.innerHTML = cls.Students.map((s, idx) => 
+        `<option value="${idx}" ${idx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${s.No} ${s.FullName}</option>`
+      ).join('');
+    }
+
+    function renderStudentList() {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      const listEl = document.getElementById('studentList');
+      listEl.innerHTML = '';
+
+      const filtered = cls.Students.filter(s => {
+        if (!currentSearchTerm) return true;
+        const term = currentSearchTerm.toLowerCase();
+        return s.FullName.toLowerCase().includes(term) || String(s.No).includes(term) || String(s.StudentId).includes(term);
+      });
+
+      document.getElementById('studentListCount').textContent = filtered.length;
+
+      filtered.forEach((s) => {
+        const originalIndex = cls.Students.findIndex(st => st.No === s.No);
+        const item = document.createElement('div');
+        item.className = 'student-item ' + (originalIndex === currentStudentIndex ? 'active' : '');
+        item.onclick = () => selectStudent(originalIndex);
+
+        const hasComment = !!getTeacherComment(s.StudentId);
+
+        item.innerHTML = `
+          <div class="student-info">
+            <div class="student-no-badge">${s.No}</div>
+            <div>
+              <div style="font-size: 0.92rem; font-weight: 600;">${s.FullName}</div>
+              <div class="student-meta">รหัส: ${s.StudentId} | รวม: ${s.TotalScore || 0} คะแนน</div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+            <button class="btn btn-primary btn-sm" style="padding: 2px 7px; font-size: 0.75rem; white-space: nowrap; font-weight: 600;" 
+              onclick="event.stopPropagation(); printSpecificStudent(${originalIndex})" title="สั่งพิมพ์ใบแจ้งผลคนนี้ (A4)">
+              🖨 พิมพ์
+            </button>
+            <span class="badge ${s.Attendance?.Percent >= 80 ? 'badge-success' : 'badge-warning'}" style="font-size: 0.72rem;">
+              ${s.Attendance?.Percent || 0}%
+            </span>
+            ${hasComment ? '<div style="font-size: 0.68rem; color: #059669;">💬 มีความเห็น</div>' : ''}
+          </div>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    function filterStudents() {
+      currentSearchTerm = document.getElementById('searchStudent').value.trim();
+      renderStudentList();
+    }
+
+    function selectStudent(idx) {
+      currentStudentIndex = idx;
+      renderStudentList();
+      renderCurrentStudent();
+      updateTopCommentBox();
+      updateQuickStudentSelect();
+    }
+
+    function nextStudent(delta) {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      let newIdx = currentStudentIndex + delta;
+      if (newIdx < 0) newIdx = cls.Students.length - 1;
+      if (newIdx >= cls.Students.length) newIdx = 0;
+      selectStudent(newIdx);
+    }
+
+    // ฟังก์ชันสร้างโค้ด HTML ใบแจ้งผลการเรียน (ตรงตามแม่แบบ ปรับใหม่ + ตราโรงเรียน + กรอกความคิดเห็นครูได้)
+    function generateReportCardHtml(cls, student) {
+      const basicSubjects = student.Scores.filter(s => s.Index <= 9);
+      const additionalSubjects = student.Scores.filter(s => s.Index > 9);
+
+      function renderSubjectRows(subs) {
+        return subs.map(sub => {
+          const tot = parseFloat(sub.Total);
+          const isUnder25 = !isNaN(tot) && tot < 25;
+          const scoreClass = isUnder25 ? "score-danger" : "";
+          const scoreStyle = isUnder25 ? "color: #dc2626; font-weight: bold;" : "font-weight: bold;";
+          return `
+            <tr>
+              <td style="width: 5%;">${fmtNum(sub.Index)}</td>
+              <td class="text-left" style="width: 45%;">${sub.Name}</td>
+              <td style="width: 16%; font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif; font-size: 16pt;">${sub.Code}</td>
+              <td style="width: 11%;">${fmtNum(sub.Collect)}</td>
+              <td style="width: 11%;">${fmtNum(sub.Exam)}</td>
+              <td class="${scoreClass}" style="width: 12%; ${scoreStyle}">${fmtNum(sub.Total)}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      const teacherName = cls.Teacher1 ? '( ' + cls.Teacher1 + ' )' : '(...............................................)';
+      const teacherRole = 'ครูประจำชั้น';
+      const commentVal = getTeacherComment(student.StudentId);
+      const readingVal = getStudentEval(student, 'Reading');
+      const compVal = getStudentEval(student, 'Competency');
+      const charVal = getStudentEval(student, 'Character');
+      const hasUnder25 = student.Scores.some(sub => {
+        const tot = parseFloat(sub.Total);
+        return !isNaN(tot) && tot < 25;
+      });
+
+      return `
+        <div class="rc-header">
+          <img class="rc-school-emblem" src="logo.png" alt="ตราโรงเรียนบ้านสันดาบ">
+          <div class="rc-title-main">รายงานผลการพัฒนาคุณภาพผู้เรียน</div>
+          <div class="rc-school-name">${cls.SchoolName}</div>
+          <div class="rc-class-year">${cls.ClassName}</div>
+        </div>
+
+        <div class="rc-student-banner">
+          <span>เลขที่ ${fmtNum(student.No)}</span>
+          <span>ชื่อ - นามสกุล: <b>${student.FullName}</b></span>
+          <span>เลขประจำตัว: ${fmtNum(student.StudentId)}</span>
+        </div>
+
+        <!-- 1. เวลาเรียนตลอดปี -->
+        <div class="rc-section-title">1. เวลาเรียนตลอดปี</div>
+        <table class="rc-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width: 20%;">เวลาเรียน</th>
+              <th>เต็ม (วัน)</th>
+              <th>มาเรียน (วัน)</th>
+              <th>ป่วย (วัน)</th>
+              <th>ลา (วัน)</th>
+              <th>ขาด (วัน)</th>
+              <th>มาเรียนคิดเป็นร้อยละ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight: bold;">ภาคเรียนที่ 1</td>
+              <td>${fmtNum(student.Attendance?.Total || 100)}</td>
+              <td>${fmtNum(student.Attendance?.Present || 0)}</td>
+              <td>${fmtNum(student.Attendance?.Sick || 0)}</td>
+              <td>${fmtNum(student.Attendance?.Leave || 0)}</td>
+              <td>${fmtNum(student.Attendance?.Absent || 0)}</td>
+              <td style="font-weight: bold;">${fmtNum(student.Attendance?.Percent || 0)}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 2. ผลการประเมินผลสัมฤทธิ์ทางการเรียน -->
+        <div class="rc-section-title">2. ผลการประเมินผลสัมฤทธิ์ทางการเรียน</div>
+        <table class="rc-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width: 5%;">ที่</th>
+              <th rowspan="2" style="width: 45%;">กลุ่มสาระการเรียนรู้ / รายวิชา</th>
+              <th rowspan="2" style="width: 16%;">รหัสวิชา</th>
+              <th colspan="3">ผลสัมฤทธิ์ทางการเรียน ภาคเรียนที่ 1</th>
+            </tr>
+            <tr>
+              <th style="width: 11%;">คะแนนเก็บ</th>
+              <th style="width: 11%;">คะแนนสอบ</th>
+              <th style="width: 12%;">รวม</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="bg-gray">
+              <td colspan="3" class="text-left" style="padding-left: 10px;">รายวิชาพื้นฐาน</td>
+              <td>(35 คะแนน)</td>
+              <td>(15 คะแนน)</td>
+              <td>(50 คะแนน)</td>
+            </tr>
+            ${renderSubjectRows(basicSubjects)}
+            <tr class="bg-gray">
+              <td colspan="3" class="text-left" style="padding-left: 10px;">รายวิชาเพิ่มเติม</td>
+              <td>(40 คะแนน)</td>
+              <td>(10 คะแนน)</td>
+              <td>(50 คะแนน)</td>
+            </tr>
+            ${renderSubjectRows(additionalSubjects)}
+            <tr style="font-weight: bold; background: #fdf2f8;">
+              <td colspan="3" style="text-align: right; padding-right: 15px;">ระดับผลคะแนนเฉลี่ย  </td>
+              <td colspan="3" style="font-size: 16pt; color: #1e3a8a;">
+                ${fmtNum(student.AverageScore)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- หมายเหตุท้ายตาราง (แสดงเฉพาะเมื่อมีวิชาที่ได้คะแนนรวมไม่ถึง 25 คะแนน) -->
+        ${hasUnder25 ? `
+          <div class="rc-table-note">
+            หมายเหตุ: ติดตามแก้ไขผลการเรียน
+          </div>
+        ` : ''}
+
+        <!-- 3, 4, 5. ผลการประเมินด้านต่างๆ (คลิกเพื่อเลือกหรือเปลี่ยนผลการประเมินได้) -->
+        <div class="rc-eval-grid">
+          <div class="rc-eval-row">
+            <span class="rc-eval-label"><b>3. ผลการประเมินการอ่าน คิดวิเคราะห์ และเขียนสื่อความ:</b></span>
+            <span class="rc-eval-options">
+              <span class="rc-opt ${readingVal === 'ดีเยี่ยม' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Reading', 'ดีเยี่ยม')" title="คลิกเลือก ดีเยี่ยม">ดีเยี่ยม</span>
+              <span class="rc-opt ${readingVal === 'ดี' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Reading', 'ดี')" title="คลิกเลือก ดี">ดี</span>
+              <span class="rc-opt ${readingVal === 'ผ่าน' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Reading', 'ผ่าน')" title="คลิกเลือก ผ่าน">ผ่าน</span>
+              <span class="rc-opt ${readingVal === 'ไม่ผ่าน' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Reading', 'ไม่ผ่าน')" title="คลิกเลือก ไม่ผ่าน">ไม่ผ่าน</span>
+            </span>
+          </div>
+
+          <div class="rc-eval-row">
+            <span class="rc-eval-label"><b>4. ผลการประเมินสมรรถนะสำคัญของผู้เรียน:</b></span>
+            <span class="rc-eval-options">
+              <span class="rc-opt ${compVal === 'ดีเยี่ยม' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Competency', 'ดีเยี่ยม')" title="คลิกเลือก ดีเยี่ยม">ดีเยี่ยม</span>
+              <span class="rc-opt ${compVal === 'ดี' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Competency', 'ดี')" title="คลิกเลือก ดี">ดี</span>
+              <span class="rc-opt ${compVal === 'ผ่าน' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Competency', 'ผ่าน')" title="คลิกเลือก ผ่าน">ผ่าน</span>
+              <span class="rc-opt ${compVal === 'ไม่ผ่าน' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Competency', 'ไม่ผ่าน')" title="คลิกเลือก ไม่ผ่าน">ไม่ผ่าน</span>
+            </span>
+          </div>
+
+          <div class="rc-eval-row">
+            <span class="rc-eval-label"><b>5. ผลการประเมินคุณลักษณะอันพึงประสงค์:</b></span>
+            <span class="rc-eval-options">
+              <span class="rc-opt ${charVal === 'ดีเยี่ยม' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Character', 'ดีเยี่ยม')" title="คลิกเลือก ดีเยี่ยม">ดีเยี่ยม</span>
+              <span class="rc-opt ${charVal === 'ดี' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Character', 'ดี')" title="คลิกเลือก ดี">ดี</span>
+              <span class="rc-opt ${charVal === 'ผ่าน' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Character', 'ผ่าน')" title="คลิกเลือก ผ่าน">ผ่าน</span>
+              <span class="rc-opt ${charVal === 'ไม่ผ่าน' ? 'active' : ''}" onclick="setStudentEvaluation('${student.StudentId}', 'Character', 'ไม่ผ่าน')" title="คลิกเลือก ไม่ผ่าน">ไม่ผ่าน</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- 6. ความคิดเห็น/ ข้อเสนอแนะของครูประจำชั้น -->
+        <div class="rc-notes-box">
+          <b>6. ความคิดเห็น/ ข้อเสนอแนะของครูประจำชั้น:</b>
+          <div class="no-print" style="margin-top: 2px;">
+            <textarea class="rc-notes-input" id="commentInput_${student.StudentId}" rows="2"
+              placeholder="(คลิกเพื่อพิมพ์ข้อเสนอแนะของครูประจำชั้นที่นี่ หรือพิมพ์จากกล่องด้านบน)"
+              oninput="onCommentChange('${student.StudentId}', this.value)">${commentVal}</textarea>
+          </div>
+          <div class="print-only rc-notes-print" id="printComment_${student.StudentId}" style="margin-top: 1px;">
+            ${commentVal ? `
+              <div class="rc-printed-comment">${commentVal}</div>
+              <div class="rc-dotted-line">...................................................................................................................................................................................</div>
+            ` : `
+              <div class="rc-dotted-line">...................................................................................................................................................................................</div>
+              <div class="rc-dotted-line">...................................................................................................................................................................................</div>
+            `}
+          </div>
+        </div>
+
+        <!-- ส่วนท้ายกระดาษและลายเซ็น (ป้องกันการแยกหน้า 100%) -->
+        <div class="rc-footer-signatures">
+          <div class="rc-approval-date">
+            อนุมัติผลการเรียนวันที่ 26 เดือน ตุลาคม พ.ศ. 2569
+          </div>
+
+          <div class="rc-signatures">
+            <div>
+              <div class="sig-dots">ลงชื่อ........................................................</div>
+              <div class="sig-name">${teacherName}</div>
+              <div class="sig-title">${teacherRole}</div>
+            </div>
+            <div>
+              <div class="sig-dots">ลงชื่อ........................................................</div>
+              <div class="sig-name">( นางสาวสุจิตตรา  ปางสุข )</div>
+              <div class="sig-title">หัวหน้างานบริหารวิชาการ</div>
+            </div>
+          </div>
+
+          <div class="rc-director-signature">
+            <div class="sig-dots">ลงชื่อ........................................................</div>
+            <div class="sig-name">( นายกฤษฎา  ผลพล )</div>
+            <div class="sig-title">ผู้อำนวยการโรงเรียนบ้านสันดาบ</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCurrentStudent() {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      const student = cls.Students[currentStudentIndex];
+      const card = document.getElementById('singlePrintCard');
+      card.innerHTML = generateReportCardHtml(cls, student);
+    }
+
+    function renderOverviewTable() {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      const table = document.getElementById('overviewTable');
+      
+      let thead = `
+        <thead>
+          <tr>
+            <th style="width: 50px; text-align: center;">เลขที่</th>
+            <th style="width: 80px; text-align: center;">รหัสประจำตัว</th>
+            <th>ชื่อ - นามสกุล</th>
+            <th style="width: 90px; text-align: center;">เวลาเรียน (%)</th>
+            <th style="width: 85px; text-align: center;">คะแนนรวม</th>
+            <th style="width: 85px; text-align: center;">คะแนนเฉลี่ย</th>
+            <th style="width: 95px; text-align: center;">อ่านคิดเขียน</th>
+            <th style="width: 95px; text-align: center;">สมรรถนะ</th>
+            <th style="width: 95px; text-align: center;">คุณลักษณะ</th>
+            <th>ความคิดเห็นครูประจำชั้น</th>
+            <th style="width: 90px; text-align: center;">การดำเนินการ</th>
+          </tr>
+        </thead>
+      `;
+
+      let tbody = `<tbody>`;
+      cls.Students.forEach((s, idx) => {
+        const comment = getTeacherComment(s.StudentId);
+        const rVal = getStudentEval(s, 'Reading');
+        const compVal = getStudentEval(s, 'Competency');
+        const cVal = getStudentEval(s, 'Character');
+        tbody += `
+          <tr>
+            <td style="text-align: center; font-weight: bold;">${s.No}</td>
+            <td style="text-align: center;">${s.StudentId}</td>
+            <td><b>${s.FullName}</b></td>
+            <td style="text-align: center;">
+              <span class="badge ${s.Attendance?.Percent >= 80 ? 'badge-success' : 'badge-warning'}">
+                ${s.Attendance?.Percent}%
+              </span>
+            </td>
+            <td style="text-align: center; font-weight: bold;">${s.TotalScore}</td>
+            <td style="text-align: center; color: var(--primary); font-weight: bold;">${s.AverageScore}</td>
+            <td style="text-align: center;">
+              <select class="table-eval-select" onchange="setStudentEvaluation('${s.StudentId}', 'Reading', this.value)" title="เลือกผลการอ่าน คิดวิเคราะห์ เขียน">
+                <option value="ดีเยี่ยม" ${rVal === 'ดีเยี่ยม' ? 'selected' : ''}>ดีเยี่ยม</option>
+                <option value="ดี" ${rVal === 'ดี' ? 'selected' : ''}>ดี</option>
+                <option value="ผ่าน" ${rVal === 'ผ่าน' ? 'selected' : ''}>ผ่าน</option>
+                <option value="ไม่ผ่าน" ${rVal === 'ไม่ผ่าน' ? 'selected' : ''}>ไม่ผ่าน</option>
+              </select>
+            </td>
+            <td style="text-align: center;">
+              <select class="table-eval-select" onchange="setStudentEvaluation('${s.StudentId}', 'Competency', this.value)" title="เลือกผลการประเมินสมรรถนะ">
+                <option value="ดีเยี่ยม" ${compVal === 'ดีเยี่ยม' ? 'selected' : ''}>ดีเยี่ยม</option>
+                <option value="ดี" ${compVal === 'ดี' ? 'selected' : ''}>ดี</option>
+                <option value="ผ่าน" ${compVal === 'ผ่าน' ? 'selected' : ''}>ผ่าน</option>
+                <option value="ไม่ผ่าน" ${compVal === 'ไม่ผ่าน' ? 'selected' : ''}>ไม่ผ่าน</option>
+              </select>
+            </td>
+            <td style="text-align: center;">
+              <select class="table-eval-select" onchange="setStudentEvaluation('${s.StudentId}', 'Character', this.value)" title="เลือกผลการประเมินคุณลักษณะ">
+                <option value="ดีเยี่ยม" ${cVal === 'ดีเยี่ยม' ? 'selected' : ''}>ดีเยี่ยม</option>
+                <option value="ดี" ${cVal === 'ดี' ? 'selected' : ''}>ดี</option>
+                <option value="ผ่าน" ${cVal === 'ผ่าน' ? 'selected' : ''}>ผ่าน</option>
+                <option value="ไม่ผ่าน" ${cVal === 'ไม่ผ่าน' ? 'selected' : ''}>ไม่ผ่าน</option>
+              </select>
+            </td>
+            <td style="min-width: 260px;">
+              <input type="text" class="table-comment-input" value="${comment}" 
+                placeholder="คลิกพิมพ์ข้อเสนอแนะครูประจำชั้น..."
+                oninput="onTableCommentInput('${s.StudentId}', this.value)"
+                title="พิมพ์ข้อเสนอแนะสำหรับ ${s.FullName}">
+            </td>
+            <td style="text-align: center; white-space: nowrap;">
+              <button class="btn btn-outline btn-sm" onclick="selectAndPreviewStudent(${idx})" style="padding: 3px 6px; font-size: 0.8rem;" title="ดูตัวอย่างใบแจ้งผล">👁 ดูตัวอย่าง</button>
+              <button class="btn btn-primary btn-sm" onclick="printSpecificStudent(${idx})" style="padding: 3px 8px; font-size: 0.8rem; margin-left: 4px; font-weight: 600;" title="สั่งพิมพ์ใบแจ้งผลคนนี้ทันที (A4)">🖨 พิมพ์ (A4)</button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody += `</tbody>`;
+
+      table.innerHTML = thead + tbody;
+    }
+
+    function selectAndPreviewStudent(idx) {
+      selectStudent(idx);
+      switchTab('preview');
+    }
+
+    function switchTab(tab) {
+      if (tab === 'preview') {
+        document.getElementById('tabPreviewContent').style.display = 'block';
+        document.getElementById('tabOverviewContent').style.display = 'none';
+        document.getElementById('tabPreview').classList.add('active');
+        document.getElementById('tabOverview').classList.remove('active');
+      } else {
+        document.getElementById('tabPreviewContent').style.display = 'none';
+        document.getElementById('tabOverviewContent').style.display = 'block';
+        document.getElementById('tabPreview').classList.remove('active');
+        document.getElementById('tabOverview').classList.add('active');
+      }
+    }
+
+    // ซิงค์ข้อมูลการประเมินล่าสุดจาก BSD-EVAL Cloud (Google Apps Script API)
+    async function syncFromCloud() {
+      const btn = document.getElementById('btnSync');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ กำลังดึงข้อมูลจาก BSD-EVAL...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${CLOUD_WEBAPP_URL}?action=getAllData&t=${Date.now()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const result = await res.json();
+        
+        if (!result.success || !result.data) {
+          throw new Error('ไม่พบข้อมูลการประเมินจากระบบคลาวด์');
+        }
+
+        const cloudData = result.data;
+        const cloudStudentsByCode = {};
+        const cloudStudentsByName = {};
+
+        (cloudData.students || []).forEach(st => {
+          if (st.studentCode) cloudStudentsByCode[String(st.studentCode).trim()] = st;
+          const cleanName = ((st.prefix || '') + (st.firstName || '') + (st.lastName || '')).replace(/\s+/g, '');
+          cloudStudentsByName[cleanName] = st;
+        });
+
+        function ratingToText(val) {
+          if (val === 3 || val === '3') return 'ดีเยี่ยม';
+          if (val === 2 || val === '2') return 'ดี';
+          if (val === 1 || val === '1') return 'ผ่าน';
+          return 'ไม่ผ่าน';
+        }
+
+        let updatedCount = 0;
+        const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+        classesList.forEach(cls => {
+          cls.Students.forEach(st => {
+            const code = String(st.StudentId || '').trim();
+            const cleanLocalName = ((st.Prefix || '') + (st.FirstName || '') + (st.LastName || '')).replace(/\s+/g, '');
+            const cStudent = (code && cloudStudentsByCode[code]) || cloudStudentsByName[cleanLocalName];
+
+            if (cStudent) {
+              const cId = String(cStudent.id);
+              const rItem = cloudData.readingAssessments?.[cId];
+              const cItem = cloudData.characteristicsAssessments?.[cId];
+              const kItem = cloudData.competenciesAssessments?.[cId];
+
+              const rVal = rItem?.term1?.summary ?? rItem?.summary;
+              const kVal = kItem?.term1?.summary ?? kItem?.summary;
+              const cVal = cItem?.term1?.summary ?? cItem?.summary;
+
+              if (rVal !== undefined) st.Evaluations.Reading = ratingToText(rVal);
+              if (kVal !== undefined) st.Evaluations.Competency = ratingToText(kVal);
+              if (cVal !== undefined) st.Evaluations.Character = ratingToText(cVal);
+              updatedCount++;
+            }
+          });
+        });
+
+        renderCurrentStudent();
+        renderOverviewTable();
+        showToast(`อัปเดตข้อมูลการประเมินจาก BSD-EVAL สำเร็จแล้ว (${updatedCount} คน)`);
+      } catch (err) {
+        console.error('Sync error:', err);
+        showToast('เชื่อมต่อคลาวด์ไม่สำเร็จ (ใช้ข้อมูลประเมินล่าสุดที่บันทึกไว้แทน)');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    function printSpecificStudent(idx) {
+      selectStudent(idx);
+      switchTab('preview');
+      setTimeout(() => {
+        printCurrentStudent();
+      }, 80);
+    }
+
+    function printCurrentStudent() {
+      document.body.classList.remove('print-batch');
+      document.body.classList.add('print-single');
+      setTimeout(() => {
+        window.print();
+      }, 50);
+    }
+
+    function printAllStudentsInClass() {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      const batchContainer = document.getElementById('batchPrintContainer');
+      batchContainer.innerHTML = '';
+
+      cls.Students.forEach(student => {
+        const page = document.createElement('div');
+        page.className = 'report-card-page';
+        page.innerHTML = generateReportCardHtml(cls, student);
+        batchContainer.appendChild(page);
+      });
+
+      document.body.classList.remove('print-single');
+      document.body.classList.add('print-batch');
+      
+      setTimeout(() => {
+        window.print();
+      }, 200);
+    }
+
+    window.addEventListener('beforeprint', () => {
+      if (!document.body.classList.contains('print-batch')) {
+        document.body.classList.add('print-single');
+      }
+    });
+
+    window.addEventListener('afterprint', () => {
+      document.body.classList.remove('print-single');
+      document.body.classList.remove('print-batch');
+    });
+  </script>
+</body>
+</html>
