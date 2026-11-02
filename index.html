@@ -1211,13 +1211,26 @@
       setTimeout(() => { box.style.display = 'none'; }, 3000);
     }
 
-    // จัดการความคิดเห็นครูประจำชั้นใน localStorage
+    // จัดการความคิดเห็นครูประจำชั้นใน localStorage และฐานข้อมูลเริ่มต้น
     function getTeacherComment(studentId) {
       try {
-        return localStorage.getItem('teacher_comment_' + studentId) || '';
-      } catch (e) {
-        return '';
-      }
+        const local = localStorage.getItem('teacher_comment_' + studentId);
+        if (local !== null && local !== undefined && local.trim() !== '') {
+          return local;
+        }
+      } catch (e) {}
+
+      // ถ้าใน localStorage ยังไม่มี ให้ดึงจากข้อมูลเริ่มต้นใน PORPHOR_DATA
+      try {
+        const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+        for (const cls of classesList) {
+          const st = cls.Students?.find(s => String(s.StudentId) === String(studentId));
+          if (st && st.TeacherComment) {
+            return st.TeacherComment;
+          }
+        }
+      } catch (e) {}
+      return '';
     }
 
     function saveTeacherComment(studentId, commentText) {
