@@ -1537,6 +1537,9 @@
           <button type="button" class="nav-menu-item" id="leftMenuEditgrade" onclick="switchTab('editgrade')">
             <span class="nav-icon">📝</span> <span>แก้ไขผลการเรียน</span>
           </button>
+          <button type="button" class="nav-menu-item" id="leftMenuAdmin" onclick="switchTab('admin')">
+            <span class="nav-icon">🛠️</span> <span>แก้ไขข้อมูล (Admin)</span>
+          </button>
           <button type="button" class="nav-menu-item" onclick="printCurrentStudent()">
             <span class="nav-icon">🖨</span> <span>พิมพ์ใบแจ้งการเรียน</span>
           </button>
@@ -1750,6 +1753,219 @@
         </div>
       </div>
 
+      <!-- แท็บที่ 6: แก้ไขข้อมูลทั้งหมดสำหรับ Admin (แก้ไขข้อมูลคะแนน เวลาเรียน ผลประเมิน รายวิชา และรายห้อง) -->
+      <div id="tabAdminContent" style="display: none;">
+        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.85rem; border-color: #fbcfe8; padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+            <div>
+              <h3 style="font-family: 'Prompt'; font-size: 1.25rem; color: #be185d; font-weight: 800; margin: 0 0 0.25rem 0;">
+                🛠️ ระบบจัดการและแก้ไขข้อมูลคะแนนทั้งหมด (สำหรับ Admin)
+              </h3>
+              <p style="font-size: 0.9rem; color: #64748b; margin: 0;">
+                แก้ไขข้อมูลนักเรียน เวลาเรียน คะแนนทั้ง 15 รายวิชา ผลการประเมิน ข้อ 3–5 ความคิดเห็นครู หรือแก้ไขคะแนนรายวิชาทั้งห้องพร้อมกัน
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button type="button" class="btn btn-sm" id="btnAdminModeStudent" onclick="setAdminMode('student')" style="background: #e11d48; color: white; font-weight: 700; padding: 0.45rem 0.9rem;">
+                👤 แก้ไขรายบุคคล (ครบทุกส่วน)
+              </button>
+              <button type="button" class="btn btn-outline-pink btn-sm" id="btnAdminModeSubject" onclick="setAdminMode('subject')" style="font-weight: 700; padding: 0.45rem 0.9rem;">
+                📚 แก้ไขคะแนนรายวิชาทั้งห้อง
+              </button>
+              <button type="button" class="btn btn-sm" onclick="exportUpdatedDataJs()" style="background: #1e3a8a; color: white; font-weight: 700; padding: 0.45rem 0.9rem;" title="ดาวน์โหลดไฟล์ data.js ที่อัปเดตแล้วไปทับในโฟลเดอร์ระบบ">
+                📥 ดาวน์โหลดไฟล์ data.js ใหม่
+              </button>
+            </div>
+          </div>
+
+          <!-- โหมดที่ 1: แก้ไขข้อมูลรายบุคคลครบทุกส่วน -->
+          <div id="adminStudentModePane">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; background: #fff1f2; padding: 0.9rem 1rem; border-radius: 10px; border: 1px solid #fecdd3; margin-bottom: 1rem;">
+              <div>
+                <label style="font-weight: 700; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เลือกระดับชั้นเรียน:</label>
+                <select id="adminClassSelect" class="class-select-pink" onchange="onAdminClassChange(this.value)"></select>
+              </div>
+              <div>
+                <label style="font-weight: 700; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เลือกนักเรียน (แสดงทุกคนในชั้น):</label>
+                <select id="adminStudentSelect" class="class-select-pink" onchange="onAdminStudentChange(this.value)"></select>
+              </div>
+              <div style="display: flex; align-items: flex-end; gap: 0.5rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-success btn-sm" onclick="saveAdminStudentAllData()" style="padding: 0.55rem 1.1rem; font-weight: 700; font-size: 0.92rem; flex: 1;">
+                  💾 บันทึกข้อมูลคนนี้ทั้งหมด
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminStudentData()" style="color: #dc2626; border-color: #fca5a5; background: #fff; padding: 0.55rem 0.8rem; font-weight: 600;">
+                  🔄 คืนค่าเดิม
+                </button>
+              </div>
+            </div>
+
+            <!-- 1. ข้อมูลพื้นฐานและเวลาเรียน (ข้อ 1) -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1rem;">
+              <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 0.65rem; font-size: 0.98rem;">
+                📌 ส่วนที่ 1: ข้อมูลนักเรียน และ เวลาเรียนตลอดปี (ข้อ 1)
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.6rem;">
+                <div>
+                  <label style="font-size: 0.78rem; color: #475569; font-weight: 600;">เลขที่</label>
+                  <input type="number" id="adminStNo" class="search-box-pink" style="margin-top: 2px; background: white; font-weight: 700; text-align: center;">
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; color: #475569; font-weight: 600;">เลขประจำตัว</label>
+                  <input type="text" id="adminStId" class="search-box-pink" style="margin-top: 2px; background: white; font-weight: 700; text-align: center;">
+                </div>
+                <div style="grid-column: span 2;">
+                  <label style="font-size: 0.78rem; color: #475569; font-weight: 600;">ชื่อ - นามสกุล</label>
+                  <input type="text" id="adminStName" class="search-box-pink" style="margin-top: 2px; background: white; font-weight: 700;">
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; color: #475569; font-weight: 600;">เวลาเรียนเต็ม (วัน)</label>
+                  <input type="number" id="adminAttTotal" class="search-box-pink" style="margin-top: 2px; background: white; text-align: center; font-weight: 700;" oninput="onAdminAttInput()">
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; color: #059669; font-weight: 600;">มาเรียน (วัน)</label>
+                  <input type="number" id="adminAttPresent" class="search-box-pink" style="margin-top: 2px; background: white; text-align: center; font-weight: 700; color: #059669;" oninput="onAdminAttInput()">
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; color: #475569; font-weight: 600;">ป่วย (วัน)</label>
+                  <input type="number" id="adminAttSick" class="search-box-pink" style="margin-top: 2px; background: white; text-align: center;">
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; color: #475569; font-weight: 600;">ลา (วัน)</label>
+                  <input type="number" id="adminAttLeave" class="search-box-pink" style="margin-top: 2px; background: white; text-align: center;">
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; color: #dc2626; font-weight: 600;">ขาด (วัน)</label>
+                  <input type="number" id="adminAttAbsent" class="search-box-pink" style="margin-top: 2px; background: white; text-align: center;">
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; color: #1e3a8a; font-weight: 600;">ร้อยละเวลาเรียน (%)</label>
+                  <input type="number" step="0.01" id="adminAttPercent" class="search-box-pink" style="margin-top: 2px; background: #eff6ff; text-align: center; font-weight: 800; color: #1e3a8a;">
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. คะแนนผลสัมฤทธิ์ทางการเรียนทั้ง 15 รายวิชา (ข้อ 2) -->
+            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.65rem;">
+                <div style="font-weight: 700; color: #be185d; font-size: 0.98rem;">
+                  📊 ส่วนที่ 2: คะแนนผลสัมฤทธิ์ทางการเรียนทั้ง 15 รายวิชา (ข้อ 2)
+                </div>
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #1e3a8a; font-weight: 600; cursor: pointer; background: #eff6ff; padding: 4px 10px; border-radius: 6px; border: 1px solid #bfdbfe;">
+                  <input type="checkbox" id="adminUpdateOrigCheck" checked>
+                  อัปเดตเป็นคะแนนตั้งต้นในระบบด้วย (ไม่ให้ติดชื่อค้างในใบคำร้องแก้คะแนนหากคะแนน >= 25)
+                </label>
+              </div>
+              <div style="overflow-x: auto;">
+                <table class="score-edit-table" style="width: 100%; border-collapse: collapse;">
+                  <thead>
+                    <tr style="background: #fdf2f8; color: #881337;">
+                      <th style="width: 40px; text-align: center; padding: 8px;">ที่</th>
+                      <th style="width: 105px; text-align: center; padding: 8px;">รหัสวิชา</th>
+                      <th style="padding: 8px;">ชื่อรายวิชา</th>
+                      <th style="width: 190px; padding: 8px;">ครูประจำวิชา</th>
+                      <th style="width: 115px; text-align: center; padding: 8px;">คะแนนเก็บ</th>
+                      <th style="width: 115px; text-align: center; padding: 8px;">คะแนนสอบ</th>
+                      <th style="width: 95px; text-align: center; padding: 8px;">รวม (50)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminScoreTableBody"></tbody>
+                  <tfoot>
+                    <tr style="background: #f8fafc; font-weight: 800; font-size: 1rem;">
+                      <td colspan="4" style="text-align: right; padding: 8px 12px;">คะแนนรวมทั้งหมด (15 วิชา) / คะแนนเฉลี่ย:</td>
+                      <td style="text-align: center; color: #1e3a8a; padding: 8px;" id="adminSumCollect">0</td>
+                      <td style="text-align: center; color: #1e3a8a; padding: 8px;" id="adminSumExam">0</td>
+                      <td style="text-align: center; color: #059669; padding: 8px;" id="adminSumTotalAvg">0 (เฉลี่ย 0.00)</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+
+            <!-- 3. ผลการประเมิน ข้อ 3-5 และ ความคิดเห็นครูประจำชั้น ข้อ 6 -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.9rem 1rem;">
+              <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 0.65rem; font-size: 0.98rem;">
+                🏅 ส่วนที่ 3: ผลการประเมิน ข้อ 3–5 และ ความคิดเห็นครูประจำชั้น (ข้อ 6)
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 4px;">3. การอ่าน คิดวิเคราะห์ และเขียน:</label>
+                  <select id="adminEvalReading" class="class-select-pink">
+                    <option value="ดีเยี่ยม">ดีเยี่ยม</option>
+                    <option value="ดี">ดี</option>
+                    <option value="ผ่าน">ผ่าน</option>
+                    <option value="ไม่ผ่าน">ไม่ผ่าน</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 4px;">4. สมรรถนะสำคัญของผู้เรียน:</label>
+                  <select id="adminEvalComp" class="class-select-pink">
+                    <option value="ดีเยี่ยม">ดีเยี่ยม</option>
+                    <option value="ดี">ดี</option>
+                    <option value="ผ่าน">ผ่าน</option>
+                    <option value="ไม่ผ่าน">ไม่ผ่าน</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 4px;">5. คุณลักษณะอันพึงประสงค์:</label>
+                  <select id="adminEvalChar" class="class-select-pink">
+                    <option value="ดีเยี่ยม">ดีเยี่ยม</option>
+                    <option value="ดี">ดี</option>
+                    <option value="ผ่าน">ผ่าน</option>
+                    <option value="ไม่ผ่าน">ไม่ผ่าน</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 4px;">6. ความคิดเห็น / ข้อเสนอแนะของครูประจำชั้น:</label>
+                <textarea id="adminCommentText" class="top-comment-textarea" rows="2" placeholder="พิมพ์ความคิดเห็นของครูประจำชั้น..."></textarea>
+              </div>
+              <div style="margin-top: 0.85rem; display: flex; justify-content: flex-end; gap: 0.6rem;">
+                <button type="button" class="btn btn-success" onclick="saveAdminStudentAllData()" style="padding: 0.6rem 1.5rem; font-weight: 800; font-size: 1rem;">
+                  💾 บันทึกข้อมูลทั้งหมดของนักเรียนคนนี้
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- โหมดที่ 2: แก้ไขคะแนนรายวิชาทั้งห้อง (Bulk Subject Score Editor) -->
+          <div id="adminSubjectModePane" style="display: none;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; background: #eff6ff; padding: 0.9rem 1rem; border-radius: 10px; border: 1px solid #bfdbfe; margin-bottom: 1rem;">
+              <div>
+                <label style="font-weight: 700; font-size: 0.85rem; color: #1e3a8a; display: block; margin-bottom: 4px;">เลือกระดับชั้นเรียน:</label>
+                <select id="adminBulkClassSelect" class="class-select-pink" onchange="onAdminBulkClassChange(this.value)"></select>
+              </div>
+              <div>
+                <label style="font-weight: 700; font-size: 0.85rem; color: #1e3a8a; display: block; margin-bottom: 4px;">เลือกรายวิชาที่ต้องการแก้ไขทั้งห้อง:</label>
+                <select id="adminBulkSubjectSelect" class="class-select-pink" onchange="renderAdminBulkSubjectTable()"></select>
+              </div>
+              <div style="display: flex; align-items: flex-end;">
+                <button type="button" class="btn btn-success btn-sm" onclick="saveAdminBulkSubjectScores()" style="padding: 0.55rem 1.2rem; font-weight: 800; font-size: 0.95rem; width: 100%;">
+                  💾 บันทึกคะแนนวิชานี้ทั้งห้องทันที
+                </button>
+              </div>
+            </div>
+            <div id="adminBulkSubjectHeaderInfo" style="margin-bottom: 0.6rem; font-weight: 700; color: #1e3a8a;"></div>
+            <div style="overflow-x: auto;">
+              <table class="score-edit-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="background: #eff6ff; color: #1e3a8a;">
+                    <th style="width: 55px; text-align: center; padding: 8px;">เลขที่</th>
+                    <th style="width: 95px; text-align: center; padding: 8px;">รหัสประจำตัว</th>
+                    <th style="padding: 8px;">ชื่อ - นามสกุล นักเรียน</th>
+                    <th style="width: 140px; text-align: center; padding: 8px;" id="adminBulkMaxCollectTh">คะแนนเก็บ</th>
+                    <th style="width: 140px; text-align: center; padding: 8px;" id="adminBulkMaxExamTh">คะแนนสอบ</th>
+                    <th style="width: 110px; text-align: center; padding: 8px;">รวม (50)</th>
+                    <th style="width: 110px; text-align: center; padding: 8px;">สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody id="adminBulkSubjectTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </section>
 
     <!-- คอลัมน์ขวา: การเลือกนักเรียนและแถบควบคุม -->
@@ -1778,6 +1994,9 @@
         </button>
         <button type="button" class="right-icon-btn" id="rightTabReceipt" onclick="switchTab('receipt')" title="แบบฟอร์มการรับผลการเรียน">
           📋
+        </button>
+        <button type="button" class="right-icon-btn" id="rightTabAdmin" onclick="switchTab('admin')" title="แก้ไขข้อมูลคะแนนทั้งหมด (Admin)">
+          🛠️
         </button>
       </div>
 
@@ -2261,6 +2480,11 @@
           cls.Students.forEach(st => {
             if (customMap[st.StudentId]) {
               const custom = customMap[st.StudentId];
+              if (custom.FullName) st.FullName = custom.FullName;
+              if (custom.No !== undefined) st.No = custom.No;
+              if (custom.Attendance) {
+                st.Attendance = Object.assign({}, st.Attendance || {}, custom.Attendance);
+              }
               const savedList = custom.Scores || custom.Subjects;
               if (Array.isArray(savedList)) {
                 savedList.forEach((sub, sIdx) => {
@@ -2268,9 +2492,15 @@
                     return; // คงค่าคะแนนจริงของวิชาศิลปะ ป.3 ที่ดึงจากไฟล์ Excel
                   }
                   if (st.Scores && st.Scores[sIdx]) {
+                    if (sub.Code) st.Scores[sIdx].Code = sub.Code;
+                    if (sub.Name) st.Scores[sIdx].Name = sub.Name;
+                    if (sub.Teacher) st.Scores[sIdx].Teacher = sub.Teacher;
                     st.Scores[sIdx].Collect = sub.Collect;
                     st.Scores[sIdx].Exam = sub.Exam;
                     st.Scores[sIdx].Total = sub.Total;
+                    if (sub.OrigCollect !== undefined) st.Scores[sIdx].OrigCollect = sub.OrigCollect;
+                    if (sub.OrigExam !== undefined) st.Scores[sIdx].OrigExam = sub.OrigExam;
+                    if (sub.OrigTotal !== undefined) st.Scores[sIdx].OrigTotal = sub.OrigTotal;
                   }
                   if (st.Subjects && st.Subjects[sIdx]) {
                     st.Subjects[sIdx].Collect = sub.Collect;
@@ -2358,6 +2588,9 @@
 
       if (typeof currentActiveTab !== 'undefined' && currentActiveTab === 'receipt') {
         initReceiptTab();
+      }
+      if (typeof currentActiveTab !== 'undefined' && currentActiveTab === 'admin') {
+        initAdminTab();
       }
     }
 
@@ -2457,6 +2690,14 @@
         if (docStSel) docStSel.value = currentStudentIndex;
         renderFailingSubjectsEditor();
         updateCorrectionPreview();
+      }
+
+      if (typeof currentActiveTab !== 'undefined' && currentActiveTab === 'admin') {
+        const admStSel = document.getElementById('adminStudentSelect');
+        if (admStSel) {
+          admStSel.value = currentStudentIndex;
+          loadAdminStudentForm();
+        }
       }
     }
 
@@ -2785,7 +3026,7 @@
 
     function switchTab(tab) {
       currentActiveTab = tab;
-      const tabs = ['preview', 'overview', 'correction', 'receipt', 'editgrade'];
+      const tabs = ['preview', 'overview', 'correction', 'receipt', 'editgrade', 'admin'];
       tabs.forEach(t => {
         const pane = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1) + 'Content');
         if (pane) {
@@ -2805,7 +3046,8 @@
         overview: 'leftMenuOverview',
         correction: 'leftMenuCorrection',
         receipt: 'leftMenuReceipt',
-        editgrade: 'leftMenuEditgrade'
+        editgrade: 'leftMenuEditgrade',
+        admin: 'leftMenuAdmin'
       };
       Object.keys(leftMap).forEach(k => {
         const el = document.getElementById(leftMap[k]);
@@ -2820,7 +3062,8 @@
         preview: 'rightTabPreview',
         overview: 'rightTabOverview',
         correction: 'rightTabCorrection',
-        receipt: 'rightTabReceipt'
+        receipt: 'rightTabReceipt',
+        admin: 'rightTabAdmin'
       };
       Object.keys(rightMap).forEach(k => {
         const el = document.getElementById(rightMap[k]);
@@ -2843,6 +3086,8 @@
         updateQuickStudentSelect();
         if (tab === 'receipt') {
           initReceiptTab();
+        } else if (tab === 'admin') {
+          initAdminTab();
         }
       }
     }
@@ -3839,11 +4084,18 @@
           Index: s.Index,
           Code: s.Code,
           Name: s.Name,
+          Teacher: s.Teacher,
           Collect: s.Collect,
           Exam: s.Exam,
-          Total: s.Total
+          Total: s.Total,
+          OrigCollect: s.OrigCollect,
+          OrigExam: s.OrigExam,
+          OrigTotal: s.OrigTotal
         }));
         store[studentId] = {
+          FullName: student.FullName,
+          No: student.No,
+          Attendance: student.Attendance ? { ...student.Attendance } : undefined,
           Scores: savedScores,
           Subjects: savedScores,
           TotalCollect: student.TotalCollect,
@@ -3879,6 +4131,561 @@
       }
 
       location.reload();
+    }
+
+    // ========================================================
+    // ระบบจัดการและแก้ไขข้อมูลทั้งหมดสำหรับ Admin (#tabAdminContent)
+    // ========================================================
+    let currentAdminMode = 'student';
+
+    function initAdminTab() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const admClsSel = document.getElementById('adminClassSelect');
+      const admBulkClsSel = document.getElementById('adminBulkClassSelect');
+
+      if (admClsSel) {
+        admClsSel.innerHTML = classesList.map((c, idx) =>
+          `<option value="${idx}" ${idx === currentClassIndex ? 'selected' : ''}>${c.ClassShort} (${c.ClassName}) - ครู${c.Teacher}</option>`
+        ).join('');
+      }
+      if (admBulkClsSel) {
+        admBulkClsSel.innerHTML = classesList.map((c, idx) =>
+          `<option value="${idx}" ${idx === currentClassIndex ? 'selected' : ''}>${c.ClassShort} (${c.ClassName}) - ครู${c.Teacher}</option>`
+        ).join('');
+      }
+
+      populateAdminStudentSelect();
+      loadAdminStudentForm();
+      populateAdminBulkSubjectSelect();
+      renderAdminBulkSubjectTable();
+    }
+
+    function setAdminMode(mode) {
+      currentAdminMode = mode;
+      const stPane = document.getElementById('adminStudentModePane');
+      const subPane = document.getElementById('adminSubjectModePane');
+      const btnSt = document.getElementById('adminModeStudentBtn');
+      const btnSub = document.getElementById('adminModeSubjectBtn');
+
+      if (mode === 'student') {
+        if (stPane) stPane.style.display = 'block';
+        if (subPane) subPane.style.display = 'none';
+        if (btnSt) {
+          btnSt.style.background = '#e11d48';
+          btnSt.style.color = 'white';
+          btnSt.style.border = 'none';
+        }
+        if (btnSub) {
+          btnSub.style.background = 'white';
+          btnSub.style.color = '#334155';
+          btnSub.style.border = '1.5px solid #cbd5e1';
+        }
+        loadAdminStudentForm();
+      } else {
+        if (stPane) stPane.style.display = 'none';
+        if (subPane) subPane.style.display = 'block';
+        if (btnSub) {
+          btnSub.style.background = '#e11d48';
+          btnSub.style.color = 'white';
+          btnSub.style.border = 'none';
+        }
+        if (btnSt) {
+          btnSt.style.background = 'white';
+          btnSt.style.color = '#334155';
+          btnSt.style.border = '1.5px solid #cbd5e1';
+        }
+        populateAdminBulkSubjectSelect();
+        renderAdminBulkSubjectTable();
+      }
+    }
+
+    function populateAdminStudentSelect() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[currentClassIndex];
+      const admStSel = document.getElementById('adminStudentSelect');
+      if (!admStSel || !cls || !Array.isArray(cls.Students)) return;
+
+      admStSel.innerHTML = cls.Students.map((st, idx) => {
+        const failCount = getFailingSubjects(st).length;
+        const failTag = failCount > 0 ? ` [ไม่ผ่าน ${failCount} วิชา]` : '';
+        return `<option value="${idx}" ${idx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${st.No} ${st.FullName} (รหัส ${st.StudentId})${failTag}</option>`;
+      }).join('');
+    }
+
+    function onAdminClassChange() {
+      const admClsSel = document.getElementById('adminClassSelect');
+      if (!admClsSel) return;
+      const newClsIdx = parseInt(admClsSel.value, 10);
+      if (!isNaN(newClsIdx) && newClsIdx !== currentClassIndex) {
+        const mainSel = document.getElementById('classSelect');
+        if (mainSel) mainSel.value = newClsIdx;
+        loadClass(newClsIdx);
+      } else {
+        populateAdminStudentSelect();
+        loadAdminStudentForm();
+      }
+    }
+
+    function onAdminStudentChange() {
+      const admStSel = document.getElementById('adminStudentSelect');
+      if (!admStSel) return;
+      const newStIdx = parseInt(admStSel.value, 10);
+      if (!isNaN(newStIdx) && newStIdx >= 0) {
+        selectStudent(newStIdx);
+      }
+    }
+
+    function loadAdminStudentForm() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[currentClassIndex];
+      if (!cls || !cls.Students) return;
+      const st = cls.Students[currentStudentIndex];
+      if (!st) return;
+
+      // 1. ข้อมูลทั่วไป & เวลาเรียน
+      const elNo = document.getElementById('adminStNo');
+      const elId = document.getElementById('adminStId');
+      const elName = document.getElementById('adminStName');
+      if (elNo) elNo.value = st.No ?? '';
+      if (elId) elId.value = st.StudentId ?? '';
+      if (elName) elName.value = st.FullName ?? '';
+
+      const att = st.Attendance || {};
+      const elAttTotal = document.getElementById('adminAttTotal');
+      const elAttPresent = document.getElementById('adminAttPresent');
+      const elAttSick = document.getElementById('adminAttSick');
+      const elAttLeave = document.getElementById('adminAttLeave');
+      const elAttAbsent = document.getElementById('adminAttAbsent');
+      const elAttPercent = document.getElementById('adminAttPercent');
+
+      if (elAttTotal) elAttTotal.value = att.TotalHours ?? 100;
+      if (elAttPresent) elAttPresent.value = att.Present ?? 100;
+      if (elAttSick) elAttSick.value = att.Sick ?? 0;
+      if (elAttLeave) elAttLeave.value = att.Leave ?? 0;
+      if (elAttAbsent) elAttAbsent.value = att.Absent ?? 0;
+      if (elAttPercent) elAttPercent.value = att.Percent ?? 100;
+
+      // 2. ตารางคะแนนทั้ง 15 รายวิชา
+      const tbody = document.getElementById('adminScoresTableBody');
+      if (tbody && Array.isArray(st.Scores)) {
+        let sumC = 0, sumE = 0, sumT = 0;
+        tbody.innerHTML = st.Scores.map((sc, sIdx) => {
+          const c = parseFloat(sc.Collect) || 0;
+          const e = parseFloat(sc.Exam) || 0;
+          const t = parseFloat(sc.Total) || 0;
+          sumC += c;
+          sumE += e;
+          sumT += t;
+          const isFail = t < 25;
+          const statusHtml = isFail
+            ? `<span style="background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;">ไม่ผ่าน (<25)</span>`
+            : `<span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;">ผ่านเกณฑ์</span>`;
+
+          return `
+            <tr id="adminScoreRow_${sIdx}" style="background: ${isFail ? '#fff1f2' : (sIdx % 2 === 0 ? '#ffffff' : '#f8fafc')};">
+              <td style="padding: 6px; border: 1px solid #cbd5e1; text-align: center; font-weight: 700;">${sc.Index}</td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1;">
+                <input type="text" id="adminSubCode_${sIdx}" value="${sc.Code || ''}" style="width: 100%; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-family: 'Sarabun', sans-serif; font-size: 0.85rem; text-align: center;">
+              </td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1;">
+                <input type="text" id="adminSubName_${sIdx}" value="${sc.Name || ''}" style="width: 100%; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-family: 'Sarabun', sans-serif; font-size: 0.85rem; font-weight: 600;">
+              </td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1;">
+                <input type="text" id="adminSubTeacher_${sIdx}" value="${sc.Teacher || getSubjectTeacher(currentClassIndex, sc.Index) || ''}" style="width: 100%; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-family: 'Sarabun', sans-serif; font-size: 0.82rem;">
+              </td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1; text-align: center; background: #fffbeb;">
+                <input type="number" id="adminSubCollect_${sIdx}" min="0" max="50" step="0.5" value="${sc.Collect ?? 0}" oninput="onAdminScoreInput(${sIdx})"
+                  style="width: 72px; padding: 5px; border: 1.5px solid #f59e0b; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 0.95rem; text-align: center;">
+              </td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1; text-align: center; background: #eff6ff;">
+                <input type="number" id="adminSubExam_${sIdx}" min="0" max="50" step="0.5" value="${sc.Exam ?? 0}" oninput="onAdminScoreInput(${sIdx})"
+                  style="width: 72px; padding: 5px; border: 1.5px solid #3b82f6; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 0.95rem; text-align: center;">
+              </td>
+              <td id="adminSubTotal_${sIdx}" style="padding: 6px; border: 1px solid #cbd5e1; text-align: center; font-weight: 800; font-size: 1rem; color: ${isFail ? '#dc2626' : '#15803d'}; background: #f0fdf4;">
+                ${t}
+              </td>
+              <td id="adminSubStatus_${sIdx}" style="padding: 6px; border: 1px solid #cbd5e1; text-align: center;">
+                ${statusHtml}
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        const elSumC = document.getElementById('adminSumCollect');
+        const elSumE = document.getElementById('adminSumExam');
+        const elSumT = document.getElementById('adminSumTotal');
+        const elAvg = document.getElementById('adminAvgScore');
+        if (elSumC) elSumC.textContent = Math.round(sumC * 100) / 100;
+        if (elSumE) elSumE.textContent = Math.round(sumE * 100) / 100;
+        if (elSumT) elSumT.textContent = Math.round(sumT * 100) / 100;
+        if (elAvg) elAvg.textContent = (sumT / 15.0).toFixed(2);
+      }
+
+      // 3. ผลประเมินข้อ 3-5 และความคิดเห็นครูประจำชั้น
+      const elEvalRead = document.getElementById('adminEvalReading');
+      const elEvalComp = document.getElementById('adminEvalCompetency');
+      const elEvalChar = document.getElementById('adminEvalCharacter');
+      const elComment = document.getElementById('adminTeacherComment');
+
+      if (elEvalRead) elEvalRead.value = getStudentEval(st, 'Reading') || 'ดี';
+      if (elEvalComp) elEvalComp.value = getStudentEval(st, 'Competency') || 'ดี';
+      if (elEvalChar) elEvalChar.value = getStudentEval(st, 'Character') || 'ดี';
+      if (elComment) elComment.value = getTeacherComment(st.StudentId) || '';
+    }
+
+    function onAdminAttInput() {
+      const total = parseFloat(document.getElementById('adminAttTotal')?.value) || 0;
+      const present = parseFloat(document.getElementById('adminAttPresent')?.value) || 0;
+      const elPct = document.getElementById('adminAttPercent');
+      if (elPct && total > 0) {
+        elPct.value = Math.round((present / total) * 10000) / 100;
+      }
+    }
+
+    function onAdminScoreInput(sIdx) {
+      const cInput = document.getElementById(`adminSubCollect_${sIdx}`);
+      const eInput = document.getElementById(`adminSubExam_${sIdx}`);
+      const totEl = document.getElementById(`adminSubTotal_${sIdx}`);
+      const statusEl = document.getElementById(`adminSubStatus_${sIdx}`);
+      const rowEl = document.getElementById(`adminScoreRow_${sIdx}`);
+
+      const c = parseFloat(cInput?.value) || 0;
+      const e = parseFloat(eInput?.value) || 0;
+      const t = Math.round((c + e) * 100) / 100;
+      const isFail = t < 25;
+
+      if (totEl) {
+        totEl.textContent = t;
+        totEl.style.color = isFail ? '#dc2626' : '#15803d';
+      }
+      if (statusEl) {
+        statusEl.innerHTML = isFail
+          ? `<span style="background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;">ไม่ผ่าน (<25)</span>`
+          : `<span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;">ผ่านเกณฑ์</span>`;
+      }
+      if (rowEl) {
+        rowEl.style.background = isFail ? '#fff1f2' : (sIdx % 2 === 0 ? '#ffffff' : '#f8fafc');
+      }
+
+      // คำนวณยอดรวมทั้งหมด
+      let sumC = 0, sumE = 0, sumT = 0;
+      for (let i = 0; i < 15; i++) {
+        const ci = parseFloat(document.getElementById(`adminSubCollect_${i}`)?.value) || 0;
+        const ei = parseFloat(document.getElementById(`adminSubExam_${i}`)?.value) || 0;
+        sumC += ci;
+        sumE += ei;
+        sumT += (ci + ei);
+      }
+      const elSumC = document.getElementById('adminSumCollect');
+      const elSumE = document.getElementById('adminSumExam');
+      const elSumT = document.getElementById('adminSumTotal');
+      const elAvg = document.getElementById('adminAvgScore');
+      if (elSumC) elSumC.textContent = Math.round(sumC * 100) / 100;
+      if (elSumE) elSumE.textContent = Math.round(sumE * 100) / 100;
+      if (elSumT) elSumT.textContent = Math.round(sumT * 100) / 100;
+      if (elAvg) elAvg.textContent = (sumT / 15.0).toFixed(2);
+    }
+
+    function saveAdminStudentAllData() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[currentClassIndex];
+      if (!cls || !cls.Students) return;
+      const st = cls.Students[currentStudentIndex];
+      if (!st) return;
+
+      // 1. บันทึกข้อมูลทั่วไปและเวลาเรียน
+      const newNo = parseInt(document.getElementById('adminStNo')?.value, 10);
+      const newName = (document.getElementById('adminStName')?.value || '').trim();
+      if (!isNaN(newNo)) st.No = newNo;
+      if (newName) st.FullName = newName;
+
+      if (!st.Attendance) st.Attendance = {};
+      st.Attendance.TotalHours = parseFloat(document.getElementById('adminAttTotal')?.value) || 0;
+      st.Attendance.Present = parseFloat(document.getElementById('adminAttPresent')?.value) || 0;
+      st.Attendance.Sick = parseFloat(document.getElementById('adminAttSick')?.value) || 0;
+      st.Attendance.Leave = parseFloat(document.getElementById('adminAttLeave')?.value) || 0;
+      st.Attendance.Absent = parseFloat(document.getElementById('adminAttAbsent')?.value) || 0;
+      st.Attendance.Percent = parseFloat(document.getElementById('adminAttPercent')?.value) || 0;
+
+      // 2. บันทึกคะแนนทั้ง 15 วิชา
+      const updateOrig = !!document.getElementById('adminUpdateOrigCheck')?.checked;
+      let sumC = 0, sumE = 0, sumT = 0;
+
+      if (Array.isArray(st.Scores)) {
+        st.Scores.forEach((sc, sIdx) => {
+          const codeVal = (document.getElementById(`adminSubCode_${sIdx}`)?.value || '').trim();
+          const nameVal = (document.getElementById(`adminSubName_${sIdx}`)?.value || '').trim();
+          const teacherVal = (document.getElementById(`adminSubTeacher_${sIdx}`)?.value || '').trim();
+          const cVal = parseFloat(document.getElementById(`adminSubCollect_${sIdx}`)?.value) || 0;
+          const eVal = parseFloat(document.getElementById(`adminSubExam_${sIdx}`)?.value) || 0;
+          const tVal = Math.round((cVal + eVal) * 100) / 100;
+
+          if (codeVal) sc.Code = codeVal;
+          if (nameVal) sc.Name = nameVal;
+          if (teacherVal) sc.Teacher = teacherVal;
+
+          sc.Collect = cVal;
+          sc.Exam = eVal;
+          sc.Total = tVal;
+
+          if (updateOrig) {
+            sc.OrigCollect = cVal;
+            sc.OrigExam = eVal;
+            sc.OrigTotal = tVal;
+          }
+
+          sumC += cVal;
+          sumE += eVal;
+          sumT += tVal;
+        });
+      }
+
+      st.TotalCollect = Math.round(sumC * 100) / 100;
+      st.TotalExam = Math.round(sumE * 100) / 100;
+      st.TotalScore = Math.round(sumT * 100) / 100;
+      st.AverageScore = Number((sumT / 15.0).toFixed(2));
+
+      // บันทึกคะแนนและข้อมูลลง localStorage
+      saveCustomScoresToStorage(st.StudentId, st);
+
+      // 3. บันทึกผลประเมินข้อ 3-5 และความคิดเห็นครู
+      const readVal = document.getElementById('adminEvalReading')?.value || 'ดี';
+      const compVal = document.getElementById('adminEvalCompetency')?.value || 'ดี';
+      const charVal = document.getElementById('adminEvalCharacter')?.value || 'ดี';
+      const commentVal = document.getElementById('adminTeacherComment')?.value || '';
+
+      if (!st.Evaluations) st.Evaluations = {};
+      st.Evaluations.Reading = readVal;
+      st.Evaluations.Competency = compVal;
+      st.Evaluations.Character = charVal;
+      try {
+        localStorage.setItem('eval_' + st.StudentId + '_Reading', readVal);
+        localStorage.setItem('eval_' + st.StudentId + '_Competency', compVal);
+        localStorage.setItem('eval_' + st.StudentId + '_Character', charVal);
+      } catch (e) {}
+
+      saveTeacherComment(st.StudentId, commentVal);
+
+      // อัปเดตทุกส่วนของระบบทันที
+      populateAdminStudentSelect();
+      loadAdminStudentForm();
+      renderStudentList();
+      renderCurrentStudent();
+      renderOverviewTable();
+      updateTopCommentBox();
+      updateQuickStudentSelect();
+
+      // คำนวณคะแนนเฉลี่ยทั้งห้องใหม่
+      const avgAll = cls.Students.reduce((acc, s) => acc + (s.AverageScore || 0), 0) / cls.Students.length;
+      const statAvgEl = document.getElementById('statAvgScore');
+      if (statAvgEl) statAvgEl.textContent = avgAll.toFixed(2);
+
+      showToast(`✅ บันทึกข้อมูลทั้งหมดของ "${st.FullName}" เรียบร้อยแล้ว`);
+    }
+
+    function resetAdminStudentData() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[currentClassIndex];
+      const st = cls?.Students?.[currentStudentIndex];
+      if (!st) return;
+
+      if (!confirm(`คุณต้องการคืนค่าข้อมูลและคะแนนเดิมจากฐานข้อมูลของ "${st.FullName}" ใช่หรือไม่?`)) {
+        return;
+      }
+
+      try {
+        const raw = localStorage.getItem('STUDENT_CUSTOM_SCORES');
+        if (raw) {
+          const store = JSON.parse(raw);
+          delete store[st.StudentId];
+          localStorage.setItem('STUDENT_CUSTOM_SCORES', JSON.stringify(store));
+        }
+        localStorage.removeItem('eval_' + st.StudentId + '_Reading');
+        localStorage.removeItem('eval_' + st.StudentId + '_Competency');
+        localStorage.removeItem('eval_' + st.StudentId + '_Character');
+      } catch (e) {
+        console.error(e);
+      }
+      location.reload();
+    }
+
+    // โหมดแก้ไขคะแนนรายวิชาทั้งห้อง (Bulk Subject Editor)
+    function populateAdminBulkSubjectSelect() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const bulkClsIdx = parseInt(document.getElementById('adminBulkClassSelect')?.value ?? currentClassIndex, 10);
+      const cls = classesList[isNaN(bulkClsIdx) ? currentClassIndex : bulkClsIdx];
+      const subSel = document.getElementById('adminBulkSubjectSelect');
+      if (!subSel || !cls) return;
+
+      const currentVal = subSel.value || '0';
+      const refScores = cls.Students?.[0]?.Scores || cls.Subjects || [];
+      subSel.innerHTML = refScores.map((sc, sIdx) =>
+        `<option value="${sIdx}">วิชาที่ ${sc.Index}: ${sc.Code} ${sc.Name} (${sc.Teacher || getSubjectTeacher(bulkClsIdx, sc.Index)})</option>`
+      ).join('');
+      if (Array.from(subSel.options).some(o => o.value === currentVal)) {
+        subSel.value = currentVal;
+      }
+    }
+
+    function onAdminBulkClassChange() {
+      const bulkClsIdx = parseInt(document.getElementById('adminBulkClassSelect')?.value, 10);
+      if (!isNaN(bulkClsIdx) && bulkClsIdx !== currentClassIndex) {
+        const mainSel = document.getElementById('classSelect');
+        if (mainSel) mainSel.value = bulkClsIdx;
+        loadClass(bulkClsIdx);
+      }
+      populateAdminBulkSubjectSelect();
+      renderAdminBulkSubjectTable();
+    }
+
+    function renderAdminBulkSubjectTable() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const bulkClsIdx = parseInt(document.getElementById('adminBulkClassSelect')?.value ?? currentClassIndex, 10);
+      const clsIdx = isNaN(bulkClsIdx) ? currentClassIndex : bulkClsIdx;
+      const cls = classesList[clsIdx];
+      const sIdx = parseInt(document.getElementById('adminBulkSubjectSelect')?.value ?? '0', 10) || 0;
+      const tbody = document.getElementById('adminBulkTableBody');
+      const infoBanner = document.getElementById('adminBulkSubjectInfoBanner');
+      if (!tbody || !cls || !Array.isArray(cls.Students)) return;
+
+      const sampleSub = cls.Students[0]?.Scores?.[sIdx];
+      if (infoBanner && sampleSub) {
+        infoBanner.textContent = `${cls.ClassName} | วิชาที่ ${sampleSub.Index}: ${sampleSub.Code} ${sampleSub.Name} | ครูประจำวิชา: ${sampleSub.Teacher || getSubjectTeacher(clsIdx, sampleSub.Index)} | นักเรียนทั้งหมด ${cls.Students.length} คน`;
+      }
+
+      tbody.innerHTML = cls.Students.map((st, stIdx) => {
+        const sc = st.Scores?.[sIdx] || { Collect: 0, Exam: 0, Total: 0 };
+        const t = parseFloat(sc.Total) || 0;
+        const isFail = t < 25;
+        const statusHtml = isFail
+          ? `<span style="background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;">ไม่ผ่าน (<25)</span>`
+          : `<span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;">ผ่านเกณฑ์</span>`;
+
+        return `
+          <tr id="adminBulkRow_${stIdx}" style="background: ${isFail ? '#fff1f2' : (stIdx % 2 === 0 ? '#ffffff' : '#f8fafc')};">
+            <td style="padding: 7px; border: 1px solid #cbd5e1; text-align: center; font-weight: 700;">${st.No}</td>
+            <td style="padding: 7px; border: 1px solid #cbd5e1; text-align: center;">${st.StudentId}</td>
+            <td style="padding: 7px 10px; border: 1px solid #cbd5e1; font-weight: 600;">${st.FullName}</td>
+            <td style="padding: 7px; border: 1px solid #cbd5e1; text-align: center; background: #fffbeb;">
+              <input type="number" id="adminBulkCollect_${stIdx}" min="0" max="50" step="0.5" value="${sc.Collect ?? 0}" oninput="onAdminBulkScoreInput(${stIdx})"
+                style="width: 80px; padding: 5px; border: 1.5px solid #f59e0b; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 0.95rem; text-align: center;">
+            </td>
+            <td style="padding: 7px; border: 1px solid #cbd5e1; text-align: center; background: #eff6ff;">
+              <input type="number" id="adminBulkExam_${stIdx}" min="0" max="50" step="0.5" value="${sc.Exam ?? 0}" oninput="onAdminBulkScoreInput(${stIdx})"
+                style="width: 80px; padding: 5px; border: 1.5px solid #3b82f6; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 0.95rem; text-align: center;">
+            </td>
+            <td id="adminBulkTotal_${stIdx}" style="padding: 7px; border: 1px solid #cbd5e1; text-align: center; font-weight: 800; font-size: 1rem; color: ${isFail ? '#dc2626' : '#15803d'}; background: #f0fdf4;">
+              ${t}
+            </td>
+            <td id="adminBulkStatus_${stIdx}" style="padding: 7px; border: 1px solid #cbd5e1; text-align: center;">
+              ${statusHtml}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function onAdminBulkScoreInput(stIdx) {
+      const c = parseFloat(document.getElementById(`adminBulkCollect_${stIdx}`)?.value) || 0;
+      const e = parseFloat(document.getElementById(`adminBulkExam_${stIdx}`)?.value) || 0;
+      const t = Math.round((c + e) * 100) / 100;
+      const isFail = t < 25;
+
+      const totEl = document.getElementById(`adminBulkTotal_${stIdx}`);
+      const statusEl = document.getElementById(`adminBulkStatus_${stIdx}`);
+      const rowEl = document.getElementById(`adminBulkRow_${stIdx}`);
+
+      if (totEl) {
+        totEl.textContent = t;
+        totEl.style.color = isFail ? '#dc2626' : '#15803d';
+      }
+      if (statusEl) {
+        statusEl.innerHTML = isFail
+          ? `<span style="background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;">ไม่ผ่าน (<25)</span>`
+          : `<span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;">ผ่านเกณฑ์</span>`;
+      }
+      if (rowEl) {
+        rowEl.style.background = isFail ? '#fff1f2' : (stIdx % 2 === 0 ? '#ffffff' : '#f8fafc');
+      }
+    }
+
+    function saveAdminBulkSubjectScores() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const bulkClsIdx = parseInt(document.getElementById('adminBulkClassSelect')?.value ?? currentClassIndex, 10);
+      const clsIdx = isNaN(bulkClsIdx) ? currentClassIndex : bulkClsIdx;
+      const cls = classesList[clsIdx];
+      const sIdx = parseInt(document.getElementById('adminBulkSubjectSelect')?.value ?? '0', 10) || 0;
+      if (!cls || !Array.isArray(cls.Students)) return;
+
+      const updateOrig = !!document.getElementById('adminUpdateOrigCheck')?.checked;
+
+      cls.Students.forEach((st, stIdx) => {
+        const sc = st.Scores?.[sIdx];
+        if (!sc) return;
+        const cVal = parseFloat(document.getElementById(`adminBulkCollect_${stIdx}`)?.value) || 0;
+        const eVal = parseFloat(document.getElementById(`adminBulkExam_${stIdx}`)?.value) || 0;
+        const tVal = Math.round((cVal + eVal) * 100) / 100;
+
+        sc.Collect = cVal;
+        sc.Exam = eVal;
+        sc.Total = tVal;
+
+        if (updateOrig) {
+          sc.OrigCollect = cVal;
+          sc.OrigExam = eVal;
+          sc.OrigTotal = tVal;
+        }
+
+        // คำนวณคะแนนรวมของนักเรียนคนนี้ใหม่
+        let sumC = 0, sumE = 0, sumT = 0;
+        st.Scores.forEach(s => {
+          sumC += parseFloat(s.Collect) || 0;
+          sumE += parseFloat(s.Exam) || 0;
+          sumT += parseFloat(s.Total) || 0;
+        });
+        st.TotalCollect = Math.round(sumC * 100) / 100;
+        st.TotalExam = Math.round(sumE * 100) / 100;
+        st.TotalScore = Math.round(sumT * 100) / 100;
+        st.AverageScore = Number((sumT / 15.0).toFixed(2));
+
+        saveCustomScoresToStorage(st.StudentId, st);
+      });
+
+      renderAdminBulkSubjectTable();
+      renderStudentList();
+      renderCurrentStudent();
+      renderOverviewTable();
+
+      const avgAll = cls.Students.reduce((acc, s) => acc + (s.AverageScore || 0), 0) / cls.Students.length;
+      const statAvgEl = document.getElementById('statAvgScore');
+      if (statAvgEl) statAvgEl.textContent = avgAll.toFixed(2);
+
+      const subName = cls.Students[0]?.Scores?.[sIdx]?.Name || '';
+      showToast(`✅ บันทึกคะแนนวิชา "${subName}" ของนักเรียนชั้น ${cls.ClassShort} ทั้งห้องเรียบร้อยแล้ว`);
+    }
+
+    function exportUpdatedDataJs() {
+      try {
+        const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+        const exportObj = {
+          value: classesList,
+          Count: classesList.length
+        };
+        const content = 'const PORPHOR_DATA = ' + JSON.stringify(exportObj, null, 2) + ';\n';
+        const blob = new Blob([content], { type: 'application/javascript;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'data.js';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('📥 ดาวน์โหลดไฟล์ data.js ใหม่เรียบร้อยแล้ว (นำไปวางทับไฟล์ data.js เดิมในโฟลเดอร์ Gradez ได้เลย)');
+      } catch (e) {
+        console.error(e);
+        alert('เกิดข้อผิดพลาดในการสร้างไฟล์ data.js');
+      }
     }
   </script>
   <!-- ภาชนะพิมพ์คำร้องขอแก้ไขผลการเรียน (Print Only) -->
