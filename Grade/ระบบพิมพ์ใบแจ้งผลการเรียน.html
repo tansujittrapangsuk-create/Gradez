@@ -1727,8 +1727,8 @@
               <select id="corrStudentSelect" class="class-select-pink" onchange="onCorrStudentChange()"></select>
             </div>
             <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">วันที่ยื่นคำร้อง:</label>
-              <input type="text" id="corrDate" class="search-box-pink" style="margin-top: 0; background: white;" value="26 ตุลาคม 2569" oninput="updateCorrectionPreview()">
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">วันที่ยื่นคำร้อง (วันที่พิมพ์ออกจากระบบ):</label>
+              <input type="text" id="corrDate" class="search-box-pink" style="margin-top: 0; background: white;" placeholder="ใส่วันที่พิมพ์อัตโนมัติ" oninput="updateCorrectionPreview()">
             </div>
             <div>
               <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เหตุผลความจำเป็นในการขอแก้ไข:</label>
@@ -1754,6 +1754,17 @@
 
     <!-- คอลัมน์ขวา: การเลือกนักเรียนและแถบควบคุม -->
     <aside class="right-control-sidebar no-print">
+      <!-- เลือกระดับชั้นเรียน (อยู่ด้านบนสุด) -->
+      <div class="sidebar-pink-card" style="margin-bottom: 0.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+          <span style="font-weight: 700; color: #881337; font-size: 0.95rem; font-family: 'Prompt', sans-serif;">เลือกระดับชั้นเรียน</span>
+          <span class="badge badge-pink" id="totalClassBadge">6 ระดับชั้น</span>
+        </div>
+        <select id="classSelect" class="class-select-pink" onchange="onClassChange()">
+          <!-- ตัวเลือกระดับชั้น -->
+        </select>
+      </div>
+
       <!-- แถบปุ่มลัดไอคอนด้านบน -->
       <div class="right-tab-bar">
         <button type="button" class="right-tab-pill active" id="rightTabPreview" onclick="switchTab('preview')" title="ใบแจ้งผลการเรียน (A4)">
@@ -1792,17 +1803,6 @@
         <button type="button" class="btn btn-pink-solid" style="width: 100%; font-weight: 700; padding: 0.65rem 1rem;" onclick="printCurrentStudent()">
           🖨 พิมพ์คนนี้ (A4 1 หน้า)
         </button>
-      </div>
-
-      <!-- เลือกระดับชั้นเรียน -->
-      <div class="sidebar-pink-card" style="margin-top: 0.85rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-          <span style="font-weight: 700; color: #881337; font-size: 0.95rem; font-family: 'Prompt', sans-serif;">เลือกระดับชั้นเรียน</span>
-          <span class="badge badge-pink" id="totalClassBadge">6 ระดับชั้น</span>
-        </div>
-        <select id="classSelect" class="class-select-pink" onchange="onClassChange()">
-          <!-- ตัวเลือกระดับชั้น -->
-        </select>
       </div>
 
       <!-- รายชื่อนักเรียนในห้อง -->
@@ -2801,11 +2801,29 @@
     // ฟังก์ชันระบบคำร้องขอแก้ไขผลการเรียน & แก้ไขผลการเรียน
     // (แสดงเฉพาะนักเรียนที่ไม่ผ่านเกณฑ์ + รวมทุกวิชาที่ไม่ผ่านในฉบับเดียว + ชื่อครูประจำวิชา)
     // ========================================================
+    function getCurrentThaiDateString() {
+      const months = [
+        "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+        "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+      ];
+      const now = new Date();
+      const d = now.getDate();
+      const m = months[now.getMonth()];
+      const rawYear = now.getFullYear();
+      const y = rawYear >= 2400 ? rawYear : rawYear + 543;
+      return `${d} ${m} ${y}`;
+    }
+
     function initCorrectionTab() {
       const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
       const classSel = document.getElementById('corrClassSelect');
       const docClassSel = document.getElementById('corrDocClassSelect');
       if (!classSel && !docClassSel) return;
+
+      const dateInput = document.getElementById('corrDate');
+      if (dateInput) {
+        dateInput.value = getCurrentThaiDateString();
+      }
 
       corrInitialized = true;
       const optionsHtml = classesList.map((c, idx) => {
@@ -3051,7 +3069,7 @@
       }
 
       const homeroomTeacher = cls.Teacher1 || '................................................';
-      const reqDate = document.getElementById('corrDate')?.value?.trim() || '26 ตุลาคม 2569';
+      const reqDate = document.getElementById('corrDate')?.value?.trim() || getCurrentThaiDateString();
       const reason = getCorrectionReason();
 
       // รวบรวมรายชื่อครูประจำวิชาที่ไม่ซ้ำกันของวิชาที่ไม่ผ่านทั้งหมดของนักเรียนคนนี้
@@ -3170,37 +3188,27 @@
           จึงเรียนมาเพื่อโปรดพิจารณาให้ความเห็นชอบและอนุมัติแก้ไขในระบบเอกสารหลักฐานทางการศึกษา (ปพ.5) ต่อไป
         </div>
 
-        <!-- ส่วนที่ (1) ครูประจำวิชาลงนามรับรอง -->
-        <div style="margin-top: 8px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; font-size: 14pt;">
-          <div style="font-weight: bold; text-align: center; margin-bottom: 2px;">
-            (1) ลงนามรับรองผลการเรียนโดยครูประจำวิชา (ตรวจสอบและประเมินผลเรียบร้อยแล้ว)
-          </div>
-          <div style="display: grid; grid-template-columns: ${teacherSigCols}; gap: 4px 12px;">
-            ${teacherSignaturesHtml}
-          </div>
-        </div>
-
-        <!-- ส่วนที่ (2) หัวหน้างานวิชาการ และ ส่วนที่ (3) ผู้อำนวยการโรงเรียน -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 8px; font-size: 14pt;">
-          <div style="text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px;">
-            <div style="font-weight: bold; margin-bottom: 4px;">(2) ความเห็นหัวหน้างานบริหารวิชาการ</div>
+        <!-- ส่วนความเห็นหัวหน้างานบริหารวิชาการ และ คำสั่ง/การอนุมัติของผู้อำนวยการโรงเรียน -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 12px; font-size: 14pt;">
+          <div style="text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px;">
+            <div style="font-weight: bold; margin-bottom: 4px;">(1) ความเห็นหัวหน้างานบริหารวิชาการ</div>
             <div style="text-align: left; font-size: 13.5pt; margin-left: 14px; margin-bottom: 4px;">
               [ &nbsp; ] ตรวจสอบแล้วถูกต้อง เห็นควรอนุมัติ<br>
               [ &nbsp; ] อื่นๆ .........................................................
             </div>
-            <div style="height: 8px;"></div>
+            <div style="height: 12px;"></div>
             <div>ลงชื่อ................................................................</div>
             <div style="margin-top: 2px; font-weight: bold;">( นางสาวสุจิตตรา  ปางสุข )</div>
             <div style="font-size: 13pt; color: #475569;">หัวหน้างานบริหารวิชาการ</div>
           </div>
 
-          <div style="text-align: center; border: 1px solid #94a3b8; border-radius: 6px; padding: 6px 8px;">
-            <div style="font-weight: bold; margin-bottom: 4px;">(3) คำสั่ง / การอนุมัติของผู้อำนวยการโรงเรียน</div>
+          <div style="text-align: center; border: 1px solid #94a3b8; border-radius: 6px; padding: 8px 10px;">
+            <div style="font-weight: bold; margin-bottom: 4px;">(2) คำสั่ง / การอนุมัติของผู้อำนวยการโรงเรียน</div>
             <div style="text-align: left; font-size: 13.5pt; margin-left: 14px; margin-bottom: 4px;">
               [ &nbsp; ] <b>อนุมัติ</b> ให้แก้ไขผลการเรียนใน ปพ.5 ได้<br>
               [ &nbsp; ] ไม่อนุมัติ เนื่องจาก..........................................
             </div>
-            <div style="height: 8px;"></div>
+            <div style="height: 12px;"></div>
             <div>ลงชื่อ................................................................</div>
             <div style="margin-top: 2px; font-weight: bold;">( นายกฤษฎา  ผลพล )</div>
             <div style="font-size: 13pt; color: #475569;">ผู้อำนวยการโรงเรียนบ้านสันดาบ</div>
@@ -3273,6 +3281,10 @@
     }
 
     function printCorrectionForm() {
+      const dateInput = document.getElementById('corrDate');
+      if (dateInput) {
+        dateInput.value = getCurrentThaiDateString();
+      }
       updateCorrectionPreview();
       const previewDiv = document.getElementById('correctionDocPreview');
       const printContainer = document.getElementById('correctionPrintContainer');
@@ -3291,6 +3303,11 @@
     }
 
     function printAllFailingCorrectionForms() {
+      const dateInput = document.getElementById('corrDate');
+      if (dateInput) {
+        dateInput.value = getCurrentThaiDateString();
+      }
+      updateCorrectionPreview();
       const classIdx = currentClassIndex;
       const failingList = getFailingStudentsOfClass(classIdx);
       if (failingList.length === 0) {
