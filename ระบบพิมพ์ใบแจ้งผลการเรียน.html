@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -689,11 +689,11 @@
     .report-preview-wrapper {
       display: flex;
       justify-content: center;
-      background: #94a3b8;
-      padding: 2rem 1rem;
-      border-radius: 12px;
+      background: linear-gradient(180deg, #dc8aa8 0%, #d47a9b 100%);
+      padding: 1.5rem 1rem;
+      border-radius: 14px;
       overflow-x: auto;
-      box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.1);
+      box-shadow: inset 0 2px 6px 0 rgba(136, 19, 55, 0.18);
     }
 
     /* หน้าใบแจ้งผลการเรียน A4 ฟอนต์ TH Sarabun PSK ขนาด 16 pt (ปรับระยะให้พอดี 1 หน้า A4 100%) */
@@ -1163,7 +1163,9 @@
       font-family: 'Prompt', sans-serif;
     }
 
-    #batchPrintContainer {
+    #batchPrintContainer,
+    #correctionPrintContainer,
+    #receiptPrintContainer {
       display: none;
     }
 
@@ -1417,6 +1419,9 @@
       body.print-correction #correctionPrintContainer {
         display: block !important;
       }
+      body.print-correction #receiptPrintContainer {
+        display: none !important;
+      }
       body.print-correction .official-doc-page {
         box-shadow: none !important;
         margin: 0 auto !important;
@@ -1428,6 +1433,7 @@
         break-inside: avoid !important;
       }
       body.print-correction .app-header,
+      body.print-correction .app-main,
       body.print-correction .sidebar,
       body.print-correction .preview-toolbar,
       body.print-correction .stats-grid,
@@ -1448,6 +1454,9 @@
       body.print-receipt #receiptPrintContainer {
         display: block !important;
       }
+      body.print-receipt #correctionPrintContainer {
+        display: none !important;
+      }
       body.print-receipt .official-doc-page {
         box-shadow: none !important;
         margin: 0 auto !important;
@@ -1456,6 +1465,7 @@
         page-break-inside: auto !important;
       }
       body.print-receipt .app-header,
+      body.print-receipt .app-main,
       body.print-receipt .sidebar,
       body.print-receipt .preview-toolbar,
       body.print-receipt .stats-grid,
@@ -1470,8 +1480,8 @@
         display: none !important;
       }
 
-      body:not(.print-batch):not(.print-correction):not(.print-receipt) #correctionPrintContainer,
-      body:not(.print-batch):not(.print-correction):not(.print-receipt) #receiptPrintContainer {
+      body:not(.print-correction) #correctionPrintContainer,
+      body:not(.print-receipt) #receiptPrintContainer {
         display: none !important;
       }
     }
@@ -1532,34 +1542,34 @@
       </div>
     </aside>
 
-    <!-- คอลัมน์กลาง: เนื้อหาและใบแจ้งผลการเรียน -->
+    <!-- คอลัมน์กลาง: เนื้อหาแยกตามหัวข้อเมนูที่เลือก -->
     <section class="content-area">
 
-      <!-- สรุปสถิติประจำห้อง 4 การ์ด -->
-      <div class="stats-grid no-print">
-        <div class="stat-card">
-          <div class="stat-title">ระดับชั้นเรียน</div>
-          <div class="stat-value" id="statClass" style="font-size: 1.15rem; color: #be185d; font-weight: 800;">-</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">จำนวนนักเรียนทั้งหมด</div>
-          <div class="stat-value" id="statTotalStudents" style="font-weight: 800;">0 คน</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">คะแนนเฉลี่ยทั้งห้อง (เต็ม 50 คะแนน)</div>
-          <div class="stat-value" id="statClassAvg" style="font-weight: 800;">0.00</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">แหล่งข้อมูลการประเมิน ข้อ 3-5</div>
-          <div class="stat-value" id="statEvalSource" style="font-size: 1.05rem; color: #059669; font-weight: 700;">เชื่อมโยงผลประเมินแล้ว</div>
-        </div>
-      </div>
-
-      <!-- แท็บที่ 1: ตัวอย่างใบแจ้งผลการเรียน -->
+      <!-- แท็บที่ 1: ตัวอย่างใบแจ้งผลการเรียน (A4) -->
       <div id="tabPreviewContent">
 
+        <!-- สรุปสถิติประจำห้อง 4 การ์ด (แสดงเฉพาะในหน้าใบแจ้งผลการเรียน) -->
+        <div class="stats-grid no-print" style="margin-bottom: 0.85rem;">
+          <div class="stat-card">
+            <div class="stat-title">ระดับชั้นเรียน</div>
+            <div class="stat-value" id="statClass" style="font-size: 1.15rem; color: #be185d; font-weight: 800;">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">จำนวนนักเรียนทั้งหมด</div>
+            <div class="stat-value" id="statTotalStudents" style="font-weight: 800;">0 คน</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">คะแนนเฉลี่ยทั้งห้อง (เต็ม 50 คะแนน)</div>
+            <div class="stat-value" id="statClassAvg" style="font-weight: 800;">0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">แหล่งข้อมูลการประเมิน ข้อ 3-5</div>
+            <div class="stat-value" id="statEvalSource" style="font-size: 1.05rem; color: #059669; font-weight: 700;">เชื่อมโยงผลประเมินแล้ว</div>
+          </div>
+        </div>
+
         <!-- กล่องพิมพ์ความคิดเห็น/ข้อเสนอแนะของครูประจำชั้น (เด่นชัด สะดวก บันทึกอัตโนมัติ) -->
-        <div class="comment-editor-card no-print">
+        <div class="comment-editor-card no-print" style="margin-bottom: 0.85rem;">
           <div class="comment-editor-header">
             <div>
               <span style="font-weight: 700; font-size: 1.05rem; color: #1e3a8a;">✏️ ช่องพิมพ์ ความคิดเห็น/ ข้อเสนอแนะของครูประจำชั้น (ข้อ 6)</span>
@@ -1610,9 +1620,8 @@
         </div>
       </div>
 
-      <!-- แท็บที่ 3: คำร้องขอแก้ไขผลการเรียน (เอกสารจะขึ้นมาอยู่ด้านบนในช่องว่างทันที) -->
+      <!-- แท็บที่ 3: คำร้องขอแก้ไขผลการเรียน (แสดงเฉพาะส่วนคำร้องขอแก้ไขผลการเรียน ไม่ปนกับส่วนอื่น) -->
       <div id="tabCorrectionContent" style="display: none;">
-        <!-- แถบควบคุมและเครื่องมือสำหรับคำร้อง -->
         <div class="sidebar-pink-card no-print" style="margin-bottom: 0.85rem; border-color: #fbcfe8;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 0.8rem;">
             <div>
@@ -1624,6 +1633,9 @@
               </p>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+              <button class="btn btn-outline-pink btn-sm" onclick="openStudentScoreModal()" title="เปิดตารางแก้ไขคะแนนทั้ง 15 วิชา">
+                ✏️ แก้ไขคะแนนทั้ง 15 วิชา
+              </button>
               <button class="btn btn-warning btn-sm" onclick="saveGradeCorrection()" style="background-color: #ea580c; color: white;">
                 💾 บันทึกคะแนนลงระบบทันที
               </button>
@@ -1705,7 +1717,7 @@
           </div>
         </div>
 
-        <!-- ตัวอย่างเอกสาร A4 ขึ้นมาอยู่ด้านบนในช่องว่างทันที! -->
+        <!-- ตัวอย่างเอกสารคำร้องขอแก้ไขผลการเรียน A4 -->
         <div class="report-preview-wrapper" style="margin-top: 0;">
           <div class="official-doc-page" id="correctionDocPreview">
             <!-- Rendered via JS updateCorrectionPreview() -->
@@ -1713,7 +1725,7 @@
         </div>
       </div>
 
-      <!-- แท็บที่ 4: แบบฟอร์มการรับผลการเรียน (เอกสารจะขึ้นมาอยู่ด้านบนในช่องว่างทันที) -->
+      <!-- แท็บที่ 4: แบบฟอร์มการรับผลการเรียน (แสดงเฉพาะส่วนแบบฟอร์มการรับผลการเรียน ไม่ปนกับส่วนอื่น) -->
       <div id="tabReceiptContent" style="display: none;">
         <div class="sidebar-pink-card no-print" style="margin-bottom: 0.85rem; border-color: #fbcfe8;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;">
@@ -1737,7 +1749,7 @@
           </div>
         </div>
 
-        <!-- ตัวอย่างเอกสาร A4 ขึ้นมาอยู่ด้านบนในช่องว่างทันที! -->
+        <!-- ตัวอย่างเอกสารบัญชีลงนามรับผลการเรียน A4 -->
         <div class="report-preview-wrapper" style="margin-top: 0;">
           <div class="official-doc-page" id="receiptDocPreview">
             <!-- Rendered via JS renderReceiptSheet() -->
@@ -1757,7 +1769,7 @@
         <button type="button" class="right-icon-btn" id="rightTabOverview" onclick="switchTab('overview')" title="ตารางสรุปคะแนน">
           📊
         </button>
-        <button type="button" class="right-icon-btn" onclick="openStudentScoreModal()" title="แก้ไขคะแนนรายวิชาของนักเรียนคนนี้">
+        <button type="button" class="right-icon-btn" id="rightTabCorrection" onclick="switchTab('correction')" title="คำร้องขอแก้ไขผลการเรียน">
           ✏️
         </button>
         <button type="button" class="right-icon-btn" id="rightTabReceipt" onclick="switchTab('receipt')" title="แบบฟอร์มการรับผลการเรียน">
@@ -2113,6 +2125,11 @@
       renderOverviewTable();
       updateTopCommentBox();
       updateQuickStudentSelect();
+
+      if (typeof currentActiveTab !== 'undefined') {
+        if (currentActiveTab === 'correction') initCorrectionTab();
+        else if (currentActiveTab === 'receipt') initReceiptTab();
+      }
     }
 
     function updateQuickStudentSelect() {
@@ -2179,6 +2196,17 @@
       renderCurrentStudent();
       updateTopCommentBox();
       updateQuickStudentSelect();
+
+      if (typeof currentActiveTab !== 'undefined' && currentActiveTab === 'correction') {
+        const classSel = document.getElementById('corrClassSelect');
+        const stSel = document.getElementById('corrStudentSelect');
+        if (classSel && parseInt(classSel.value) !== currentClassIndex) {
+          initCorrectionTab();
+        } else if (stSel) {
+          stSel.value = currentStudentIndex;
+          onCorrStudentChange();
+        }
+      }
     }
 
     function nextStudent(delta) {
@@ -2491,7 +2519,10 @@
     // ==========================================
     // จัดการแท็บและการสลับหน้าจอ (Switch Tabs)
     // ==========================================
+    let currentActiveTab = 'preview';
+
     function switchTab(tab) {
+      currentActiveTab = tab;
       const tabs = ['preview', 'overview', 'correction', 'receipt'];
       tabs.forEach(t => {
         const pane = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1) + 'Content');
@@ -2499,6 +2530,12 @@
           pane.style.display = (t === tab) ? 'block' : 'none';
         }
       });
+
+      // ล้างคอนเทนเนอร์สำหรับสั่งพิมพ์เพื่อไม่ให้แสดงซ้ำซ้อนหรือปะปนกัน
+      const corrPrint = document.getElementById('correctionPrintContainer');
+      if (corrPrint) corrPrint.innerHTML = '';
+      const recPrint = document.getElementById('receiptPrintContainer');
+      if (recPrint) recPrint.innerHTML = '';
 
       // อัปเดตสถานะเมนูด้านซ้าย
       const leftMap = {
@@ -2519,6 +2556,7 @@
       const rightMap = {
         preview: 'rightTabPreview',
         overview: 'rightTabOverview',
+        correction: 'rightTabCorrection',
         receipt: 'rightTabReceipt'
       };
       Object.keys(rightMap).forEach(k => {
@@ -2781,9 +2819,6 @@
 
       const previewDiv = document.getElementById('correctionDocPreview');
       if (previewDiv) previewDiv.innerHTML = docHtml;
-
-      const printContainer = document.getElementById('correctionPrintContainer');
-      if (printContainer) printContainer.innerHTML = `<div class="official-doc-page">${docHtml}</div>`;
     }
 
     function saveGradeCorrection() {
@@ -2818,12 +2853,15 @@
       student.AverageScore = Math.round((student.TotalScore / 15.0) * 100) / 100;
 
       // Save to localStorage
-      try {
-        const key = 'custom_scores_' + student.StudentId + '_' + subIdx;
-        localStorage.setItem(key, JSON.stringify({ collect: newC, exam: newE, total: newTot }));
-      } catch (e) {}
+      saveCustomScoresToStorage(student.StudentId, student);
+
+      // Update old score labels in form
+      document.getElementById('corrOldCollect').innerText = newC;
+      document.getElementById('corrOldExam').innerText = newE;
+      document.getElementById('corrOldTotal').innerText = newTot;
 
       // Refresh screens
+      renderStudentList();
       renderCurrentStudent();
       renderOverviewTable();
       updateCorrectionPreview();
@@ -2833,6 +2871,13 @@
 
     function printCorrectionForm() {
       updateCorrectionPreview();
+      const previewDiv = document.getElementById('correctionDocPreview');
+      const printContainer = document.getElementById('correctionPrintContainer');
+      const recContainer = document.getElementById('receiptPrintContainer');
+      if (recContainer) recContainer.innerHTML = '';
+      if (printContainer && previewDiv) {
+        printContainer.innerHTML = `<div class="official-doc-page">${previewDiv.innerHTML}</div>`;
+      }
       document.body.classList.remove('print-single');
       document.body.classList.remove('print-batch');
       document.body.classList.remove('print-receipt');
@@ -2946,13 +2991,17 @@
 
       const previewDiv = document.getElementById('receiptDocPreview');
       if (previewDiv) previewDiv.innerHTML = docHtml;
-
-      const printContainer = document.getElementById('receiptPrintContainer');
-      if (printContainer) printContainer.innerHTML = `<div class="official-doc-page">${docHtml}</div>`;
     }
 
     function printReceiptForm() {
       renderReceiptSheet();
+      const previewDiv = document.getElementById('receiptDocPreview');
+      const printContainer = document.getElementById('receiptPrintContainer');
+      const corrContainer = document.getElementById('correctionPrintContainer');
+      if (corrContainer) corrContainer.innerHTML = '';
+      if (printContainer && previewDiv) {
+        printContainer.innerHTML = `<div class="official-doc-page">${previewDiv.innerHTML}</div>`;
+      }
       document.body.classList.remove('print-single');
       document.body.classList.remove('print-batch');
       document.body.classList.remove('print-correction');
@@ -2999,8 +3048,27 @@
     }
 
     window.addEventListener('beforeprint', () => {
-      if (!document.body.classList.contains('print-batch')) {
-        document.body.classList.add('print-single');
+      if (!document.body.classList.contains('print-batch') &&
+          !document.body.classList.contains('print-correction') &&
+          !document.body.classList.contains('print-receipt') &&
+          !document.body.classList.contains('print-single')) {
+        if (currentActiveTab === 'correction') {
+          const previewDiv = document.getElementById('correctionDocPreview');
+          const printContainer = document.getElementById('correctionPrintContainer');
+          if (printContainer && previewDiv) {
+            printContainer.innerHTML = `<div class="official-doc-page">${previewDiv.innerHTML}</div>`;
+          }
+          document.body.classList.add('print-correction');
+        } else if (currentActiveTab === 'receipt') {
+          const previewDiv = document.getElementById('receiptDocPreview');
+          const printContainer = document.getElementById('receiptPrintContainer');
+          if (printContainer && previewDiv) {
+            printContainer.innerHTML = `<div class="official-doc-page">${previewDiv.innerHTML}</div>`;
+          }
+          document.body.classList.add('print-receipt');
+        } else {
+          document.body.classList.add('print-single');
+        }
       }
     });
 
@@ -3009,6 +3077,10 @@
       document.body.classList.remove('print-batch');
       document.body.classList.remove('print-correction');
       document.body.classList.remove('print-receipt');
+      const corrContainer = document.getElementById('correctionPrintContainer');
+      if (corrContainer) corrContainer.innerHTML = '';
+      const recContainer = document.getElementById('receiptPrintContainer');
+      if (recContainer) recContainer.innerHTML = '';
     });
 
     // ========================================================
@@ -3249,10 +3321,13 @@
 
       // อัปเดตการแสดงผลหน้าจอ
       if (currentStudentIndex === modalEditingStudentIndex) {
-        renderPreview();
+        renderCurrentStudent();
       }
       renderStudentList();
       renderOverviewTable();
+      if (typeof currentActiveTab !== 'undefined' && currentActiveTab === 'correction') {
+        onCorrSubjectChange();
+      }
 
       closeStudentScoreModal();
       showToast(`✅ บันทึกคะแนนของ ${student.FullName} เรียบร้อยแล้ว (คะแนนรวม: ${student.TotalScore}, เฉลี่ย: ${student.AverageScore})`);
