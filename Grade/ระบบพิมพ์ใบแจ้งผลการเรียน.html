@@ -2132,6 +2132,25 @@
       return clsMap[subIndex]?.Teacher || (PORPHOR_DATA[classIdx]?.Teacher1 || "");
     }
 
+    // คะแนนวิชาศิลปะ (ศ 13101) ของชั้น ป.3 จากไฟล์ ปพ5ปพ6-ป3 69.xlsx (ชีต วิชา7)
+    const P3_ART_SCORES = {
+      1:  { Collect: 19, Exam: 6, Total: 25 },
+      2:  { Collect: 19, Exam: 6, Total: 25 },
+      3:  { Collect: 17, Exam: 8, Total: 25 },
+      4:  { Collect: 20, Exam: 6, Total: 26 },
+      5:  { Collect: 21, Exam: 9, Total: 30 },
+      6:  { Collect: 35, Exam: 8, Total: 43 },
+      7:  { Collect: 30, Exam: 9, Total: 39 },
+      8:  { Collect: 23, Exam: 8, Total: 31 },
+      9:  { Collect: 33, Exam: 9, Total: 42 },
+      10: { Collect: 27, Exam: 7, Total: 34 },
+      11: { Collect: 22, Exam: 3, Total: 25 },
+      12: { Collect: 21, Exam: 6, Total: 27 },
+      13: { Collect: 25, Exam: 9, Total: 34 },
+      14: { Collect: 19, Exam: 6, Total: 25 },
+      15: { Collect: 24, Exam: 7, Total: 31 }
+    };
+
     function snapshotOriginalScores() {
       const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
       classesList.forEach((cls, cIdx) => {
@@ -2149,6 +2168,7 @@
         if (!cls.Students) return;
         cls.Students.forEach(st => {
           if (!st.Scores) return;
+          let recalcNeeded = false;
           st.Scores.forEach(sc => {
             const meta = clsCat ? clsCat[sc.Index] : null;
             if (meta) {
@@ -2158,10 +2178,31 @@
             } else {
               sc.Teacher = getSubjectTeacher(cIdx, sc.Index);
             }
+            if (cIdx === 2 && sc.Index === 7 && (!sc.Total || Number(sc.Total) === 0)) {
+              const artFix = P3_ART_SCORES[Number(st.No)];
+              if (artFix) {
+                sc.Collect = artFix.Collect;
+                sc.Exam = artFix.Exam;
+                sc.Total = artFix.Total;
+                recalcNeeded = true;
+              }
+            }
             if (sc.OrigCollect === undefined) sc.OrigCollect = sc.Collect;
             if (sc.OrigExam === undefined) sc.OrigExam = sc.Exam;
             if (sc.OrigTotal === undefined) sc.OrigTotal = sc.Total;
           });
+          if (recalcNeeded) {
+            let sumC = 0, sumE = 0, sumT = 0;
+            st.Scores.forEach(s => {
+              sumC += parseFloat(s.Collect) || 0;
+              sumE += parseFloat(s.Exam) || 0;
+              sumT += parseFloat(s.Total) || 0;
+            });
+            st.TotalCollect = Math.round(sumC * 100) / 100;
+            st.TotalExam = Math.round(sumE * 100) / 100;
+            st.TotalScore = Math.round(sumT * 100) / 100;
+            st.AverageScore = Math.round((st.TotalScore / 15.0) * 100) / 100;
+          }
         });
       });
     }
@@ -2215,7 +2256,7 @@
         if (!raw) return;
         const customMap = JSON.parse(raw);
         const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
-        classesList.forEach(cls => {
+        classesList.forEach((cls, cIdx) => {
           if (!cls.Students) return;
           cls.Students.forEach(st => {
             if (customMap[st.StudentId]) {
@@ -2223,6 +2264,9 @@
               const savedList = custom.Scores || custom.Subjects;
               if (Array.isArray(savedList)) {
                 savedList.forEach((sub, sIdx) => {
+                  if (cIdx === 2 && sIdx === 6 && (!sub.Total || Number(sub.Total) === 0)) {
+                    return; // คงค่าคะแนนจริงของวิชาศิลปะ ป.3 ที่ดึงจากไฟล์ Excel
+                  }
                   if (st.Scores && st.Scores[sIdx]) {
                     st.Scores[sIdx].Collect = sub.Collect;
                     st.Scores[sIdx].Exam = sub.Exam;
@@ -2235,10 +2279,16 @@
                   }
                 });
               }
-              if (custom.TotalCollect !== undefined) st.TotalCollect = custom.TotalCollect;
-              if (custom.TotalExam !== undefined) st.TotalExam = custom.TotalExam;
-              if (custom.TotalScore !== undefined) st.TotalScore = custom.TotalScore;
-              if (custom.AverageScore !== undefined) st.AverageScore = custom.AverageScore;
+              let sumC = 0, sumE = 0, sumT = 0;
+              st.Scores.forEach(s => {
+                sumC += parseFloat(s.Collect) || 0;
+                sumE += parseFloat(s.Exam) || 0;
+                sumT += parseFloat(s.Total) || 0;
+              });
+              st.TotalCollect = Math.round(sumC * 100) / 100;
+              st.TotalExam = Math.round(sumE * 100) / 100;
+              st.TotalScore = Math.round(sumT * 100) / 100;
+              st.AverageScore = Math.round((st.TotalScore / 15.0) * 100) / 100;
             }
           });
         });

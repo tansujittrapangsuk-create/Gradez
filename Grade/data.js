@@ -8546,9 +8546,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  19,
+                                                "Exam":  6,
+                                                "Total":  25,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -8656,10 +8656,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  337,
-                             "TotalExam":  79,
-                             "TotalScore":  416,
-                             "AverageScore":  27.73,
+                             "TotalScore":  441,
+                             "AverageScore":  29.4,
                              "Evaluations":  {
                                                  "Reading":  "ดี",
                                                  "Competency":  "ดีเยี่ยม",
@@ -8668,7 +8666,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "มีความพยายามในการเรียนรู้ดี และมีจิตสาธารณะ หากผู้ปกรองเสริมด้านการอ่านให้มากขึ้นจะดีมาก"
+                             "TeacherComment":  "มีความพยายามในการเรียนรู้ดี และมีจิตสาธารณะ หากผู้ปกรองเสริมด้านการอ่านให้มากขึ้นจะดีมาก",
+                             "TotalCollect":  356,
+                             "TotalExam":  85
                          },
                          {
                              "No":  2,
@@ -8773,9 +8773,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  19,
+                                                "Exam":  6,
+                                                "Total":  25,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -8883,10 +8883,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  336,
-                             "TotalExam":  68,
-                             "TotalScore":  404,
-                             "AverageScore":  26.93,
+                             "TotalScore":  429,
+                             "AverageScore":  28.6,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดี",
@@ -8895,7 +8893,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "มีความพยายามในการเรียนรู้ดี มีความรับผิดชอบพอใช้ หากผู้ปกรองเสริมด้านการอ่านให้มากขึ้นจะดีมาก"
+                             "TeacherComment":  "มีความพยายามในการเรียนรู้ดี มีความรับผิดชอบพอใช้ หากผู้ปกรองเสริมด้านการอ่านให้มากขึ้นจะดีมาก",
+                             "TotalCollect":  355,
+                             "TotalExam":  74
                          },
                          {
                              "No":  3,
@@ -9000,9 +9000,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  17,
+                                                "Exam":  8,
+                                                "Total":  25,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -9110,10 +9110,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  442,
-                             "TotalExam":  128,
-                             "TotalScore":  570,
-                             "AverageScore":  38,
+                             "TotalScore":  595,
+                             "AverageScore":  39.67,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดีเยี่ยม",
@@ -9122,7 +9120,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "ตั้งใจเรียน และมุ่งมั่นในการทำงานดีมาก และมีความประพฤติเรียบร้อย"
+                             "TeacherComment":  "ตั้งใจเรียน และมุ่งมั่นในการทำงานดีมาก และมีความประพฤติเรียบร้อย",
+                             "TotalCollect":  459,
+                             "TotalExam":  136
                          },
                          {
                              "No":  4,
@@ -9227,9 +9227,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  20,
+                                                "Exam":  6,
+                                                "Total":  26,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -9337,10 +9337,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  388,
-                             "TotalExam":  111,
-                             "TotalScore":  499,
-                             "AverageScore":  33.27,
+                             "TotalScore":  525,
+                             "AverageScore":  35,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดีเยี่ยม",
@@ -9349,7 +9347,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "มีความพยายามในการเรียนรู้ดี การเรียนพอใช้ มีความเป็นตัวของตัวเองสูง"
+                             "TeacherComment":  "มีความพยายามในการเรียนรู้ดี การเรียนพอใช้ มีความเป็นตัวของตัวเองสูง",
+                             "TotalCollect":  408,
+                             "TotalExam":  117
                          },
                          {
                              "No":  5,
@@ -9454,9 +9454,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  21,
+                                                "Exam":  9,
+                                                "Total":  30,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -9564,10 +9564,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  421,
-                             "TotalExam":  142,
-                             "TotalScore":  563,
-                             "AverageScore":  37.53,
+                             "TotalScore":  593,
+                             "AverageScore":  39.53,
                              "Evaluations":  {
                                                  "Reading":  "ดี",
                                                  "Competency":  "ดี",
@@ -9576,7 +9574,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "เข้าใจในบทเรียนได้เร็ว มีน้ำใจ และมีความรับผิดชอบพอใช้"
+                             "TeacherComment":  "เข้าใจในบทเรียนได้เร็ว มีน้ำใจ และมีความรับผิดชอบพอใช้",
+                             "TotalCollect":  442,
+                             "TotalExam":  151
                          },
                          {
                              "No":  6,
@@ -9681,9 +9681,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  35,
+                                                "Exam":  8,
+                                                "Total":  43,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -9791,10 +9791,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  488,
-                             "TotalExam":  153,
-                             "TotalScore":  641,
-                             "AverageScore":  42.73,
+                             "TotalScore":  684,
+                             "AverageScore":  45.6,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดีเยี่ยม",
@@ -9803,7 +9801,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "ตั้งใจเรียน และเข้าใจในบทเรียนได้เร็ว และมีความประพฤติเรียบร้อย"
+                             "TeacherComment":  "ตั้งใจเรียน และเข้าใจในบทเรียนได้เร็ว และมีความประพฤติเรียบร้อย",
+                             "TotalCollect":  523,
+                             "TotalExam":  161
                          },
                          {
                              "No":  7,
@@ -9908,9 +9908,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  30,
+                                                "Exam":  9,
+                                                "Total":  39,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -10018,10 +10018,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  455,
-                             "TotalExam":  146,
-                             "TotalScore":  601,
-                             "AverageScore":  40.07,
+                             "TotalScore":  640,
+                             "AverageScore":  42.67,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดีเยี่ยม",
@@ -10030,7 +10028,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีมาก ร่าเริง และมีความประพฤติเรียบร้อย"
+                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีมาก ร่าเริง และมีความประพฤติเรียบร้อย",
+                             "TotalCollect":  485,
+                             "TotalExam":  155
                          },
                          {
                              "No":  8,
@@ -10135,9 +10135,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  23,
+                                                "Exam":  8,
+                                                "Total":  31,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -10245,10 +10245,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  417,
-                             "TotalExam":  105,
-                             "TotalScore":  522,
-                             "AverageScore":  34.8,
+                             "TotalScore":  553,
+                             "AverageScore":  36.87,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดีเยี่ยม",
@@ -10257,7 +10255,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "ตั้งใจเรียน และมุ่งมั่นในการทำงาน มีจิตสาธารณะ"
+                             "TeacherComment":  "ตั้งใจเรียน และมุ่งมั่นในการทำงาน มีจิตสาธารณะ",
+                             "TotalCollect":  440,
+                             "TotalExam":  113
                          },
                          {
                              "No":  9,
@@ -10362,9 +10362,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  33,
+                                                "Exam":  9,
+                                                "Total":  42,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -10472,10 +10472,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  497,
-                             "TotalExam":  161,
-                             "TotalScore":  658,
-                             "AverageScore":  43.87,
+                             "TotalScore":  700,
+                             "AverageScore":  46.67,
                              "Evaluations":  {
                                                  "Reading":  "ผ่าน",
                                                  "Competency":  "ดี",
@@ -10484,7 +10482,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีมาก มีความรับผิดชอบ และมีความประพฤติเรียบร้อย"
+                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีมาก มีความรับผิดชอบ และมีความประพฤติเรียบร้อย",
+                             "TotalCollect":  530,
+                             "TotalExam":  170
                          },
                          {
                              "No":  10,
@@ -10589,9 +10589,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  27,
+                                                "Exam":  7,
+                                                "Total":  34,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -10699,10 +10699,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  470,
-                             "TotalExam":  148,
-                             "TotalScore":  618,
-                             "AverageScore":  41.2,
+                             "TotalScore":  652,
+                             "AverageScore":  43.47,
                              "Evaluations":  {
                                                  "Reading":  "ดี",
                                                  "Competency":  "ผ่าน",
@@ -10711,7 +10709,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีมาก มีความมั่นใจในตนเอง และมีความรับผิดชอบในหน้าที่"
+                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีมาก มีความมั่นใจในตนเอง และมีความรับผิดชอบในหน้าที่",
+                             "TotalCollect":  497,
+                             "TotalExam":  155
                          },
                          {
                              "No":  11,
@@ -10816,9 +10816,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  22,
+                                                "Exam":  3,
+                                                "Total":  25,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -10926,10 +10926,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  334,
-                             "TotalExam":  80,
-                             "TotalScore":  414,
-                             "AverageScore":  27.6,
+                             "TotalScore":  439,
+                             "AverageScore":  29.27,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดีเยี่ยม",
@@ -10938,7 +10936,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "จำคำศัพท์ได้หลายคำ ร่าเริง และเข้ากับเพื่อน ๆ ได้ดี"
+                             "TeacherComment":  "จำคำศัพท์ได้หลายคำ ร่าเริง และเข้ากับเพื่อน ๆ ได้ดี",
+                             "TotalCollect":  356,
+                             "TotalExam":  83
                          },
                          {
                              "No":  12,
@@ -11043,9 +11043,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  21,
+                                                "Exam":  6,
+                                                "Total":  27,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -11153,10 +11153,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  433,
-                             "TotalExam":  116,
-                             "TotalScore":  549,
-                             "AverageScore":  36.6,
+                             "TotalScore":  576,
+                             "AverageScore":  38.4,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดีเยี่ยม",
@@ -11165,7 +11163,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีพอใช้ มีความรับผิดชอบดีมาก และชอบช่วยเหลือเพื่อน ๆ"
+                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีพอใช้ มีความรับผิดชอบดีมาก และชอบช่วยเหลือเพื่อน ๆ",
+                             "TotalCollect":  454,
+                             "TotalExam":  122
                          },
                          {
                              "No":  13,
@@ -11270,9 +11270,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  25,
+                                                "Exam":  9,
+                                                "Total":  34,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -11380,10 +11380,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  447,
-                             "TotalExam":  136,
-                             "TotalScore":  583,
-                             "AverageScore":  38.87,
+                             "TotalScore":  617,
+                             "AverageScore":  41.13,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดีเยี่ยม",
@@ -11392,7 +11390,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีมาก มีความมั่นใจในตนเอง มีจิตสาธารณะ"
+                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีมาก มีความมั่นใจในตนเอง มีจิตสาธารณะ",
+                             "TotalCollect":  472,
+                             "TotalExam":  145
                          },
                          {
                              "No":  14,
@@ -11497,9 +11497,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  19,
+                                                "Exam":  6,
+                                                "Total":  25,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -11607,10 +11607,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  350,
-                             "TotalExam":  81,
-                             "TotalScore":  431,
-                             "AverageScore":  28.73,
+                             "TotalScore":  456,
+                             "AverageScore":  30.4,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดี",
@@ -11619,7 +11617,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "มีความพยายามในการเรียนรู้ดี ความประพฤติเรียบร้อย หากผู้ปกรองเสริมด้านการอ่านให้มากขึ้นจะดีมาก"
+                             "TeacherComment":  "มีความพยายามในการเรียนรู้ดี ความประพฤติเรียบร้อย หากผู้ปกรองเสริมด้านการอ่านให้มากขึ้นจะดีมาก",
+                             "TotalCollect":  369,
+                             "TotalExam":  87
                          },
                          {
                              "No":  15,
@@ -11724,9 +11724,9 @@ const PORPHOR_DATA = [
                                                 "MaxCollect":  35,
                                                 "MaxExam":  15,
                                                 "MaxTotal":  50,
-                                                "Collect":  0,
-                                                "Exam":  0,
-                                                "Total":  0,
+                                                "Collect":  24,
+                                                "Exam":  7,
+                                                "Total":  31,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -11834,10 +11834,8 @@ const PORPHOR_DATA = [
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalCollect":  449,
-                             "TotalExam":  138,
-                             "TotalScore":  587,
-                             "AverageScore":  39.13,
+                             "TotalScore":  618,
+                             "AverageScore":  41.2,
                              "Evaluations":  {
                                                  "Reading":  "ดี",
                                                  "Competency":  "ดีเยี่ยม",
@@ -11846,7 +11844,9 @@ const PORPHOR_DATA = [
                                                  "Promotion":  "ผ่านครบทุกเกณฑ์",
                                                  "Decision":  "ให้ผู้เรียนเลื่อนชั้นเรียน"
                                              },
-                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีมาก และชอบช่วยเหลือเพื่อน ๆ"
+                             "TeacherComment":  "ตั้งใจเรียน และสนใจในการทำงานดีมาก และชอบช่วยเหลือเพื่อน ๆ",
+                             "TotalCollect":  473,
+                             "TotalExam":  145
                          }
                      ]
     },
