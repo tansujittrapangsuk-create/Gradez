@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -2647,6 +2647,296 @@
       document.body.classList.remove('print-correction');
       document.body.classList.remove('print-receipt');
     });
+
+    // ========================================================
+    // ฟังก์ชันระบบแก้ไขผลการเรียนสำหรับครู (Score Editor Modal)
+    // ========================================================
+    let modalEditingStudentIndex = 0;
+    let modalScoresTemp = [];
+
+    function openStudentScoreModal(studentIdx) {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      if (!cls || !cls.Students || cls.Students.length === 0) return;
+
+      if (studentIdx !== undefined && studentIdx >= 0 && studentIdx < cls.Students.length) {
+        modalEditingStudentIndex = studentIdx;
+      } else {
+        modalEditingStudentIndex = currentStudentIndex;
+      }
+
+      // สร้างตัวเลือกเปลี่ยนนักเรียนใน Modal
+      const switcher = document.getElementById('modalStudentSwitcher');
+      if (switcher) {
+        switcher.innerHTML = cls.Students.map((st, i) => 
+          `<option value="${i}" ${i === modalEditingStudentIndex ? 'selected' : ''}>เลขที่ ${st.No} ${st.FullName}</option>`
+        ).join('');
+      }
+
+      loadStudentIntoModal(modalEditingStudentIndex);
+
+      const modal = document.getElementById('scoreEditModal');
+      if (modal) modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function switchModalStudent(newIdx) {
+      modalEditingStudentIndex = newIdx;
+      loadStudentIntoModal(newIdx);
+    }
+
+    function loadStudentIntoModal(idx) {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      const student = cls.Students[idx];
+      if (!student) return;
+
+      const titleEl = document.getElementById('scoreModalStudentTitle');
+      const subEl = document.getElementById('scoreModalStudentSubtitle');
+      if (titleEl) titleEl.textContent = `แก้ไขคะแนนผลการเรียน - ${student.FullName}`;
+      if (subEl) subEl.textContent = `${cls.ClassName || cls.Grade} | เลขประจำตัว ${student.StudentId} | เลขที่ ${student.No}`;
+
+      // โหลดคะแนน 15 รายวิชา
+      modalScoresTemp = (student.Subjects || []).map((sub, sIdx) => {
+        const isBasic = sIdx < 9;
+        const maxC = isBasic ? 35 : 40;
+        const maxE = isBasic ? 15 : 10;
+        return {
+          Code: sub.Code || '',
+          Name: sub.Name || '',
+          Type: isBasic ? 'พื้นฐาน' : 'เพิ่มเติม',
+          maxC: maxC,
+          maxE: maxE,
+          Collect: sub.Collect !== undefined ? Number(sub.Collect) : 0,
+          Exam: sub.Exam !== undefined ? Number(sub.Exam) : 0,
+          Total: sub.Total !== undefined ? Number(sub.Total) : 0
+        };
+      });
+
+      renderModalScoreTable();
+    }
+
+    function renderModalScoreTable() {
+      const tbody = document.getElementById('modalScoreTableBody');
+      if (!tbody) return;
+
+      let html = '';
+      modalScoresTemp.forEach((sub, sIdx) => {
+        const cVal = sub.Collect;
+        const eVal = sub.Exam;
+        const tot = cVal + eVal;
+        const cInvalid = cVal < 0 || cVal > sub.maxC;
+        const eInvalid = eVal < 0 || eVal > sub.maxE;
+
+        html += `
+          <tr>
+            <td style="text-align: center; color: var(--gray-600); font-weight: 600;">${sIdx + 1}</td>
+            <td style="text-align: center; font-family: monospace; font-size: 0.95rem; font-weight: 600; color: #1e40af;">${sub.Code}</td>
+            <td style="font-weight: 600; color: #1e293b;">${sub.Name}</td>
+            <td style="text-align: center;">
+              <span class="badge ${sub.Type === 'พื้นฐาน' ? 'badge-primary' : 'badge-warning'}" style="font-size: 0.75rem; padding: 2px 8px;">
+                ${sub.Type}
+              </span>
+            </td>
+            <td style="text-align: center;">
+              <input type="number" 
+                class="score-input ${cInvalid ? 'invalid-score' : ''}" 
+                id="modalCollectInput_${sIdx}" 
+                min="0" 
+                max="${sub.maxC}" 
+                step="0.5" 
+                value="${cVal}" 
+                oninput="onModalScoreChanged(${sIdx}, 'Collect', this.value)"
+                title="คะแนนเก็บเต็ม ${sub.maxC}">
+              <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">เต็ม ${sub.maxC}</div>
+            </td>
+            <td style="text-align: center;">
+              <input type="number" 
+                class="score-input ${eInvalid ? 'invalid-score' : ''}" 
+                id="modalExamInput_${sIdx}" 
+                min="0" 
+                max="${sub.maxE}" 
+                step="0.5" 
+                value="${eVal}" 
+                oninput="onModalScoreChanged(${sIdx}, 'Exam', this.value)"
+                title="คะแนนสอบเต็ม ${sub.maxE}">
+              <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">เต็ม ${sub.maxE}</div>
+            </td>
+            <td class="score-total-cell" id="modalSubjectTotal_${sIdx}">
+              ${tot}
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+      recalculateModalSummary();
+    }
+
+    function onModalScoreChanged(sIdx, type, val) {
+      if (!modalScoresTemp[sIdx]) return;
+      let num = parseFloat(val);
+      if (isNaN(num)) num = 0;
+
+      modalScoresTemp[sIdx][type] = num;
+      modalScoresTemp[sIdx].Total = (modalScoresTemp[sIdx].Collect || 0) + (modalScoresTemp[sIdx].Exam || 0);
+
+      // ตรวจสอบความถูกต้องของคะแนน
+      const inputEl = document.getElementById('modal' + type + 'Input_' + sIdx);
+      const maxLimit = type === 'Collect' ? modalScoresTemp[sIdx].maxC : modalScoresTemp[sIdx].maxE;
+      if (inputEl) {
+        if (num < 0 || num > maxLimit) {
+          inputEl.classList.add('invalid-score');
+        } else {
+          inputEl.classList.remove('invalid-score');
+        }
+      }
+
+      // อัปเดตช่องผลรวมวิชานี้
+      const totCell = document.getElementById('modalSubjectTotal_' + sIdx);
+      if (totCell) {
+        totCell.textContent = modalScoresTemp[sIdx].Total;
+      }
+
+      recalculateModalSummary();
+    }
+
+    function recalculateModalSummary() {
+      let sumCollect = 0;
+      let sumExam = 0;
+      let sumTotal = 0;
+
+      modalScoresTemp.forEach(s => {
+        sumCollect += (Number(s.Collect) || 0);
+        sumExam += (Number(s.Exam) || 0);
+        sumTotal += (Number(s.Total) || 0);
+      });
+
+      const avg = modalScoresTemp.length > 0 ? (sumTotal / modalScoresTemp.length).toFixed(2) : '0.00';
+
+      const collEl = document.getElementById('modalTotalCollect');
+      const examEl = document.getElementById('modalTotalExam');
+      const totEl = document.getElementById('modalTotalScore');
+      const avgEl = document.getElementById('modalAvgScore');
+
+      if (collEl) collEl.textContent = sumCollect;
+      if (examEl) examEl.textContent = sumExam;
+      if (totEl) totEl.textContent = `${sumTotal} / 750`;
+      if (avgEl) avgEl.textContent = avg;
+    }
+
+    function closeStudentScoreModal() {
+      const modal = document.getElementById('scoreEditModal');
+      if (modal) modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    function onModalOverlayClick(e) {
+      if (e.target.id === 'scoreEditModal') {
+        closeStudentScoreModal();
+      }
+    }
+
+    function saveModalStudentScores() {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      const student = cls.Students[modalEditingStudentIndex];
+      if (!student) return;
+
+      // ตรวจสอบคะแนน
+      for (let i = 0; i < modalScoresTemp.length; i++) {
+        const item = modalScoresTemp[i];
+        if (item.Collect < 0 || item.Collect > item.maxC) {
+          alert(`วิชา "${item.Name}" คะแนนเก็บไม่ถูกต้อง (ต้องอยู่ระหว่าง 0 - ${item.maxC})`);
+          return;
+        }
+        if (item.Exam < 0 || item.Exam > item.maxE) {
+          alert(`วิชา "${item.Name}" คะแนนสอบไม่ถูกต้อง (ต้องอยู่ระหว่าง 0 - ${item.maxE})`);
+          return;
+        }
+      }
+
+      // บันทึกลง student.Subjects
+      let sumCollect = 0;
+      let sumExam = 0;
+      let sumTotal = 0;
+
+      modalScoresTemp.forEach((sub, sIdx) => {
+        if (student.Subjects[sIdx]) {
+          student.Subjects[sIdx].Collect = sub.Collect;
+          student.Subjects[sIdx].Exam = sub.Exam;
+          student.Subjects[sIdx].Total = sub.Total;
+        }
+        sumCollect += sub.Collect;
+        sumExam += sub.Exam;
+        sumTotal += sub.Total;
+      });
+
+      student.TotalCollect = sumCollect;
+      student.TotalExam = sumExam;
+      student.TotalScore = sumTotal;
+      student.AverageScore = Number((sumTotal / 15.0).toFixed(2));
+
+      // บันทึกลง localStorage เพื่อให้ข้อมูลคงอยู่ถาวร
+      saveCustomScoresToStorage(student.StudentId, student);
+
+      // อัปเดตการแสดงผลหน้าจอ
+      if (currentStudentIndex === modalEditingStudentIndex) {
+        renderPreview();
+      }
+      renderStudentList();
+      renderOverviewTable();
+
+      closeStudentScoreModal();
+      showToast(`✅ บันทึกคะแนนของ ${student.FullName} เรียบร้อยแล้ว (คะแนนรวม: ${student.TotalScore}, เฉลี่ย: ${student.AverageScore})`);
+    }
+
+    function saveCustomScoresToStorage(studentId, student) {
+      try {
+        let store = {};
+        const raw = localStorage.getItem('STUDENT_CUSTOM_SCORES');
+        if (raw) {
+          store = JSON.parse(raw);
+        }
+        store[studentId] = {
+          Subjects: student.Subjects.map(s => ({
+            Code: s.Code,
+            Name: s.Name,
+            Collect: s.Collect,
+            Exam: s.Exam,
+            Total: s.Total
+          })),
+          TotalCollect: student.TotalCollect,
+          TotalExam: student.TotalExam,
+          TotalScore: student.TotalScore,
+          AverageScore: student.AverageScore,
+          UpdatedAt: new Date().toISOString()
+        };
+        localStorage.setItem('STUDENT_CUSTOM_SCORES', JSON.stringify(store));
+      } catch (e) {
+        console.error('Failed to save score to localStorage', e);
+      }
+    }
+
+    function resetCurrentStudentScores() {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      const student = cls.Students[modalEditingStudentIndex];
+      if (!student) return;
+
+      if (!confirm(`คุณต้องการคืนค่าคะแนนเดิมของ "${student.FullName}" จากฐานข้อมูลใช่หรือไม่?`)) {
+        return;
+      }
+
+      try {
+        const raw = localStorage.getItem('STUDENT_CUSTOM_SCORES');
+        if (raw) {
+          const store = JSON.parse(raw);
+          delete store[student.StudentId];
+          localStorage.setItem('STUDENT_CUSTOM_SCORES', JSON.stringify(store));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      location.reload();
+    }
   </script>
   <!-- ภาชนะพิมพ์คำร้องขอแก้ไขผลการเรียน (Print Only) -->
   <div id="correctionPrintContainer"></div>
