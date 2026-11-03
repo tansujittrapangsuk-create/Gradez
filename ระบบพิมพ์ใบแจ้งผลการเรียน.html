@@ -1442,6 +1442,7 @@
       body.print-correction #tabOverviewContent,
       body.print-correction #tabCorrectionContent,
       body.print-correction #tabReceiptContent,
+      body.print-correction #tabEditgradeContent,
       body.print-correction #singlePrintCard,
       body.print-correction #batchPrintContainer,
       body.print-correction .no-print {
@@ -1474,6 +1475,7 @@
       body.print-receipt #tabOverviewContent,
       body.print-receipt #tabCorrectionContent,
       body.print-receipt #tabReceiptContent,
+      body.print-receipt #tabEditgradeContent,
       body.print-receipt #singlePrintCard,
       body.print-receipt #batchPrintContainer,
       body.print-receipt .no-print {
@@ -1531,6 +1533,9 @@
           </button>
           <button type="button" class="nav-menu-item" id="leftMenuReceipt" onclick="switchTab('receipt')">
             <span class="nav-icon">📋</span> <span>แบบฟอร์มการรับผลการเรียน</span>
+          </button>
+          <button type="button" class="nav-menu-item" id="leftMenuEditgrade" onclick="switchTab('editgrade')">
+            <span class="nav-icon">📝</span> <span>แก้ไขผลการเรียน</span>
           </button>
           <button type="button" class="nav-menu-item" onclick="printCurrentStudent()">
             <span class="nav-icon">🖨</span> <span>พิมพ์ใบแจ้งการเรียน</span>
@@ -1620,104 +1625,35 @@
         </div>
       </div>
 
-      <!-- แท็บที่ 3: คำร้องขอแก้ไขผลการเรียน (แสดงเฉพาะส่วนคำร้องขอแก้ไขผลการเรียน ไม่ปนกับส่วนอื่น) -->
+      <!-- แท็บที่ 3: คำร้องขอแก้ไขผลการเรียน (แสดงเฉพาะนักเรียนที่ไม่ผ่านเกณฑ์ และรวมทุกวิชาที่ไม่ผ่านในฉบับเดียว) -->
       <div id="tabCorrectionContent" style="display: none;">
-        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.85rem; border-color: #fbcfe8;">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 0.8rem;">
+        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.75rem; padding: 0.75rem 1rem; border-color: #fbcfe8;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
             <div>
-              <h3 style="font-family: 'Prompt'; font-size: 1.15rem; color: #be185d; font-weight: 700; margin: 0;">
-                ✏️ แบบคำร้องขออนุมัติแก้ไขผลการเรียน (ปพ.5)
-              </h3>
-              <p style="font-size: 0.88rem; color: #64748b; margin: 0;">
-                เลือกนักเรียนและรายวิชาเพื่อสร้างแบบคำร้อง และสั่งพิมพ์ออกกระดาษ A4 หรือบันทึกลงระบบ
-              </p>
+              <div style="font-family: 'Prompt'; font-size: 1.05rem; color: #be185d; font-weight: 700;">
+                📄 แบบคำร้องขออนุมัติแก้ไขผลการเรียน (ปพ.5) — เฉพาะนักเรียนที่ไม่ผ่านเกณฑ์
+              </div>
+              <div style="font-size: 0.84rem; color: #64748b;" id="corrFailingCountSummary">
+                แสดงรายวิชาที่ไม่ผ่านเกณฑ์ทั้งหมดของนักเรียนในเอกสารฉบับเดียวกัน พร้อมชื่อครูประจำวิชาลงนามรับรอง
+              </div>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-              <button class="btn btn-outline-pink btn-sm" onclick="openStudentScoreModal()" title="เปิดตารางแก้ไขคะแนนทั้ง 15 วิชา">
-                ✏️ แก้ไขคะแนนทั้ง 15 วิชา
+              <select id="corrDocClassSelect" class="class-select-pink" style="min-width: 120px; padding: 0.35rem 0.6rem;" onchange="onCorrDocClassChange(this.value)"></select>
+              <select id="corrDocStudentSelect" class="class-select-pink" style="min-width: 240px; padding: 0.35rem 0.6rem;" onchange="onCorrDocStudentChange(this.value)"></select>
+              <button class="btn btn-outline-pink btn-sm" onclick="switchTab('editgrade')">
+                📝 แก้ไขคะแนนวิชาที่ไม่ผ่าน
               </button>
-              <button class="btn btn-warning btn-sm" onclick="saveGradeCorrection()" style="background-color: #ea580c; color: white;">
-                💾 บันทึกคะแนนลงระบบทันที
+              <button class="btn btn-pink-solid btn-sm" onclick="printCorrectionForm()" style="padding: 0.4rem 0.9rem;">
+                🖨 พิมพ์คนนี้ (A4)
               </button>
-              <button class="btn btn-pink-solid btn-sm" onclick="printCorrectionForm()" style="padding: 0.45rem 1rem;">
-                🖨 สั่งพิมพ์แบบฟอร์มนี้ (A4/PDF)
+              <button class="btn btn-sm" onclick="printAllFailingCorrectionForms()" style="background: #881337; color: white; padding: 0.4rem 0.9rem; font-weight: 600;">
+                🖨 พิมพ์ทั้งห้อง (เฉพาะคนไม่ผ่าน)
               </button>
-            </div>
-          </div>
-
-          <!-- ตัวเลือกแบบฟอร์ม -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; background: #fff1f2; padding: 0.85rem; border-radius: 8px; border: 1px solid #fecdd3;">
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">เลือกระดับชั้นเรียน:</label>
-              <select id="corrClassSelect" class="class-select-pink" onchange="onCorrClassChange()"></select>
-            </div>
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">เลือกนักเรียน:</label>
-              <select id="corrStudentSelect" class="class-select-pink" onchange="onCorrStudentChange()"></select>
-            </div>
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">เลือกรายวิชาที่ขอแก้ไข:</label>
-              <select id="corrSubjectSelect" class="class-select-pink" onchange="onCorrSubjectChange()"></select>
-            </div>
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">ชื่อครูผู้สอน / ผู้ยื่นคำร้อง:</label>
-              <input type="text" id="corrTeacherName" class="search-box-pink" style="margin-top: 0;" placeholder="ระบุชื่อ-สกุลครูผู้สอน" oninput="updateCorrectionPreview()">
-            </div>
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">วันที่ยื่นคำร้อง:</label>
-              <input type="text" id="corrDate" class="search-box-pink" style="margin-top: 0;" value="26 ตุลาคม 2569" oninput="updateCorrectionPreview()">
-            </div>
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">เหตุผลความจำเป็นในการขอแก้ไข:</label>
-              <select id="corrReasonPreset" class="class-select-pink" onchange="onCorrReasonPresetChange(this.value)">
-                <option value="กรอกคะแนนผิดพลาดจากการรวมคะแนน">กรอกคะแนนผิดพลาดจากการรวมคะแนน</option>
-                <option value="บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด">บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด</option>
-                <option value="นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข">นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข</option>
-                <option value="ตรวจทานข้อสอบใหม่พบข้อผิดพลาด">ตรวจทานข้อสอบใหม่พบข้อผิดพลาด</option>
-                <option value="other">อื่นๆ (ระบุเอง)</option>
-              </select>
-              <input type="text" id="corrReasonCustom" class="search-box-pink" style="display: none; margin-top: 4px;" placeholder="ระบุเหตุผลอื่นๆ..." oninput="updateCorrectionPreview()">
-            </div>
-          </div>
-
-          <!-- แผงเปรียบเทียบคะแนนเดิม vs คะแนนใหม่ -->
-          <div style="background: white; border-radius: 8px; border: 1px solid #fbcfe8; padding: 0.75rem 1rem; margin-top: 0.75rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap;">
-              <span style="font-weight: 700; color: #881337; font-size: 0.95rem;">
-                📊 วิชา: <span id="corrSubjectTitle" style="color: #be185d;">-</span>
-              </span>
-              <span style="font-size: 0.85rem; color: #64748b;">กรอกคะแนนใหม่เพื่อแสดงในเอกสาร</span>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; text-align: center;">
-              <div style="background: #f8fafc; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <div style="font-size: 0.78rem; color: #64748b;">เก็บเดิม (เต็ม <span id="corrMaxCollect">-</span>)</div>
-                <div id="corrOldCollect" style="font-size: 1.2rem; font-weight: 700; color: #334155;">0</div>
-              </div>
-              <div style="background: #f8fafc; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <div style="font-size: 0.78rem; color: #64748b;">สอบเดิม (เต็ม <span id="corrMaxExam">-</span>)</div>
-                <div id="corrOldExam" style="font-size: 1.2rem; font-weight: 700; color: #334155;">0</div>
-              </div>
-              <div style="background: #f8fafc; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <div style="font-size: 0.78rem; color: #64748b;">รวมเดิม (เต็ม 50)</div>
-                <div id="corrOldTotal" style="font-size: 1.2rem; font-weight: 700; color: #334155;">0</div>
-              </div>
-              <div style="background: #fff1f2; padding: 0.5rem; border-radius: 6px; border: 1.5px solid #f43f5e;">
-                <div style="font-size: 0.78rem; color: #881337; font-weight: 700;">เก็บใหม่ (เต็ม <span id="corrMaxCollect2">-</span>)</div>
-                <input type="number" id="corrNewCollect" style="width: 75px; text-align: center; font-size: 1.15rem; font-weight: 700; border: 1.5px solid #e11d48; border-radius: 6px; padding: 2px;" oninput="onCorrScoreInput()">
-              </div>
-              <div style="background: #fff1f2; padding: 0.5rem; border-radius: 6px; border: 1.5px solid #f43f5e;">
-                <div style="font-size: 0.78rem; color: #881337; font-weight: 700;">สอบใหม่ (เต็ม <span id="corrMaxExam2">-</span>)</div>
-                <input type="number" id="corrNewExam" style="width: 75px; text-align: center; font-size: 1.15rem; font-weight: 700; border: 1.5px solid #e11d48; border-radius: 6px; padding: 2px;" oninput="onCorrScoreInput()">
-              </div>
-              <div style="background: #f0fdf4; padding: 0.5rem; border-radius: 6px; border: 1.5px solid #10b981;">
-                <div style="font-size: 0.78rem; color: #065f46; font-weight: 700;">รวมใหม่ (เต็ม 50)</div>
-                <div id="corrNewTotal" style="font-size: 1.2rem; font-weight: 700; color: #059669;">0</div>
-              </div>
             </div>
           </div>
         </div>
 
-        <!-- ตัวอย่างเอกสารคำร้องขอแก้ไขผลการเรียน A4 -->
+        <!-- ตัวอย่างเอกสารคำร้องขอแก้ไขผลการเรียน A4 ขึ้นด้านบนช่องว่างทันที -->
         <div class="report-preview-wrapper" style="margin-top: 0;">
           <div class="official-doc-page" id="correctionDocPreview">
             <!-- Rendered via JS updateCorrectionPreview() -->
@@ -1727,15 +1663,12 @@
 
       <!-- แท็บที่ 4: แบบฟอร์มการรับผลการเรียน (แสดงเฉพาะส่วนแบบฟอร์มการรับผลการเรียน ไม่ปนกับส่วนอื่น) -->
       <div id="tabReceiptContent" style="display: none;">
-        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.85rem; border-color: #fbcfe8;">
+        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.75rem; padding: 0.65rem 1rem; border-color: #fbcfe8;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;">
             <div>
-              <h3 style="font-family: 'Prompt'; font-size: 1.15rem; color: #be185d; font-weight: 700; margin: 0;">
+              <h3 style="font-family: 'Prompt'; font-size: 1.05rem; color: #be185d; font-weight: 700; margin: 0;">
                 📋 บัญชีลงนามการรับใบแจ้งผลการเรียน (ปพ.5)
               </h3>
-              <p style="font-size: 0.88rem; color: #64748b; margin: 0;">
-                แบบฟอร์มสำหรับผู้ปกครองลงลายมือชื่อรับผลการเรียน (พิมพ์ออกกระดาษ A4)
-              </p>
             </div>
             <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
               <span style="font-weight: 600; font-size: 0.9rem; color: #881337;">ชั้นเรียน:</span>
@@ -1753,6 +1686,66 @@
         <div class="report-preview-wrapper" style="margin-top: 0;">
           <div class="official-doc-page" id="receiptDocPreview">
             <!-- Rendered via JS renderReceiptSheet() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- แท็บที่ 5: แก้ไขผลการเรียน (แสดงเฉพาะนักเรียนที่ไม่ผ่านเกณฑ์ และแสดงทุกวิชาที่ไม่ผ่านพร้อมครูประจำวิชา) -->
+      <div id="tabEditgradeContent" style="display: none;">
+        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.85rem; border-color: #fbcfe8; padding: 1.25rem;">
+          <div style="margin-bottom: 0.85rem;">
+            <h3 style="font-family: 'Prompt'; font-size: 1.2rem; color: #be185d; font-weight: 700; margin: 0 0 0.25rem 0;">
+              ✏️ แบบคำร้องขออนุมัติแก้ไขผลการเรียน (ปพ.5)
+            </h3>
+            <p style="font-size: 0.9rem; color: #64748b; margin: 0 0 0.85rem 0;">
+              แสดงเฉพาะนักเรียนที่ไม่ผ่านเกณฑ์ (คะแนนรวมต่ำกว่า 25 คะแนน) พร้อมรายวิชาที่ไม่ผ่านทั้งหมดและชื่อครูประจำวิชา
+            </p>
+            <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+              <button class="btn btn-outline-pink btn-sm" onclick="openStudentScoreModal()" style="padding: 0.45rem 0.9rem; font-size: 0.9rem;" title="เปิดตารางแก้ไขคะแนนทั้ง 15 วิชา">
+                ✏️ แก้ไขคะแนนทั้ง 15 วิชา
+              </button>
+              <button class="btn btn-warning btn-sm" onclick="saveGradeCorrection()" style="background-color: #ea580c; color: white; padding: 0.45rem 1rem; font-size: 0.9rem; font-weight: 600;">
+                💾 บันทึกคะแนนลงระบบทันที
+              </button>
+              <button class="btn btn-outline-pink btn-sm" onclick="switchTab('correction')" style="padding: 0.45rem 1rem; font-size: 0.9rem;">
+                📄 ดูตัวอย่างใบคำร้อง (A4)
+              </button>
+              <button class="btn btn-pink-solid btn-sm" onclick="printCorrectionForm()" style="padding: 0.45rem 1.1rem; font-size: 0.9rem;">
+                🖨 สั่งพิมพ์แบบฟอร์มนี้ (A4/PDF)
+              </button>
+            </div>
+          </div>
+
+          <!-- ตัวเลือกแบบฟอร์ม (แสดงเฉพาะนักเรียนที่ไม่ผ่านเกณฑ์) -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.85rem; background: #fff1f2; padding: 1rem; border-radius: 10px; border: 1px solid #fecdd3;">
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เลือกระดับชั้นเรียน:</label>
+              <select id="corrClassSelect" class="class-select-pink" onchange="onCorrClassChange()"></select>
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เลือกนักเรียน (เฉพาะคนไม่ผ่านเกณฑ์):</label>
+              <select id="corrStudentSelect" class="class-select-pink" onchange="onCorrStudentChange()"></select>
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">วันที่ยื่นคำร้อง:</label>
+              <input type="text" id="corrDate" class="search-box-pink" style="margin-top: 0; background: white;" value="26 ตุลาคม 2569" oninput="updateCorrectionPreview()">
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เหตุผลความจำเป็นในการขอแก้ไข:</label>
+              <select id="corrReasonPreset" class="class-select-pink" onchange="onCorrReasonPresetChange(this.value)">
+                <option value="นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข">นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข</option>
+                <option value="กรอกคะแนนผิดพลาดจากการรวมคะแนน">กรอกคะแนนผิดพลาดจากการรวมคะแนน</option>
+                <option value="บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด">บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด</option>
+                <option value="ตรวจทานข้อสอบใหม่พบข้อผิดพลาด">ตรวจทานข้อสอบใหม่พบข้อผิดพลาด</option>
+                <option value="other">อื่นๆ (ระบุเอง)</option>
+              </select>
+              <input type="text" id="corrReasonCustom" class="search-box-pink" style="display: none; margin-top: 4px; background: white;" placeholder="ระบุเหตุผลอื่นๆ..." oninput="updateCorrectionPreview()">
+            </div>
+          </div>
+
+          <!-- รายการวิชาที่ไม่ผ่านเกณฑ์ทั้งหมดของนักเรียนคนนี้ (แสดงทุกวิชาที่ไม่ผ่านพร้อมชื่อครูประจำวิชา) -->
+          <div id="corrFailingSubjectsContainer" style="margin-top: 0.85rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <!-- Rendered dynamically by renderFailingSubjectsEditor() -->
           </div>
         </div>
       </div>
@@ -2028,6 +2021,180 @@
       showToast(`บันทึก ${label} เป็น "${rating}" เรียบร้อย`);
     }
 
+    // ข้อมูลรายวิชา (รหัสวิชา, ชื่อวิชา, ครูประจำวิชา) ตามระดับชั้น ป.1 - ป.6 (ดึงจากไฟล์ รายวิชาเรียน.xlsx และตรวจสอบรหัสวิชา ป.4 ถูกต้องครบถ้วน)
+    const SUBJECT_CATALOG_BY_CLASS = {
+      0: { // ป.1
+        1:  { Code: "ท  11101", Name: "ภาษาไทย", Teacher: "นางสาวสุวรรณี  นิลประดับ" },
+        2:  { Code: "ค  11101", Name: "คณิตศาสตร์", Teacher: "นายณัฏฐ์  ไตรพุทธมาศ" },
+        3:  { Code: "ว  11101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        4:  { Code: "ส  11101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        5:  { Code: "ส  11102", Name: "ประวัติศาสตร์", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        6:  { Code: "พ  11101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  11101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  11101", Name: "การงานอาชีพ", Teacher: "นางสาวนิศารัตน์  ฉิมขันธ์" },
+        9:  { Code: "อ  11101", Name: "ภาษาอังกฤษ", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        10: { Code: "ส  11231", Name: "หน้าที่พลเมือง 1", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        11: { Code: "อ  11201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 1", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        12: { Code: "ว  11201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  11201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        14: { Code: "ส  11202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  11201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุวรรณี  นิลประดับ" }
+      },
+      1: { // ป.2
+        1:  { Code: "ท  12101", Name: "ภาษาไทย", Teacher: "นางสาวนิศารัตน์  ฉิมขันธ์" },
+        2:  { Code: "ค  12101", Name: "คณิตศาสตร์", Teacher: "นางสาวนิศารัตน์  ฉิมขันธ์" },
+        3:  { Code: "ว  12101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        4:  { Code: "ส  12101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        5:  { Code: "ส  12102", Name: "ประวัติศาสตร์", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        6:  { Code: "พ  12101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  12101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  12101", Name: "การงานอาชีพ", Teacher: "นางสาวนิศารัตน์  ฉิมขันธ์" },
+        9:  { Code: "อ  12101", Name: "ภาษาอังกฤษ", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        10: { Code: "ส  12232", Name: "หน้าที่พลเมือง 2", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        11: { Code: "อ  12201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 2", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        12: { Code: "ว  12201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  12201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        14: { Code: "ส  12202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  12201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุวรรณี  นิลประดับ" }
+      },
+      2: { // ป.3
+        1:  { Code: "ท  13101", Name: "ภาษาไทย", Teacher: "นางสาวสุวรรณี  นิลประดับ" },
+        2:  { Code: "ค  13101", Name: "คณิตศาสตร์", Teacher: "นางสาวนิศารัตน์  ฉิมขันธ์" },
+        3:  { Code: "ว  13101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        4:  { Code: "ส  13101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        5:  { Code: "ส  13102", Name: "ประวัติศาสตร์", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        6:  { Code: "พ  13101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  13101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  13101", Name: "การงานอาชีพ", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        9:  { Code: "อ  13101", Name: "ภาษาอังกฤษ", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        10: { Code: "ส  13233", Name: "หน้าที่พลเมือง 3", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        11: { Code: "อ  13201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 3", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        12: { Code: "ว  13201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  13201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        14: { Code: "ส  13202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  13201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุวรรณี  นิลประดับ" }
+      },
+      3: { // ป.4
+        1:  { Code: "ท  14101", Name: "ภาษาไทย", Teacher: "นางสาวสุวรรณี  นิลประดับ" },
+        2:  { Code: "ค  14101", Name: "คณิตศาสตร์", Teacher: "นายณัฏฐ์  ไตรพุทธมาศ" },
+        3:  { Code: "ว  14101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นางสาวสุจิตตรา  ปางสุข" },
+        4:  { Code: "ส  14101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายธนโชค  ขุนพิลึก" },
+        5:  { Code: "ส  14102", Name: "ประวัติศาสตร์", Teacher: "นายธนโชค  ขุนพิลึก" },
+        6:  { Code: "พ  14101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  14101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  14101", Name: "การงานอาชีพ", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        9:  { Code: "อ  14101", Name: "ภาษาอังกฤษ", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        10: { Code: "ส  14234", Name: "หน้าที่พลเมือง 4", Teacher: "นายธนโชค  ขุนพิลึก" },
+        11: { Code: "อ  14201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 4", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        12: { Code: "ว  14201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  14201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายธนโชค  ขุนพิลึก" },
+        14: { Code: "ส  14202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  14201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุจิตตรา  ปางสุข" }
+      },
+      4: { // ป.5
+        1:  { Code: "ท  15101", Name: "ภาษาไทย", Teacher: "นางสาวสุจิตตรา  ปางสุข" },
+        2:  { Code: "ค  15101", Name: "คณิตศาสตร์", Teacher: "นายณัฏฐ์  ไตรพุทธมาศ" },
+        3:  { Code: "ว  15101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นางสาวสุจิตตรา  ปางสุข" },
+        4:  { Code: "ส  15101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายธนโชค  ขุนพิลึก" },
+        5:  { Code: "ส  15102", Name: "ประวัติศาสตร์", Teacher: "นายธนโชค  ขุนพิลึก" },
+        6:  { Code: "พ  15101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  15101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  15101", Name: "การงานอาชีพ", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        9:  { Code: "อ  15101", Name: "ภาษาอังกฤษ", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        10: { Code: "ส  15235", Name: "หน้าที่พลเมือง 5", Teacher: "นายธนโชค  ขุนพิลึก" },
+        11: { Code: "อ  15201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 5", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        12: { Code: "ว  15201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  15201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายธนโชค  ขุนพิลึก" },
+        14: { Code: "ส  15202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  15201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุจิตตรา  ปางสุข" }
+      },
+      5: { // ป.6
+        1:  { Code: "ท  16101", Name: "ภาษาไทย", Teacher: "นางสาวสุจิตตรา  ปางสุข" },
+        2:  { Code: "ค  16101", Name: "คณิตศาสตร์", Teacher: "นายณัฏฐ์  ไตรพุทธมาศ" },
+        3:  { Code: "ว  16101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นางสาวสุจิตตรา  ปางสุข" },
+        4:  { Code: "ส  16101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายธนโชค  ขุนพิลึก" },
+        5:  { Code: "ส  16102", Name: "ประวัติศาสตร์", Teacher: "นายธนโชค  ขุนพิลึก" },
+        6:  { Code: "พ  16101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  16101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  16101", Name: "การงานอาชีพ", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        9:  { Code: "อ  16101", Name: "ภาษาอังกฤษ", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        10: { Code: "ส  16236", Name: "หน้าที่พลเมือง 6", Teacher: "นายธนโชค  ขุนพิลึก" },
+        11: { Code: "อ  16201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 6", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        12: { Code: "ว  16201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  16201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายธนโชค  ขุนพิลึก" },
+        14: { Code: "ส  16202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  16201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุจิตตรา  ปางสุข" }
+      }
+    };
+
+    function getSubjectTeacher(classIdx, subIndex) {
+      const clsMap = SUBJECT_CATALOG_BY_CLASS[classIdx] || SUBJECT_CATALOG_BY_CLASS[0];
+      return clsMap[subIndex]?.Teacher || (PORPHOR_DATA[classIdx]?.Teacher1 || "");
+    }
+
+    function snapshotOriginalScores() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      classesList.forEach((cls, cIdx) => {
+        const clsCat = SUBJECT_CATALOG_BY_CLASS[cIdx];
+        if (Array.isArray(cls.Subjects) && clsCat) {
+          cls.Subjects.forEach(sub => {
+            const meta = clsCat[sub.Index];
+            if (meta) {
+              sub.Code = meta.Code;
+              sub.Name = meta.Name;
+              sub.Teacher = meta.Teacher;
+            }
+          });
+        }
+        if (!cls.Students) return;
+        cls.Students.forEach(st => {
+          if (!st.Scores) return;
+          st.Scores.forEach(sc => {
+            const meta = clsCat ? clsCat[sc.Index] : null;
+            if (meta) {
+              sc.Code = meta.Code;
+              sc.Name = meta.Name;
+              sc.Teacher = meta.Teacher;
+            } else {
+              sc.Teacher = getSubjectTeacher(cIdx, sc.Index);
+            }
+            if (sc.OrigCollect === undefined) sc.OrigCollect = sc.Collect;
+            if (sc.OrigExam === undefined) sc.OrigExam = sc.Exam;
+            if (sc.OrigTotal === undefined) sc.OrigTotal = sc.Total;
+          });
+        });
+      });
+    }
+
+    function isSubjectFailing(sc) {
+      const origTot = parseFloat(sc.OrigTotal !== undefined ? sc.OrigTotal : sc.Total);
+      const currTot = parseFloat(sc.Total);
+      return (!isNaN(origTot) && origTot < 25) || (!isNaN(currTot) && currTot < 25);
+    }
+
+    function getFailingSubjects(student) {
+      if (!student || !Array.isArray(student.Scores)) return [];
+      return student.Scores.filter(sc => isSubjectFailing(sc));
+    }
+
+    function isStudentFailing(student) {
+      return getFailingSubjects(student).length > 0;
+    }
+
+    function getFailingStudentsOfClass(classIdx) {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      if (!cls || !Array.isArray(cls.Students)) return [];
+      const result = [];
+      cls.Students.forEach((st, idx) => {
+        const failSubs = getFailingSubjects(st);
+        if (failSubs.length > 0) {
+          result.push({ student: st, stIdx: idx, failingSubjects: failSubs });
+        }
+      });
+      return result;
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       if (typeof PORPHOR_DATA !== 'undefined' && PORPHOR_DATA && !Array.isArray(PORPHOR_DATA) && Array.isArray(PORPHOR_DATA.value)) {
         PORPHOR_DATA = PORPHOR_DATA.value;
@@ -2036,6 +2203,7 @@
         alert("ไม่พบข้อมูล PORPHOR_DATA กรุณาตรวจสอบไฟล์ data.js");
         return;
       }
+      snapshotOriginalScores();
       applyStoredCustomScores();
       populateClassSelect();
       loadClass(0);
@@ -2104,6 +2272,10 @@
     function loadClass(clsIdx) {
       currentClassIndex = clsIdx;
       const cls = PORPHOR_DATA[clsIdx];
+      const classSelectEl = document.getElementById('classSelect');
+      if (classSelectEl && parseInt(classSelectEl.value, 10) !== clsIdx) {
+        classSelectEl.value = clsIdx;
+      }
 
       document.getElementById('statClass').textContent = cls.ClassName;
       document.getElementById('statTotalStudents').textContent = cls.Students.length + ' คน';
@@ -2120,15 +2292,22 @@
       const avgScore = cls.Students.length > 0 ? (totalScoreSum / cls.Students.length).toFixed(2) : "0.00";
       document.getElementById('statClassAvg').textContent = avgScore;
 
+      if (typeof currentActiveTab !== 'undefined' && (currentActiveTab === 'correction' || currentActiveTab === 'editgrade')) {
+        const failingList = getFailingStudentsOfClass(clsIdx);
+        if (failingList.length > 0 && !failingList.some(f => f.stIdx === currentStudentIndex)) {
+          currentStudentIndex = failingList[0].stIdx;
+        }
+      }
+
       renderStudentList();
       renderCurrentStudent();
       renderOverviewTable();
       updateTopCommentBox();
       updateQuickStudentSelect();
+      initCorrectionTab();
 
-      if (typeof currentActiveTab !== 'undefined') {
-        if (currentActiveTab === 'correction') initCorrectionTab();
-        else if (currentActiveTab === 'receipt') initReceiptTab();
+      if (typeof currentActiveTab !== 'undefined' && currentActiveTab === 'receipt') {
+        initReceiptTab();
       }
     }
 
@@ -2136,9 +2315,21 @@
       const cls = PORPHOR_DATA[currentClassIndex];
       const sel = document.getElementById('quickStudentSelect');
       if (!sel) return;
-      sel.innerHTML = cls.Students.map((s, idx) => 
-        `<option value="${idx}" ${idx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${s.No} ${s.FullName}</option>`
-      ).join('');
+      const onlyFailing = (typeof currentActiveTab !== 'undefined') && (currentActiveTab === 'correction' || currentActiveTab === 'editgrade');
+      if (onlyFailing) {
+        const failingList = getFailingStudentsOfClass(currentClassIndex);
+        if (failingList.length === 0) {
+          sel.innerHTML = `<option value="-1">-- ไม่มีนักเรียนที่ไม่ผ่านเกณฑ์ในชั้นนี้ --</option>`;
+          return;
+        }
+        sel.innerHTML = failingList.map(item =>
+          `<option value="${item.stIdx}" ${item.stIdx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${item.student.No} ${item.student.FullName} (ไม่ผ่าน ${item.failingSubjects.length} วิชา)</option>`
+        ).join('');
+      } else {
+        sel.innerHTML = cls.Students.map((s, idx) =>
+          `<option value="${idx}" ${idx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${s.No} ${s.FullName}</option>`
+        ).join('');
+      }
     }
 
     function renderStudentList() {
@@ -2146,13 +2337,21 @@
       const listEl = document.getElementById('studentList');
       listEl.innerHTML = '';
 
+      const onlyFailing = (typeof currentActiveTab !== 'undefined') && (currentActiveTab === 'correction' || currentActiveTab === 'editgrade');
+
       const filtered = cls.Students.filter(s => {
+        if (onlyFailing && !isStudentFailing(s)) return false;
         if (!currentSearchTerm) return true;
         const term = currentSearchTerm.toLowerCase();
         return s.FullName.toLowerCase().includes(term) || String(s.No).includes(term) || String(s.StudentId).includes(term);
       });
 
       document.getElementById('studentListCount').textContent = filtered.length;
+
+      if (onlyFailing && filtered.length === 0) {
+        listEl.innerHTML = `<div style="padding: 1.2rem; text-align: center; color: #059669; font-weight: 600; background: #ecfdf5; border-radius: 8px;">✅ นักเรียนชั้นนี้ผ่านเกณฑ์ทุกรายวิชา</div>`;
+        return;
+      }
 
       filtered.forEach((s) => {
         const originalIndex = cls.Students.findIndex(st => st.No === s.No);
@@ -2161,6 +2360,7 @@
         item.onclick = () => selectStudent(originalIndex);
 
         const hasComment = !!getTeacherComment(s.StudentId);
+        const failCount = getFailingSubjects(s).length;
 
         item.innerHTML = `
           <div class="student-info">
@@ -2168,6 +2368,7 @@
             <div>
               <div style="font-size: 0.92rem; font-weight: 600;">${s.FullName}</div>
               <div class="student-meta">รหัส: ${s.StudentId} | รวม: ${s.TotalScore || 0} คะแนน</div>
+              ${failCount > 0 ? `<div style="font-size: 0.75rem; color: #dc2626; font-weight: 700;">⚠️ ไม่ผ่านเกณฑ์ ${failCount} วิชา</div>` : ''}
             </div>
           </div>
           <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
@@ -2191,26 +2392,36 @@
     }
 
     function selectStudent(idx) {
+      idx = parseInt(idx, 10);
+      if (isNaN(idx) || idx < 0) return;
       currentStudentIndex = idx;
       renderStudentList();
       renderCurrentStudent();
       updateTopCommentBox();
       updateQuickStudentSelect();
 
-      if (typeof currentActiveTab !== 'undefined' && currentActiveTab === 'correction') {
-        const classSel = document.getElementById('corrClassSelect');
-        const stSel = document.getElementById('corrStudentSelect');
-        if (classSel && parseInt(classSel.value) !== currentClassIndex) {
-          initCorrectionTab();
-        } else if (stSel) {
-          stSel.value = currentStudentIndex;
-          onCorrStudentChange();
-        }
+      const stSel = document.getElementById('corrStudentSelect');
+      const docStSel = document.getElementById('corrDocStudentSelect');
+      if (stSel && Array.from(stSel.options).some(o => parseInt(o.value, 10) === currentStudentIndex)) {
+        stSel.value = currentStudentIndex;
+        if (docStSel) docStSel.value = currentStudentIndex;
+        renderFailingSubjectsEditor();
+        updateCorrectionPreview();
       }
     }
 
     function nextStudent(delta) {
       const cls = PORPHOR_DATA[currentClassIndex];
+      const onlyFailing = (typeof currentActiveTab !== 'undefined') && (currentActiveTab === 'correction' || currentActiveTab === 'editgrade');
+      if (onlyFailing) {
+        const failingList = getFailingStudentsOfClass(currentClassIndex);
+        if (failingList.length === 0) return;
+        let pos = failingList.findIndex(f => f.stIdx === currentStudentIndex);
+        if (pos === -1) pos = 0;
+        else pos = (pos + delta + failingList.length) % failingList.length;
+        selectStudent(failingList[pos].stIdx);
+        return;
+      }
       let newIdx = currentStudentIndex + delta;
       if (newIdx < 0) newIdx = cls.Students.length - 1;
       if (newIdx >= cls.Students.length) newIdx = 0;
@@ -2520,10 +2731,11 @@
     // จัดการแท็บและการสลับหน้าจอ (Switch Tabs)
     // ==========================================
     let currentActiveTab = 'preview';
+    let corrInitialized = false;
 
     function switchTab(tab) {
       currentActiveTab = tab;
-      const tabs = ['preview', 'overview', 'correction', 'receipt'];
+      const tabs = ['preview', 'overview', 'correction', 'receipt', 'editgrade'];
       tabs.forEach(t => {
         const pane = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1) + 'Content');
         if (pane) {
@@ -2542,7 +2754,8 @@
         preview: 'leftMenuPreview',
         overview: 'leftMenuOverview',
         correction: 'leftMenuCorrection',
-        receipt: 'leftMenuReceipt'
+        receipt: 'leftMenuReceipt',
+        editgrade: 'leftMenuEditgrade'
       };
       Object.keys(leftMap).forEach(k => {
         const el = document.getElementById(leftMap[k]);
@@ -2562,285 +2775,479 @@
       Object.keys(rightMap).forEach(k => {
         const el = document.getElementById(rightMap[k]);
         if (el) {
-          if (k === tab) el.classList.add('active');
+          if (k === tab || (tab === 'editgrade' && k === 'correction')) el.classList.add('active');
           else el.classList.remove('active');
         }
       });
 
-      if (tab === 'correction') {
+      if (tab === 'correction' || tab === 'editgrade') {
+        const failingList = getFailingStudentsOfClass(currentClassIndex);
+        if (failingList.length > 0 && !failingList.some(f => f.stIdx === currentStudentIndex)) {
+          currentStudentIndex = failingList[0].stIdx;
+        }
+        renderStudentList();
+        updateQuickStudentSelect();
         initCorrectionTab();
-      } else if (tab === 'receipt') {
-        initReceiptTab();
+      } else {
+        renderStudentList();
+        updateQuickStudentSelect();
+        if (tab === 'receipt') {
+          initReceiptTab();
+        }
       }
     }
 
     // ========================================================
-    // ฟังก์ชันระบบคำร้องขอแก้ไขผลการเรียน (Grade Amendment Request)
+    // ฟังก์ชันระบบคำร้องขอแก้ไขผลการเรียน & แก้ไขผลการเรียน
+    // (แสดงเฉพาะนักเรียนที่ไม่ผ่านเกณฑ์ + รวมทุกวิชาที่ไม่ผ่านในฉบับเดียว + ชื่อครูประจำวิชา)
     // ========================================================
     function initCorrectionTab() {
       const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
       const classSel = document.getElementById('corrClassSelect');
-      if (!classSel) return;
-      
-      classSel.innerHTML = classesList.map((c, idx) => 
-        `<option value="${idx}" ${idx === currentClassIndex ? 'selected' : ''}>${c.Grade || ('ชั้น ป.' + (idx+1))}</option>`
-      ).join('');
+      const docClassSel = document.getElementById('corrDocClassSelect');
+      if (!classSel && !docClassSel) return;
 
-      onCorrClassChange();
+      corrInitialized = true;
+      const optionsHtml = classesList.map((c, idx) => {
+        const failCount = getFailingStudentsOfClass(idx).length;
+        return `<option value="${idx}" ${idx === currentClassIndex ? 'selected' : ''}>${c.Grade || ('ชั้น ป.' + (idx + 1))} (ไม่ผ่าน ${failCount} คน)</option>`;
+      }).join('');
+
+      if (classSel) classSel.innerHTML = optionsHtml;
+      if (docClassSel) docClassSel.innerHTML = optionsHtml;
+
+      populateFailingStudentDropdowns(currentClassIndex);
     }
 
-    function onCorrClassChange() {
-      const classIdx = parseInt(document.getElementById('corrClassSelect').value) || 0;
+    function populateFailingStudentDropdowns(classIdx) {
       const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
       const cls = classesList[classIdx];
       if (!cls || !cls.Students) return;
 
+      const failingList = getFailingStudentsOfClass(classIdx);
       const stSel = document.getElementById('corrStudentSelect');
-      stSel.innerHTML = cls.Students.map((s, idx) => 
-        `<option value="${idx}" ${idx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${s.No} ${s.FullName}</option>`
-      ).join('');
+      const docStSel = document.getElementById('corrDocStudentSelect');
+      const summaryEl = document.getElementById('corrFailingCountSummary');
 
-      const teacherInput = document.getElementById('corrTeacherName');
-      if (teacherInput && (!teacherInput.value || teacherInput.value.trim() === '')) {
-        teacherInput.value = cls.Teacher1 || '';
+      if (summaryEl) {
+        summaryEl.innerHTML = `${cls.ClassName} : นักเรียนที่ไม่ผ่านเกณฑ์จำนวน <b style="color:#dc2626;">${failingList.length} คน</b> (จากทั้งหมด ${cls.Students.length} คน) — แสดงรายวิชาที่ไม่ผ่านทั้งหมดในใบคำร้องฉบับเดียวกัน`;
       }
 
-      onCorrStudentChange();
+      if (failingList.length === 0) {
+        const emptyOpt = `<option value="-1">-- ไม่มีนักเรียนที่ไม่ผ่านเกณฑ์ในระดับชั้นนี้ --</option>`;
+        if (stSel) stSel.innerHTML = emptyOpt;
+        if (docStSel) docStSel.innerHTML = emptyOpt;
+        renderFailingSubjectsEditor();
+        updateCorrectionPreview();
+        return;
+      }
+
+      if (!failingList.some(f => f.stIdx === currentStudentIndex)) {
+        currentStudentIndex = failingList[0].stIdx;
+      }
+
+      const stOptionsHtml = failingList.map(item =>
+        `<option value="${item.stIdx}" ${item.stIdx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${item.student.No} ${item.student.FullName} (ไม่ผ่าน ${item.failingSubjects.length} วิชา)</option>`
+      ).join('');
+
+      if (stSel) stSel.innerHTML = stOptionsHtml;
+      if (docStSel) docStSel.innerHTML = stOptionsHtml;
+
+      renderFailingSubjectsEditor();
+      updateCorrectionPreview();
+    }
+
+    function onCorrClassChange() {
+      const classIdx = parseInt(document.getElementById('corrClassSelect')?.value, 10) || 0;
+      loadClass(classIdx);
+    }
+
+    function onCorrDocClassChange(val) {
+      const classIdx = parseInt(val, 10) || 0;
+      loadClass(classIdx);
     }
 
     function onCorrStudentChange() {
-      const classIdx = parseInt(document.getElementById('corrClassSelect').value) || 0;
-      const stIdx = parseInt(document.getElementById('corrStudentSelect').value) || 0;
-      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
-      const student = classesList[classIdx]?.Students?.[stIdx];
-      if (!student || !student.Scores) return;
-
-      const subSel = document.getElementById('corrSubjectSelect');
-      subSel.innerHTML = student.Scores.map((sc, idx) => 
-        `<option value="${sc.Index}">วิชาที่ ${sc.Index}: ${sc.Name} (${sc.Code || '-'})</option>`
-      ).join('');
-
-      onCorrSubjectChange();
+      const stIdx = parseInt(document.getElementById('corrStudentSelect')?.value, 10);
+      if (isNaN(stIdx) || stIdx < 0) return;
+      selectStudent(stIdx);
     }
 
-    function onCorrSubjectChange() {
-      const classIdx = parseInt(document.getElementById('corrClassSelect').value) || 0;
-      const stIdx = parseInt(document.getElementById('corrStudentSelect').value) || 0;
-      const subIdx = parseInt(document.getElementById('corrSubjectSelect').value) || 1;
-      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
-      const student = classesList[classIdx]?.Students?.[stIdx];
-      const sc = student?.Scores?.find(s => s.Index === subIdx);
-      if (!sc) return;
-
-      const maxCollect = (subIdx <= 9) ? 35 : 40;
-      const maxExam = (subIdx <= 9) ? 15 : 10;
-
-      document.getElementById('corrSubjectTitle').innerText = `${sc.Name} (${sc.Code || ''})`;
-      document.getElementById('corrMaxCollect').innerText = maxCollect;
-      document.getElementById('corrMaxExam').innerText = maxExam;
-      document.getElementById('corrMaxCollect2').innerText = maxCollect;
-      document.getElementById('corrMaxExam2').innerText = maxExam;
-
-      document.getElementById('corrOldCollect').innerText = sc.Collect;
-      document.getElementById('corrOldExam').innerText = sc.Exam;
-      document.getElementById('corrOldTotal').innerText = sc.Total;
-
-      document.getElementById('corrNewCollect').value = sc.Collect;
-      document.getElementById('corrNewExam').value = sc.Exam;
-      document.getElementById('corrNewTotal').innerText = sc.Total;
-
-      updateCorrectionPreview();
+    function onCorrDocStudentChange(val) {
+      const stIdx = parseInt(val, 10);
+      if (isNaN(stIdx) || stIdx < 0) return;
+      selectStudent(stIdx);
     }
 
     function onCorrReasonPresetChange(val) {
       const customInput = document.getElementById('corrReasonCustom');
-      if (val === 'other') {
-        customInput.style.display = 'block';
-        customInput.focus();
-      } else {
-        customInput.style.display = 'none';
+      if (customInput) {
+        if (val === 'other') {
+          customInput.style.display = 'block';
+          customInput.focus();
+        } else {
+          customInput.style.display = 'none';
+        }
       }
-      updateCorrectionPreview();
-    }
-
-    function onCorrScoreInput() {
-      const subIdx = parseInt(document.getElementById('corrSubjectSelect').value) || 1;
-      const maxCollect = (subIdx <= 9) ? 35 : 40;
-      const maxExam = (subIdx <= 9) ? 15 : 10;
-
-      let newC = parseFloat(document.getElementById('corrNewCollect').value) || 0;
-      let newE = parseFloat(document.getElementById('corrNewExam').value) || 0;
-
-      if (newC > maxCollect) {
-        newC = maxCollect;
-        document.getElementById('corrNewCollect').value = maxCollect;
-        showToast(`คะแนนเก็บสูงสุดของวิชานี้คือ ${maxCollect} คะแนน`);
-      }
-      if (newE > maxExam) {
-        newE = maxExam;
-        document.getElementById('corrNewExam').value = maxExam;
-        showToast(`คะแนนสอบสูงสุดของวิชานี้คือ ${maxExam} คะแนน`);
-      }
-      if (newC < 0) { newC = 0; document.getElementById('corrNewCollect').value = 0; }
-      if (newE < 0) { newE = 0; document.getElementById('corrNewExam').value = 0; }
-
-      const newTot = Math.round((newC + newE) * 100) / 100;
-      document.getElementById('corrNewTotal').innerText = newTot;
-
       updateCorrectionPreview();
     }
 
     function getCorrectionReason() {
       const preset = document.getElementById('corrReasonPreset')?.value || '';
       if (preset === 'other') {
-        return document.getElementById('corrReasonCustom')?.value?.trim() || 'มีความจำเป็นต้องแก้ไขตามระเบียบการวัดผล';
+        return document.getElementById('corrReasonCustom')?.value?.trim() || 'นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข';
       }
-      return preset;
+      return preset || 'นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข';
     }
 
-    function updateCorrectionPreview() {
-      const classIdx = parseInt(document.getElementById('corrClassSelect').value) || 0;
-      const stIdx = parseInt(document.getElementById('corrStudentSelect').value) || 0;
-      const subIdx = parseInt(document.getElementById('corrSubjectSelect').value) || 1;
+    function renderFailingSubjectsEditor() {
+      const container = document.getElementById('corrFailingSubjectsContainer');
+      if (!container) return;
+
+      const classIdx = currentClassIndex;
       const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
       const cls = classesList[classIdx];
-      const student = cls?.Students?.[stIdx];
-      const sc = student?.Scores?.find(s => s.Index === subIdx);
-      if (!student || !sc) return;
+      const stIdx = parseInt(document.getElementById('corrStudentSelect')?.value ?? currentStudentIndex, 10);
+      const student = (stIdx >= 0) ? cls?.Students?.[stIdx] : null;
 
-      const teacherName = document.getElementById('corrTeacherName')?.value?.trim() || (cls.Teacher1 || '................................................');
+      if (!student) {
+        container.innerHTML = `
+          <div style="padding: 1.5rem; text-align: center; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; color: #065f46; font-weight: 600;">
+            ✅ ไม่มีนักเรียนที่ไม่ผ่านเกณฑ์ในระดับชั้นนี้
+          </div>
+        `;
+        return;
+      }
+
+      const failingSubs = getFailingSubjects(student);
+      if (failingSubs.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 1.5rem; text-align: center; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; color: #065f46; font-weight: 600;">
+            ✅ นักเรียนคนนี้ผ่านเกณฑ์ทุกรายวิชา (คะแนนรวมตั้งแต่ 25 คะแนนขึ้นไปทุกวิชา)
+          </div>
+        `;
+        return;
+      }
+
+      let html = `
+        <div style="background: #fff; border: 1.5px solid #fecdd3; border-radius: 10px; padding: 0.9rem 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div style="font-weight: 700; color: #be185d; font-size: 1rem;">
+              📌 รายวิชาที่ไม่ผ่านเกณฑ์ของ ${student.FullName} (เลขที่ ${student.No}) — รวมทั้งหมด ${failingSubs.length} วิชา
+            </div>
+            <div style="font-size: 0.85rem; color: #64748b;">
+              ครูประจำชั้น: <b>${cls.Teacher1 || '-'}</b> | กรอกคะแนนที่ขอแก้ไขแล้วกดบันทึกหรือสั่งพิมพ์ใบคำร้อง
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+      `;
+
+      failingSubs.forEach((sc, idx) => {
+        const subIdx = sc.Index;
+        const maxCollect = (subIdx <= 9) ? 35 : 40;
+        const maxExam = (subIdx <= 9) ? 15 : 10;
+        const origC = sc.OrigCollect !== undefined ? sc.OrigCollect : sc.Collect;
+        const origE = sc.OrigExam !== undefined ? sc.OrigExam : sc.Exam;
+        const origTot = sc.OrigTotal !== undefined ? sc.OrigTotal : sc.Total;
+        const subjectTeacher = getSubjectTeacher(classIdx, subIdx);
+
+        html += `
+          <div style="border: 1px solid #f1f5f9; background: #fdf2f8; border-radius: 8px; padding: 0.75rem 0.9rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem; flex-wrap: wrap; gap: 0.4rem;">
+              <div style="font-weight: 700; color: #9d174d; font-size: 0.95rem;">
+                ${idx + 1}. วิชา${sc.Name} (${sc.Code || '-'})
+              </div>
+              <div style="font-size: 0.85rem; background: #fff; border: 1px solid #fbcfe8; padding: 2px 10px; border-radius: 99px; color: #881337; font-weight: 600;">
+                👩‍🏫 ครูประจำวิชา: ${subjectTeacher}
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.55rem; text-align: center;">
+              <div style="background: #f8fafc; padding: 0.45rem; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 0.75rem; color: #64748b;">เก็บเดิม (เต็ม ${maxCollect})</div>
+                <div style="font-size: 1.05rem; font-weight: 700; color: #475569;">${origC}</div>
+              </div>
+              <div style="background: #f8fafc; padding: 0.45rem; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 0.75rem; color: #64748b;">สอบเดิม (เต็ม ${maxExam})</div>
+                <div style="font-size: 1.05rem; font-weight: 700; color: #475569;">${origE}</div>
+              </div>
+              <div style="background: #fef2f2; padding: 0.45rem; border-radius: 6px; border: 1px solid #fecaca;">
+                <div style="font-size: 0.75rem; color: #dc2626; font-weight: 600;">รวมเดิม (เต็ม 50)</div>
+                <div style="font-size: 1.05rem; font-weight: 700; color: #dc2626;">${origTot}</div>
+              </div>
+              <div style="background: #fff; padding: 0.45rem; border-radius: 6px; border: 1.5px solid #f43f5e;">
+                <div style="font-size: 0.75rem; color: #be185d; font-weight: 700;">เก็บใหม่ (เต็ม ${maxCollect})</div>
+                <input type="number" id="corrNewCollect_${subIdx}" min="0" max="${maxCollect}" value="${sc.Collect}"
+                  style="width: 78px; text-align: center; font-size: 1rem; font-weight: 700; padding: 2px; border: 1px solid #cbd5e1; border-radius: 5px; margin-top: 2px;"
+                  oninput="onCorrMultiScoreInput(${subIdx}, ${maxCollect}, ${maxExam})">
+              </div>
+              <div style="background: #fff; padding: 0.45rem; border-radius: 6px; border: 1.5px solid #f43f5e;">
+                <div style="font-size: 0.75rem; color: #be185d; font-weight: 700;">สอบใหม่ (เต็ม ${maxExam})</div>
+                <input type="number" id="corrNewExam_${subIdx}" min="0" max="${maxExam}" value="${sc.Exam}"
+                  style="width: 78px; text-align: center; font-size: 1rem; font-weight: 700; padding: 2px; border: 1px solid #cbd5e1; border-radius: 5px; margin-top: 2px;"
+                  oninput="onCorrMultiScoreInput(${subIdx}, ${maxCollect}, ${maxExam})">
+              </div>
+              <div style="background: #f0fdf4; padding: 0.45rem; border-radius: 6px; border: 1.5px solid #86efac;">
+                <div style="font-size: 0.75rem; color: #15803d; font-weight: 700;">รวมใหม่ (เต็ม 50)</div>
+                <div id="corrNewTotal_${subIdx}" style="font-size: 1.1rem; font-weight: 700; color: #16a34a; margin-top: 3px;">${sc.Total}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+      container.innerHTML = html;
+    }
+
+    function onCorrMultiScoreInput(subIdx, maxCollect, maxExam) {
+      const cInput = document.getElementById(`corrNewCollect_${subIdx}`);
+      const eInput = document.getElementById(`corrNewExam_${subIdx}`);
+      const totEl = document.getElementById(`corrNewTotal_${subIdx}`);
+      if (!cInput || !eInput || !totEl) return;
+
+      let newC = parseFloat(cInput.value) || 0;
+      let newE = parseFloat(eInput.value) || 0;
+
+      if (newC > maxCollect) {
+        newC = maxCollect;
+        cInput.value = maxCollect;
+        showToast(`คะแนนเก็บสูงสุดของวิชานี้คือ ${maxCollect} คะแนน`);
+      }
+      if (newE > maxExam) {
+        newE = maxExam;
+        eInput.value = maxExam;
+        showToast(`คะแนนสอบสูงสุดของวิชานี้คือ ${maxExam} คะแนน`);
+      }
+      if (newC < 0) { newC = 0; cInput.value = 0; }
+      if (newE < 0) { newE = 0; eInput.value = 0; }
+
+      const newTot = Math.round((newC + newE) * 100) / 100;
+      totEl.innerText = newTot;
+      totEl.style.color = (newTot >= 25) ? '#16a34a' : '#dc2626';
+
+      updateCorrectionPreview();
+    }
+
+    function generateCorrectionDocHtml(classIdx, stIdx, useFormInputs) {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      const student = (stIdx >= 0) ? cls?.Students?.[stIdx] : null;
+
+      if (!cls || !student) {
+        return `
+          <div style="text-align: center; padding: 60px 20px; font-size: 18pt; color: #059669; font-weight: bold;">
+            ✅ ไม่มีนักเรียนที่ไม่ผ่านเกณฑ์ในระดับชั้นนี้ (${cls ? cls.ClassName : ''})
+          </div>
+        `;
+      }
+
+      const failingSubs = getFailingSubjects(student);
+      if (failingSubs.length === 0) {
+        return `
+          <div style="text-align: center; padding: 60px 20px; font-size: 18pt; color: #059669; font-weight: bold;">
+            ✅ นักเรียน ${student.FullName} (เลขที่ ${student.No}) ผ่านเกณฑ์การประเมินทุกรายวิชา
+          </div>
+        `;
+      }
+
+      const homeroomTeacher = cls.Teacher1 || '................................................';
       const reqDate = document.getElementById('corrDate')?.value?.trim() || '26 ตุลาคม 2569';
       const reason = getCorrectionReason();
 
-      const oldC = sc.Collect;
-      const oldE = sc.Exam;
-      const oldTot = sc.Total;
+      // รวบรวมรายชื่อครูประจำวิชาที่ไม่ซ้ำกันของวิชาที่ไม่ผ่านทั้งหมดของนักเรียนคนนี้
+      const teacherSubjectsMap = new Map();
+      let rowsHtml = '';
 
-      const newC = parseFloat(document.getElementById('corrNewCollect')?.value) || oldC;
-      const newE = parseFloat(document.getElementById('corrNewExam')?.value) || oldE;
-      const newTot = Math.round((newC + newE) * 100) / 100;
+      failingSubs.forEach((sc, idx) => {
+        const subIdx = sc.Index;
+        const origC = sc.OrigCollect !== undefined ? sc.OrigCollect : sc.Collect;
+        const origE = sc.OrigExam !== undefined ? sc.OrigExam : sc.Exam;
+        const origTot = sc.OrigTotal !== undefined ? sc.OrigTotal : sc.Total;
 
-      const maxC = (subIdx <= 9) ? 35 : 40;
-      const maxE = (subIdx <= 9) ? 15 : 10;
+        let newC = sc.Collect;
+        let newE = sc.Exam;
+        if (useFormInputs) {
+          const cEl = document.getElementById(`corrNewCollect_${subIdx}`);
+          const eEl = document.getElementById(`corrNewExam_${subIdx}`);
+          if (cEl) newC = parseFloat(cEl.value) || 0;
+          if (eEl) newE = parseFloat(eEl.value) || 0;
+        }
+        const newTot = Math.round((parseFloat(newC) + parseFloat(newE)) * 100) / 100;
 
-      const docHtml = `
+        // ถ้านักเรียนยังไม่ได้แก้คะแนนในระบบ (คะแนนใหม่ยังเท่ากับคะแนนเดิมที่ < 25) ให้แสดงช่องว่างหรือคะแนนที่กรอก
+        const isEdited = (newTot !== parseFloat(origTot)) || (newTot >= 25);
+        const dispNewC = isEdited ? newC : '........';
+        const dispNewE = isEdited ? newE : '........';
+        const dispNewTot = isEdited ? newTot : '........';
+
+        const subjectTeacher = getSubjectTeacher(classIdx, subIdx);
+        if (!teacherSubjectsMap.has(subjectTeacher)) {
+          teacherSubjectsMap.set(subjectTeacher, []);
+        }
+        teacherSubjectsMap.get(subjectTeacher).push(sc.Name);
+
+        rowsHtml += `
+          <tr style="text-align: center;">
+            <td>${idx + 1}</td>
+            <td style="white-space: nowrap;">${sc.Code || '-'}</td>
+            <td style="text-align: left; font-weight: bold;">${sc.Name}</td>
+            <td>${origC}</td>
+            <td>${origE}</td>
+            <td style="font-weight: bold; color: #dc2626;">${origTot}</td>
+            <td style="background: #eff6ff; font-weight: bold; color: #1e40af;">${dispNewC}</td>
+            <td style="background: #eff6ff; font-weight: bold; color: #1e40af;">${dispNewE}</td>
+            <td style="background: #dbeafe; font-weight: bold; color: #1e3a8a;">${dispNewTot}</td>
+            <td style="text-align: left; font-size: 13.5pt; white-space: nowrap;">${subjectTeacher}</td>
+            <td style="color: #64748b; font-size: 12pt;">.................................</td>
+          </tr>
+        `;
+      });
+
+      // สร้างกล่องลงนามของครูประจำวิชาทุกคนที่เกี่ยวข้อง
+      const uniqueTeachers = Array.from(teacherSubjectsMap.entries());
+      const teacherSigCols = uniqueTeachers.length === 1 ? '1fr' : '1fr 1fr';
+      const teacherSignaturesHtml = uniqueTeachers.map(([tName, subNames]) => `
+        <div style="text-align: center; padding: 4px 6px;">
+          <div style="height: 12px;"></div>
+          <div>ลงชื่อ.......................................................ครูประจำวิชา</div>
+          <div style="margin-top: 2px; font-weight: bold;">( ${tName} )</div>
+          <div style="font-size: 12.5pt; color: #334155; line-height: 1.2;">รายวิชา: ${subNames.join(', ')}</div>
+        </div>
+      `).join('');
+
+      return `
         <div style="text-align: center;">
           <img src="logo.png" class="doc-header-emblem" alt="ตราโรงเรียน">
           <div class="doc-title">แบบคำร้องขออนุมัติแก้ไขผลการเรียน (ปพ.5)</div>
           <div class="doc-subtitle">โรงเรียนบ้านสันดาบ ตำบลชัยมงคล อำเภอเมืองสมุทรสาคร จังหวัดสมุทรสาคร</div>
         </div>
 
-        <div style="text-align: right; margin-bottom: 8px;">
+        <div style="text-align: right; margin-bottom: 4px; font-size: 14.5pt;">
           วันที่ <b>${reqDate}</b>
         </div>
 
-        <div style="margin-bottom: 6px;">
+        <div style="margin-bottom: 4px; font-size: 14.5pt; line-height: 1.35;">
           <b>เรื่อง:</b> ขออนุมัติแก้ไขผลการเรียน ภาคเรียนที่ 1 ปีการศึกษา 2569<br>
           <b>เรียน:</b> ผู้อำนวยการโรงเรียนบ้านสันดาบ
         </div>
 
-        <div style="text-indent: 2.5rem; line-height: 1.45; margin-bottom: 8px;">
-          ด้วย ข้าพเจ้า <b>${teacherName}</b> ตำแหน่ง ครูผู้สอน/ครูประจำชั้น มีความประสงค์ขออนุมัติแก้ไขผลสัมฤทธิ์ทางการเรียนของนักเรียน
-          <b>${cls.Grade || 'ชั้นประถมศึกษา'}</b> ภาคเรียนที่ 1 ปีการศึกษา 2569 ของ <b>${student.FullName}</b>
-          เลขประจำตัว <b>${student.StudentId}</b> เลขที่ <b>${student.No}</b>
-          ในรายวิชา <b>${sc.Name} (รหัสวิชา ${sc.Code || '-'})</b> โดยมีรายละเอียดการขอแก้ไขคะแนน ดังต่อไปนี้
+        <div style="text-indent: 2rem; line-height: 1.4; margin-bottom: 6px; font-size: 14.5pt;">
+          ด้วย นักเรียน <b>${student.FullName}</b> ระดับชั้น <b>${cls.Grade || cls.ClassName}</b> เลขประจำตัว <b>${student.StudentId}</b> เลขที่ <b>${student.No}</b>
+          (ครูประจำชั้น: <b>${homeroomTeacher}</b>) มีผลการเรียนไม่ผ่านเกณฑ์การประเมิน (คะแนนรวมต่ำกว่า 25 คะแนน) ในภาคเรียนที่ 1 ปีการศึกษา 2569
+          จำนวน <b>${failingSubs.length} รายวิชา</b> และได้ดำเนินการแก้ไขผลการเรียนเรียบร้อยแล้ว จึงขออนุมัติแก้ไขผลสัมฤทธิ์ทางการเรียน ดังรายละเอียดต่อไปนี้
         </div>
 
-        <table class="correction-table">
+        <table class="correction-table" style="margin: 6px 0; font-size: 14pt;">
           <thead>
             <tr>
-              <th rowspan="2" style="width: 25%;">รายการ</th>
-              <th colspan="3">คะแนนเดิมในระบบ</th>
-              <th colspan="3" style="background: #eff6ff;">คะแนนที่ถูกต้อง (ขอแก้ไข)</th>
+              <th rowspan="2" style="width: 4%;">ที่</th>
+              <th rowspan="2" style="width: 9%;">รหัสวิชา</th>
+              <th rowspan="2" style="width: 19%;">รายวิชาที่ไม่ผ่านเกณฑ์</th>
+              <th colspan="3" style="width: 18%;">คะแนนเดิมในระบบ</th>
+              <th colspan="3" style="width: 18%; background: #eff6ff;">คะแนนที่ขอแก้ไข</th>
+              <th rowspan="2" style="width: 18%;">ครูประจำวิชา</th>
+              <th rowspan="2" style="width: 14%;">ลายมือชื่อ<br>ครูประจำวิชา</th>
             </tr>
             <tr>
-              <th style="width: 12%;">คะแนนเก็บ (${maxC})</th>
-              <th style="width: 12%;">คะแนนสอบ (${maxE})</th>
-              <th style="width: 14%;">รวม (50)</th>
-              <th style="width: 12%; background: #eff6ff;">คะแนนเก็บ (${maxC})</th>
-              <th style="width: 12%; background: #eff6ff;">คะแนนสอบ (${maxE})</th>
-              <th style="width: 15%; background: #dbeafe; font-weight: bold; color: #1e40af;">รวม (50)</th>
+              <th style="width: 6%;">เก็บ</th>
+              <th style="width: 6%;">สอบ</th>
+              <th style="width: 6%;">รวม</th>
+              <th style="width: 6%; background: #eff6ff;">เก็บ</th>
+              <th style="width: 6%; background: #eff6ff;">สอบ</th>
+              <th style="width: 6%; background: #dbeafe; font-weight: bold; color: #1e40af;">รวม</th>
             </tr>
           </thead>
           <tbody>
-            <tr style="text-align: center;">
-              <td style="text-align: left; font-weight: bold;">${sc.Name}</td>
-              <td>${oldC}</td>
-              <td>${oldE}</td>
-              <td style="font-weight: bold;">${oldTot}</td>
-              <td style="background: #eff6ff; font-weight: bold; color: #1e40af;">${newC}</td>
-              <td style="background: #eff6ff; font-weight: bold; color: #1e40af;">${newE}</td>
-              <td style="background: #dbeafe; font-weight: bold; font-size: 16pt; color: #1e3a8a;">${newTot}</td>
-            </tr>
+            ${rowsHtml}
           </tbody>
         </table>
 
-        <div style="margin-top: 6px; line-height: 1.4;">
+        <div style="margin-top: 4px; line-height: 1.35; font-size: 14.5pt;">
           <b>เหตุผลความจำเป็นในการขอแก้ไข:</b> ${reason}
         </div>
 
-        <div style="margin-top: 10px; text-indent: 2.5rem; line-height: 1.35;">
+        <div style="margin-top: 4px; text-indent: 2rem; line-height: 1.35; font-size: 14.5pt;">
           จึงเรียนมาเพื่อโปรดพิจารณาให้ความเห็นชอบและอนุมัติแก้ไขในระบบเอกสารหลักฐานทางการศึกษา (ปพ.5) ต่อไป
         </div>
 
-        <!-- กล่องลงนาม 3 ส่วน (ครูผู้สอน, วิชาการ, ผู้อำนวยการ) -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 15px;">
-          <div style="text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px;">
-            <div style="font-weight: bold; margin-bottom: 8px;">(1) ครูผู้สอน / ผู้ยื่นคำร้อง</div>
-            <div style="height: 18px;"></div>
-            <div>ลงชื่อ......................................................................</div>
-            <div style="margin-top: 4px;">( ${teacherName} )</div>
-            <div style="font-size: 14pt; color: #475569;">ครูผู้สอน / ครูประจำชั้น</div>
+        <!-- ส่วนที่ (1) ครูประจำวิชาลงนามรับรอง -->
+        <div style="margin-top: 8px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; font-size: 14pt;">
+          <div style="font-weight: bold; text-align: center; margin-bottom: 2px;">
+            (1) ลงนามรับรองผลการเรียนโดยครูประจำวิชา (ตรวจสอบและประเมินผลเรียบร้อยแล้ว)
           </div>
-
-          <div style="text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px;">
-            <div style="font-weight: bold; margin-bottom: 8px;">(2) ความเห็นหัวหน้างานบริหารวิชาการ</div>
-            <div style="text-align: left; font-size: 14pt; margin-left: 20px; margin-bottom: 4px;">
-              [ &nbsp; ] ตรวจสอบแล้วถูกต้อง เห็นควรอนุมัติ<br>
-              [ &nbsp; ] อื่นๆ ..............................................................
-            </div>
-            <div>ลงชื่อ......................................................................</div>
-            <div style="margin-top: 4px;">( นางสาวสุจิตตรา  ปางสุข )</div>
-            <div style="font-size: 14pt; color: #475569;">หัวหน้างานบริหารวิชาการ</div>
+          <div style="display: grid; grid-template-columns: ${teacherSigCols}; gap: 4px 12px;">
+            ${teacherSignaturesHtml}
           </div>
         </div>
 
-        <div style="margin-top: 12px; border: 1.5px solid #94a3b8; border-radius: 6px; padding: 8px 16px; text-align: center;">
-          <div style="font-weight: bold; margin-bottom: 4px;">(3) คำสั่ง / การอนุมัติของผู้อำนวยการโรงเรียน</div>
-          <div style="display: inline-block; text-align: left; margin: 4px 0 8px 0; font-size: 15pt;">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ &nbsp; ] <b>อนุมัติ</b> ให้ดำเนินการแก้ไขผลการเรียนใน ปพ.5 ได้ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ &nbsp; ] ไม่อนุมัติ
+        <!-- ส่วนที่ (2) หัวหน้างานวิชาการ และ ส่วนที่ (3) ผู้อำนวยการโรงเรียน -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 8px; font-size: 14pt;">
+          <div style="text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px;">
+            <div style="font-weight: bold; margin-bottom: 4px;">(2) ความเห็นหัวหน้างานบริหารวิชาการ</div>
+            <div style="text-align: left; font-size: 13.5pt; margin-left: 14px; margin-bottom: 4px;">
+              [ &nbsp; ] ตรวจสอบแล้วถูกต้อง เห็นควรอนุมัติ<br>
+              [ &nbsp; ] อื่นๆ .........................................................
+            </div>
+            <div style="height: 8px;"></div>
+            <div>ลงชื่อ................................................................</div>
+            <div style="margin-top: 2px; font-weight: bold;">( นางสาวสุจิตตรา  ปางสุข )</div>
+            <div style="font-size: 13pt; color: #475569;">หัวหน้างานบริหารวิชาการ</div>
           </div>
-          <div style="height: 14px;"></div>
-          <div>ลงชื่อ......................................................................</div>
-          <div style="margin-top: 4px; font-weight: bold;">( นายกฤษฎา  ผลพล )</div>
-          <div style="font-size: 14pt; color: #475569;">ผู้อำนวยการโรงเรียนบ้านสันดาบ</div>
+
+          <div style="text-align: center; border: 1px solid #94a3b8; border-radius: 6px; padding: 6px 8px;">
+            <div style="font-weight: bold; margin-bottom: 4px;">(3) คำสั่ง / การอนุมัติของผู้อำนวยการโรงเรียน</div>
+            <div style="text-align: left; font-size: 13.5pt; margin-left: 14px; margin-bottom: 4px;">
+              [ &nbsp; ] <b>อนุมัติ</b> ให้แก้ไขผลการเรียนใน ปพ.5 ได้<br>
+              [ &nbsp; ] ไม่อนุมัติ เนื่องจาก..........................................
+            </div>
+            <div style="height: 8px;"></div>
+            <div>ลงชื่อ................................................................</div>
+            <div style="margin-top: 2px; font-weight: bold;">( นายกฤษฎา  ผลพล )</div>
+            <div style="font-size: 13pt; color: #475569;">ผู้อำนวยการโรงเรียนบ้านสันดาบ</div>
+          </div>
         </div>
       `;
+    }
 
+    function updateCorrectionPreview() {
+      const classIdx = currentClassIndex;
+      const stSel = document.getElementById('corrStudentSelect');
+      const stIdx = stSel ? parseInt(stSel.value, 10) : currentStudentIndex;
+      const docHtml = generateCorrectionDocHtml(classIdx, stIdx, true);
       const previewDiv = document.getElementById('correctionDocPreview');
       if (previewDiv) previewDiv.innerHTML = docHtml;
     }
 
     function saveGradeCorrection() {
-      const classIdx = parseInt(document.getElementById('corrClassSelect').value) || 0;
-      const stIdx = parseInt(document.getElementById('corrStudentSelect').value) || 0;
-      const subIdx = parseInt(document.getElementById('corrSubjectSelect').value) || 1;
+      const classIdx = currentClassIndex;
+      const stSel = document.getElementById('corrStudentSelect');
+      const stIdx = stSel ? parseInt(stSel.value, 10) : currentStudentIndex;
       const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
       const cls = classesList[classIdx];
-      const student = cls?.Students?.[stIdx];
-      const sc = student?.Scores?.find(s => s.Index === subIdx);
-      if (!student || !sc) return;
+      const student = (stIdx >= 0) ? cls?.Students?.[stIdx] : null;
+      if (!student) {
+        showToast('ไม่พบข้อมูลนักเรียนที่ต้องการบันทึก');
+        return;
+      }
 
-      const newC = parseFloat(document.getElementById('corrNewCollect').value) || 0;
-      const newE = parseFloat(document.getElementById('corrNewExam').value) || 0;
-      const newTot = Math.round((newC + newE) * 100) / 100;
+      const failingSubs = getFailingSubjects(student);
+      if (failingSubs.length === 0) return;
 
-      // Update in memory
-      sc.Collect = newC;
-      sc.Exam = newE;
-      sc.Total = newTot;
+      failingSubs.forEach(sc => {
+        const subIdx = sc.Index;
+        const cEl = document.getElementById(`corrNewCollect_${subIdx}`);
+        const eEl = document.getElementById(`corrNewExam_${subIdx}`);
+        if (cEl && eEl) {
+          const newC = parseFloat(cEl.value) || 0;
+          const newE = parseFloat(eEl.value) || 0;
+          const newTot = Math.round((newC + newE) * 100) / 100;
+          sc.Collect = newC;
+          sc.Exam = newE;
+          sc.Total = newTot;
+        }
+      });
 
-      // Recalculate student total scores
+      // คำนวณคะแนนรวมและคะแนนเฉลี่ยใหม่ของนักเรียน
       let totC = 0, totE = 0, tot = 0;
       student.Scores.forEach(s => {
         totC += parseFloat(s.Collect) || 0;
@@ -2852,21 +3259,17 @@
       student.TotalScore = Math.round(tot * 100) / 100;
       student.AverageScore = Math.round((student.TotalScore / 15.0) * 100) / 100;
 
-      // Save to localStorage
+      // บันทึกลง localStorage
       saveCustomScoresToStorage(student.StudentId, student);
 
-      // Update old score labels in form
-      document.getElementById('corrOldCollect').innerText = newC;
-      document.getElementById('corrOldExam').innerText = newE;
-      document.getElementById('corrOldTotal').innerText = newTot;
-
-      // Refresh screens
+      // อัปเดตหน้าจอทั้งหมด
       renderStudentList();
       renderCurrentStudent();
       renderOverviewTable();
+      renderFailingSubjectsEditor();
       updateCorrectionPreview();
 
-      showToast(`บันทึกแก้ไขคะแนนวิชา ${sc.Name} ของ ${student.FullName} เป็น [รวม ${newTot}] เรียบร้อยแล้ว!`);
+      showToast(`บันทึกแก้ไขผลการเรียน (${failingSubs.length} วิชา) ของ ${student.FullName} เรียบร้อยแล้ว!`);
     }
 
     function printCorrectionForm() {
@@ -2885,6 +3288,30 @@
       setTimeout(() => {
         window.print();
       }, 100);
+    }
+
+    function printAllFailingCorrectionForms() {
+      const classIdx = currentClassIndex;
+      const failingList = getFailingStudentsOfClass(classIdx);
+      if (failingList.length === 0) {
+        showToast('ไม่มีนักเรียนที่ไม่ผ่านเกณฑ์ในระดับชั้นนี้');
+        return;
+      }
+      const printContainer = document.getElementById('correctionPrintContainer');
+      const recContainer = document.getElementById('receiptPrintContainer');
+      if (recContainer) recContainer.innerHTML = '';
+      if (printContainer) {
+        printContainer.innerHTML = failingList.map(item =>
+          `<div class="official-doc-page">${generateCorrectionDocHtml(classIdx, item.stIdx, item.stIdx === currentStudentIndex)}</div>`
+        ).join('');
+      }
+      document.body.classList.remove('print-single');
+      document.body.classList.remove('print-batch');
+      document.body.classList.remove('print-receipt');
+      document.body.classList.add('print-correction');
+      setTimeout(() => {
+        window.print();
+      }, 150);
     }
 
     // ========================================================
@@ -3052,7 +3479,7 @@
           !document.body.classList.contains('print-correction') &&
           !document.body.classList.contains('print-receipt') &&
           !document.body.classList.contains('print-single')) {
-        if (currentActiveTab === 'correction') {
+        if (currentActiveTab === 'correction' || currentActiveTab === 'editgrade') {
           const previewDiv = document.getElementById('correctionDocPreview');
           const printContainer = document.getElementById('correctionPrintContainer');
           if (printContainer && previewDiv) {
@@ -3325,8 +3752,9 @@
       }
       renderStudentList();
       renderOverviewTable();
-      if (typeof currentActiveTab !== 'undefined' && currentActiveTab === 'correction') {
-        onCorrSubjectChange();
+      if (typeof currentActiveTab !== 'undefined' && (currentActiveTab === 'correction' || currentActiveTab === 'editgrade')) {
+        renderFailingSubjectsEditor();
+        updateCorrectionPreview();
       }
 
       closeStudentScoreModal();

@@ -9,22 +9,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #1e40af;
-      --primary-hover: #1d4ed8;
-      --primary-light: #eff6ff;
-      --secondary: #0f766e;
-      --accent: #d97706;
-      --gray-50: #f8fafc;
-      --gray-100: #f1f5f9;
-      --gray-200: #e2e8f0;
+      --primary: #e11d48;
+      --primary-hover: #be123c;
+      --primary-light: #fff1f2;
+      --secondary: #be185d;
+      --accent: #f43f5e;
+      --pink-dark: #9f1239;
+      --pink-border: #fbcfe8;
+      --gray-50: #fff5f7;
+      --gray-100: #fdf2f8;
+      --gray-200: #fce7f3;
       --gray-300: #cbd5e1;
       --gray-600: #475569;
       --gray-700: #334155;
       --gray-800: #1e293b;
       --gray-900: #0f172a;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-sm: 0 1px 3px 0 rgba(225, 29, 72, 0.08);
+      --shadow-md: 0 4px 8px -1px rgba(225, 29, 72, 0.12), 0 2px 4px -2px rgba(225, 29, 72, 0.08);
+      --shadow-lg: 0 10px 20px -3px rgba(225, 29, 72, 0.15), 0 4px 6px -4px rgba(225, 29, 72, 0.1);
     }
 
     * {
@@ -48,32 +50,57 @@
 
     body {
       font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
-      background-color: #f1f5f9;
+      background-color: #fff5f7;
       color: var(--gray-800);
       line-height: 1.35;
       font-size: 16pt;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ส่วนหัว */
+    /* ส่วนหัวแบบธีมชมพูหวานพร้อมคลื่นประดับ */
     .app-header {
-      background: linear-gradient(135deg, #1e3a8a 0%, #0369a1 100%);
+      background: linear-gradient(135deg, #be185d 0%, #db2777 45%, #e11d48 75%, #f43f5e 100%);
       color: white;
-      padding: 1rem 1.5rem;
-      box-shadow: var(--shadow-md);
+      padding: 0.95rem 1.5rem;
+      box-shadow: 0 4px 15px rgba(225, 29, 72, 0.2);
       position: sticky;
       top: 0;
       z-index: 100;
+      overflow: hidden;
+    }
+
+    .app-header::after {
+      content: '';
+      position: absolute;
+      right: -40px;
+      bottom: -60px;
+      width: 320px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .app-header::before {
+      content: '';
+      position: absolute;
+      right: 180px;
+      top: -60px;
+      width: 250px;
+      height: 130px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+      pointer-events: none;
     }
 
     .header-content {
-      max-width: 1400px;
+      max-width: 1580px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
+      position: relative;
+      z-index: 1;
     }
 
     .brand {
@@ -167,21 +194,276 @@
       font-size: 0.85rem;
     }
 
-    /* โครงสร้างหน้าจอหลัก */
+    /* โครงสร้างหน้าจอหลัก 3 คอลัมน์ (เมนูซ้าย / เนื้อหากลาง / ควบคุมขวา) */
     .app-main {
-      max-width: 1400px;
-      margin: 1.5rem auto;
+      max-width: 1580px;
+      margin: 1.25rem auto;
       padding: 0 1rem;
       display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 1.5rem;
+      grid-template-columns: 215px 1fr 310px;
+      gap: 1.25rem;
       align-items: start;
     }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 1250px) {
+      .app-main {
+        grid-template-columns: 200px 1fr;
+      }
+      .right-control-sidebar {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 920px) {
       .app-main {
         grid-template-columns: 1fr;
       }
+      .right-control-sidebar {
+        grid-column: span 1;
+      }
+    }
+
+    /* เมนูคอลัมน์ซ้าย */
+    .left-nav-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: sticky;
+      top: 85px;
+    }
+
+    .system-title-card {
+      background: white;
+      border: 1.5px solid #f43f5e;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 2px 6px rgba(244, 63, 94, 0.08);
+    }
+    .system-title-icon {
+      font-size: 1.3rem;
+    }
+    .system-title-text {
+      font-family: 'Prompt', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #e11d48;
+    }
+
+    .nav-menu-box {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(225, 29, 72, 0.06);
+      border: 1px solid #fecdd3;
+      overflow: hidden;
+    }
+    .nav-menu-header {
+      background: #e11d48;
+      color: white;
+      padding: 0.65rem 0.9rem;
+      font-family: 'Prompt', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px 8px 0 0;
+    }
+    .nav-menu-list {
+      padding: 0.4rem 0.3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .nav-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 0.85rem;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      font-family: 'Prompt', 'Sarabun', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #475569;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      width: 100%;
+    }
+    .nav-menu-item:hover {
+      background: #fff1f2;
+      color: #e11d48;
+    }
+    .nav-menu-item.active {
+      background: #fff1f2;
+      color: #e11d48;
+      font-weight: 700;
+      border-left: 3.5px solid #e11d48;
+      border-radius: 4px 8px 8px 4px;
+    }
+
+    /* คอลัมน์ขวา */
+    .right-control-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      position: sticky;
+      top: 85px;
+    }
+
+    .right-tab-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: white;
+      padding: 0.35rem;
+      border-radius: 10px;
+      border: 1.5px solid #fce7f3;
+      box-shadow: 0 2px 6px rgba(225, 29, 72, 0.04);
+    }
+    .right-tab-pill {
+      background: #e11d48;
+      color: white;
+      border: none;
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      flex: 1;
+      text-align: center;
+    }
+    .right-icon-btn {
+      background: white;
+      border: 1px solid #fecdd3;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: #e11d48;
+    }
+    .right-icon-btn:hover {
+      background: #fff1f2;
+      border-color: #f43f5e;
+    }
+    .right-icon-btn.active {
+      background: #e11d48;
+      color: white;
+      border-color: #e11d48;
+    }
+
+    .quick-student-select-pink {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+      border: 1.5px solid #fbcfe8;
+      background: white;
+      color: #1e293b;
+      font-family: 'Prompt', 'Sarabun', sans-serif;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .quick-student-select-pink:focus {
+      outline: none;
+      border-color: #e11d48;
+      box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15);
+    }
+
+    .btn-outline-pink {
+      background: white;
+      border: 1.5px solid #fbcfe8;
+      color: #334155;
+      border-radius: 8px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.45rem 0.6rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-outline-pink:hover {
+      background: #fff1f2;
+      border-color: #f43f5e;
+      color: #e11d48;
+    }
+
+    .btn-pink-solid {
+      background: #e11d48;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Prompt', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.15s;
+      box-shadow: 0 3px 8px rgba(225, 29, 72, 0.25);
+    }
+    .btn-pink-solid:hover {
+      background: #be123c;
+      transform: translateY(-1px);
+      box-shadow: 0 5px 12px rgba(225, 29, 72, 0.35);
+    }
+
+    .sidebar-pink-card {
+      background: white;
+      border-radius: 12px;
+      border: 1.5px solid #fce7f3;
+      padding: 0.75rem 0.85rem;
+      box-shadow: 0 2px 6px rgba(225, 29, 72, 0.04);
+    }
+    .class-select-pink {
+      width: 100%;
+      padding: 0.5rem 0.7rem;
+      border-radius: 8px;
+      border: 1.5px solid #e2e8f0;
+      font-family: 'Prompt', 'Sarabun', sans-serif;
+      font-weight: 600;
+      font-size: 0.88rem;
+      background: white;
+      cursor: pointer;
+    }
+    .class-select-pink:focus {
+      outline: none;
+      border-color: #e11d48;
+    }
+    .search-box-pink {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      border: 1.5px solid #e2e8f0;
+      font-size: 0.82rem;
+      font-family: 'Prompt', 'Sarabun', sans-serif;
+      margin-top: 0.3rem;
+    }
+    .search-box-pink:focus {
+      outline: none;
+      border-color: #e11d48;
+      box-shadow: 0 0 0 2.5px rgba(225, 29, 72, 0.15);
+    }
+    .badge-pink {
+      background: #fff1f2;
+      color: #e11d48;
+      border: 1px solid #fecdd3;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
     }
 
     /* แถบด้านข้าง */
@@ -294,8 +576,21 @@
       font-size: 0.85rem;
       font-weight: 700;
     }
+    .student-no-badge {
+      width: 28px;
+      height: 28px;
+      background: #e11d48;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
     .student-item.active .student-no-badge {
-      background: #2563eb;
+      background: #be185d;
       color: white;
     }
 
@@ -394,11 +689,11 @@
     .report-preview-wrapper {
       display: flex;
       justify-content: center;
-      background: #94a3b8;
-      padding: 2rem 1rem;
-      border-radius: 12px;
+      background: linear-gradient(180deg, #dc8aa8 0%, #d47a9b 100%);
+      padding: 1.5rem 1rem;
+      border-radius: 14px;
       overflow-x: auto;
-      box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.1);
+      box-shadow: inset 0 2px 6px 0 rgba(136, 19, 55, 0.18);
     }
 
     /* หน้าใบแจ้งผลการเรียน A4 ฟอนต์ TH Sarabun PSK ขนาด 16 pt (ปรับระยะให้พอดี 1 หน้า A4 100%) */
@@ -868,7 +1163,9 @@
       font-family: 'Prompt', sans-serif;
     }
 
-    #batchPrintContainer {
+    #batchPrintContainer,
+    #correctionPrintContainer,
+    #receiptPrintContainer {
       display: none;
     }
 
@@ -1025,11 +1322,176 @@
         break-after: auto !important;
       }
     }
+
+    /* ปุ่มสีพิเศษ */
+    .btn-warning {
+      background-color: #d97706;
+      color: white;
+    }
+    .btn-warning:hover {
+      background-color: #b45309;
+      transform: translateY(-1px);
+    }
+    .btn-info {
+      background-color: #0284c7;
+      color: white;
+    }
+    .btn-info:hover {
+      background-color: #0369a1;
+      transform: translateY(-1px);
+    }
+
+    /* กล่องเอกสารทางการ (คำร้องขอแก้ไข / แบบฟอร์มรับผลการเรียน) */
+    .official-doc-page {
+      background: white;
+      width: 100%;
+      max-width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 2rem auto;
+      padding: 14mm 16mm;
+      box-shadow: var(--shadow-md);
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+      font-size: 15.5pt;
+      line-height: 1.28;
+      color: black;
+    }
+
+    .doc-header-emblem {
+      height: 0.8in;
+      display: block;
+      margin: 0 auto 4px auto;
+      object-fit: contain;
+    }
+
+    .doc-title {
+      text-align: center;
+      font-weight: bold;
+      font-size: 17pt;
+      line-height: 1.2;
+      margin-bottom: 2px;
+    }
+
+    .doc-subtitle {
+      text-align: center;
+      font-size: 15pt;
+      margin-bottom: 8px;
+    }
+
+    .correction-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      font-size: 14.5pt;
+    }
+    .correction-table th, .correction-table td {
+      border: 1px solid black;
+      padding: 4px 6px;
+    }
+    .correction-table th {
+      background-color: #f8fafc;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6px 0;
+      font-size: 13.5pt;
+    }
+    .receipt-table th, .receipt-table td {
+      border: 1px solid black;
+      padding: 3px 5px;
+    }
+    .receipt-table th {
+      background-color: #f1f5f9;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* กฎการพิมพ์แยกเฉพาะสำหรับคำร้องขอแก้ไข และแบบฟอร์มลงนามรับ */
+    @media print {
+      body.print-correction {
+        background: white !important;
+      }
+      body.print-correction #correctionPrintContainer {
+        display: block !important;
+      }
+      body.print-correction #receiptPrintContainer {
+        display: none !important;
+      }
+      body.print-correction .official-doc-page {
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        padding: 4mm 6mm !important;
+        max-width: 194mm !important;
+        max-height: 288mm !important;
+        overflow: hidden !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      body.print-correction .app-header,
+      body.print-correction .app-main,
+      body.print-correction .sidebar,
+      body.print-correction .preview-toolbar,
+      body.print-correction .stats-grid,
+      body.print-correction .comment-editor-card,
+      body.print-correction #tabPreviewContent,
+      body.print-correction #tabOverviewContent,
+      body.print-correction #tabCorrectionContent,
+      body.print-correction #tabReceiptContent,
+      body.print-correction #tabEditgradeContent,
+      body.print-correction #singlePrintCard,
+      body.print-correction #batchPrintContainer,
+      body.print-correction .no-print {
+        display: none !important;
+      }
+
+      body.print-receipt {
+        background: white !important;
+      }
+      body.print-receipt #receiptPrintContainer {
+        display: block !important;
+      }
+      body.print-receipt #correctionPrintContainer {
+        display: none !important;
+      }
+      body.print-receipt .official-doc-page {
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        padding: 4mm 6mm !important;
+        max-width: 194mm !important;
+        page-break-inside: auto !important;
+      }
+      body.print-receipt .app-header,
+      body.print-receipt .app-main,
+      body.print-receipt .sidebar,
+      body.print-receipt .preview-toolbar,
+      body.print-receipt .stats-grid,
+      body.print-receipt .comment-editor-card,
+      body.print-receipt #tabPreviewContent,
+      body.print-receipt #tabOverviewContent,
+      body.print-receipt #tabCorrectionContent,
+      body.print-receipt #tabReceiptContent,
+      body.print-receipt #tabEditgradeContent,
+      body.print-receipt #singlePrintCard,
+      body.print-receipt #batchPrintContainer,
+      body.print-receipt .no-print {
+        display: none !important;
+      }
+
+      body:not(.print-correction) #correctionPrintContainer,
+      body:not(.print-receipt) #receiptPrintContainer {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- แถบส่วนหัว -->
+  <!-- แถบส่วนหัวแบบคลีนไม่มีปุ่มรกรุงรัง (เหมือนในภาพตัวอย่าง) -->
   <header class="app-header no-print">
     <div class="header-content">
       <div class="brand">
@@ -1039,103 +1501,80 @@
           <p>โรงเรียนบ้านสันดาบ สำนักงานเขตพื้นที่การศึกษาประถมศึกษาสมุทรสาคร (ปีการศึกษา 2569)</p>
         </div>
       </div>
-      <div class="header-actions">
-        <button class="btn btn-cloud btn-sm" onclick="syncFromCloud()" id="btnSync">
-          🔄 ซิงค์การประเมินจาก BSD-EVAL
-        </button>
-        <button class="btn btn-primary" onclick="printCurrentStudent()">
-          🖨 พิมพ์ใบแจ้งผลการเรียน (คนนี้)
-        </button>
-        <button class="btn btn-success" onclick="printAllStudentsInClass()">
-          📑 พิมพ์ทั้งห้องพร้อมกัน (<span id="btnBatchCount">0</span> คน)
-        </button>
-      </div>
     </div>
   </header>
 
-  <!-- หน้าจอหลัก -->
+  <!-- หน้าจอหลัก 3 คอลัมน์ -->
   <main class="app-main">
-    
-    <!-- แถบด้านข้าง -->
-    <aside class="sidebar no-print">
-      <div class="sidebar-section">
-        <div class="sidebar-title">
-          <span>เลือกระดับชั้นเรียน</span>
-          <span class="badge badge-primary" id="totalClassBadge">6 ระดับชั้น</span>
+
+    <!-- คอลัมน์ซ้าย: เมนูระบบ ปพ.5 -->
+    <aside class="left-nav-sidebar no-print">
+      <div class="system-title-card">
+        <span class="system-title-icon">📋</span>
+        <span class="system-title-text">ระบบ ปพ.5</span>
+      </div>
+
+      <div class="nav-menu-box">
+        <div class="nav-menu-header">
+          <span style="display: flex; align-items: center; gap: 0.4rem;">
+            <span>🖨</span> <span>เมนูระบบ ปพ.5</span>
+          </span>
+          <span style="font-size: 0.8rem;">▼</span>
         </div>
-        <select id="classSelect" class="class-select" onchange="onClassChange()">
-          <!-- ตัวเลือกระดับชั้น -->
-        </select>
-        <input type="text" id="searchStudent" class="search-box" placeholder="🔍 ค้นหาด้วยชื่อ สกุล หรือเลขที่นักเรียน..." oninput="filterStudents()">
-      </div>
-
-      <div class="sidebar-section" style="padding-bottom: 0.5rem; background: var(--gray-50);">
-        <div class="sidebar-title" style="margin-bottom: 0;">
-          <span>รายชื่อนักเรียน (<span id="studentListCount">0</span> คน)</span>
+        <div class="nav-menu-list">
+          <button type="button" class="nav-menu-item active" id="leftMenuPreview" onclick="switchTab('preview')">
+            <span class="nav-icon">📄</span> <span>ใบแจ้งผลการเรียน (A4)</span>
+          </button>
+          <button type="button" class="nav-menu-item" id="leftMenuOverview" onclick="switchTab('overview')">
+            <span class="nav-icon">📊</span> <span>ตารางสรุปคะแนน</span>
+          </button>
+          <button type="button" class="nav-menu-item" id="leftMenuCorrection" onclick="switchTab('correction')">
+            <span class="nav-icon">✏️</span> <span>คำร้องขอแก้ไขผลการเรียน</span>
+          </button>
+          <button type="button" class="nav-menu-item" id="leftMenuReceipt" onclick="switchTab('receipt')">
+            <span class="nav-icon">📋</span> <span>แบบฟอร์มการรับผลการเรียน</span>
+          </button>
+          <button type="button" class="nav-menu-item" id="leftMenuEditgrade" onclick="switchTab('editgrade')">
+            <span class="nav-icon">📝</span> <span>แก้ไขผลการเรียน</span>
+          </button>
+          <button type="button" class="nav-menu-item" onclick="printCurrentStudent()">
+            <span class="nav-icon">🖨</span> <span>พิมพ์ใบแจ้งการเรียน</span>
+          </button>
+          <button type="button" class="nav-menu-item" onclick="syncFromCloud()">
+            <span class="nav-icon">📊</span> <span>องค์ประเมินจาก BSD-EVAL</span>
+          </button>
         </div>
-      </div>
-
-      <div class="student-list" id="studentList">
-        <!-- รายชื่อนักเรียน -->
-      </div>
-
-      <div class="batch-print-box">
-        <button class="btn btn-success" style="width: 100%;" onclick="printAllStudentsInClass()">
-          🖨 สั่งพิมพ์ใบแจ้งผลฯ ทั้งห้อง
-        </button>
       </div>
     </aside>
 
-    <!-- พื้นที่แสดงผลเนื้อหา -->
+    <!-- คอลัมน์กลาง: เนื้อหาแยกตามหัวข้อเมนูที่เลือก -->
     <section class="content-area">
 
-      <!-- แถบเครื่องมือด้านบน -->
-      <div class="preview-toolbar no-print">
-        <div class="toolbar-left">
-          <button class="tab-btn active" id="tabPreview" onclick="switchTab('preview')">📄 ตัวอย่างใบแจ้งผลการเรียน (แบบปรับใหม่ A4)</button>
-          <button class="tab-btn" id="tabOverview" onclick="switchTab('overview')">📊 ตารางสรุปคะแนน ปพ.5 ทั้งชั้นเรียน</button>
-        </div>
-        <div class="toolbar-right" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-          <select id="quickStudentSelect" onchange="selectStudent(parseInt(this.value))" style="font-family: inherit; font-size: 0.85rem; padding: 4px 8px; border-radius: 6px; border: 1.5px solid #2563eb; background: white; color: #1e3a8a; font-weight: 600; cursor: pointer;" title="เลือกนักเรียนรายบุคคลเพื่อดูและพิมพ์">
-            <!-- รายชื่อนักเรียนรายบุคคล -->
-          </select>
-          <button class="btn btn-outline btn-sm" style="color: var(--gray-700); border-color: var(--gray-300);" onclick="nextStudent(-1)" title="นักเรียนคนก่อนหน้า">
-            ◀ คนก่อนหน้า
-          </button>
-          <button class="btn btn-outline btn-sm" style="color: var(--gray-700); border-color: var(--gray-300);" onclick="nextStudent(1)" title="นักเรียนคนถัดไป">
-            คนถัดไป ▶
-          </button>
-          <button class="btn btn-primary" onclick="printCurrentStudent()" style="font-weight: 700; padding: 5px 16px; box-shadow: 0 2px 4px rgba(37,99,235,0.3);" title="สั่งพิมพ์ใบแจ้งผลการเรียนคนนี้ (พอดี 1 หน้า A4)">
-            🖨 พิมพ์คนนี้ (A4 1 หน้า)
-          </button>
-        </div>
-      </div>
-
-      <!-- สรุปสถิติประจำห้อง -->
-      <div class="stats-grid no-print">
-        <div class="stat-card">
-          <div class="stat-title">ระดับชั้นเรียน</div>
-          <div class="stat-value" id="statClass" style="font-size: 1.15rem; color: var(--primary);">-</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">จำนวนนักเรียนทั้งหมด</div>
-          <div class="stat-value" id="statTotalStudents">0 คน</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">คะแนนเฉลี่ยทั้งห้อง (เต็ม 50 คะแนน)</div>
-          <div class="stat-value" id="statClassAvg">0.00</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">แหล่งข้อมูลการประเมิน ข้อ 3-5</div>
-          <div class="stat-value" id="statEvalSource" style="font-size: 1.05rem; color: var(--secondary);">เชื่อมโยงผลประเมินแล้ว</div>
-        </div>
-      </div>
-
-      <!-- แท็บที่ 1: ตัวอย่างใบแจ้งผลการเรียน -->
+      <!-- แท็บที่ 1: ตัวอย่างใบแจ้งผลการเรียน (A4) -->
       <div id="tabPreviewContent">
 
+        <!-- สรุปสถิติประจำห้อง 4 การ์ด (แสดงเฉพาะในหน้าใบแจ้งผลการเรียน) -->
+        <div class="stats-grid no-print" style="margin-bottom: 0.85rem;">
+          <div class="stat-card">
+            <div class="stat-title">ระดับชั้นเรียน</div>
+            <div class="stat-value" id="statClass" style="font-size: 1.15rem; color: #be185d; font-weight: 800;">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">จำนวนนักเรียนทั้งหมด</div>
+            <div class="stat-value" id="statTotalStudents" style="font-weight: 800;">0 คน</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">คะแนนเฉลี่ยทั้งห้อง (เต็ม 50 คะแนน)</div>
+            <div class="stat-value" id="statClassAvg" style="font-weight: 800;">0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">แหล่งข้อมูลการประเมิน ข้อ 3-5</div>
+            <div class="stat-value" id="statEvalSource" style="font-size: 1.05rem; color: #059669; font-weight: 700;">เชื่อมโยงผลประเมินแล้ว</div>
+          </div>
+        </div>
+
         <!-- กล่องพิมพ์ความคิดเห็น/ข้อเสนอแนะของครูประจำชั้น (เด่นชัด สะดวก บันทึกอัตโนมัติ) -->
-        <div class="comment-editor-card no-print">
+        <div class="comment-editor-card no-print" style="margin-bottom: 0.85rem;">
           <div class="comment-editor-header">
             <div>
               <span style="font-weight: 700; font-size: 1.05rem; color: #1e3a8a;">✏️ ช่องพิมพ์ ความคิดเห็น/ ข้อเสนอแนะของครูประจำชั้น (ข้อ 6)</span>
@@ -1172,16 +1611,218 @@
       <!-- แท็บที่ 2: ตารางสรุปภาพรวมทั้งห้อง -->
       <div id="tabOverviewContent" style="display: none;">
         <div class="table-container">
-          <h2 style="font-family: 'Prompt'; font-size: 1.1rem; margin-bottom: 1rem; color: var(--gray-800);">
-            ตารางสรุปผลสัมฤทธิ์ทางการเรียน ผลการประเมิน (BSD-EVAL) และเวลาเรียน ภาคเรียนที่ 1
-          </h2>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h2 style="font-family: 'Prompt'; font-size: 1.1rem; color: #881337; font-weight: 700; margin: 0;">
+              📊 ตารางสรุปผลสัมฤทธิ์ทางการเรียน ผลการประเมิน (BSD-EVAL) และเวลาเรียน ภาคเรียนที่ 1
+            </h2>
+            <button class="btn btn-sm" onclick="openStudentScoreModal()" style="background-color: #e11d48; color: white;">
+              ✏️ แก้ไขคะแนนในระบบ
+            </button>
+          </div>
           <table class="data-table" id="overviewTable">
             <!-- เรนเดอร์ข้อมูลตาราง -->
           </table>
         </div>
       </div>
 
+      <!-- แท็บที่ 3: คำร้องขอแก้ไขผลการเรียน (แสดงเฉพาะนักเรียนที่ไม่ผ่านเกณฑ์ และรวมทุกวิชาที่ไม่ผ่านในฉบับเดียว) -->
+      <div id="tabCorrectionContent" style="display: none;">
+        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.75rem; padding: 0.75rem 1rem; border-color: #fbcfe8;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+            <div>
+              <div style="font-family: 'Prompt'; font-size: 1.05rem; color: #be185d; font-weight: 700;">
+                📄 แบบคำร้องขออนุมัติแก้ไขผลการเรียน (ปพ.5) — เฉพาะนักเรียนที่ไม่ผ่านเกณฑ์
+              </div>
+              <div style="font-size: 0.84rem; color: #64748b;" id="corrFailingCountSummary">
+                แสดงรายวิชาที่ไม่ผ่านเกณฑ์ทั้งหมดของนักเรียนในเอกสารฉบับเดียวกัน พร้อมชื่อครูประจำวิชาลงนามรับรอง
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+              <select id="corrDocClassSelect" class="class-select-pink" style="min-width: 120px; padding: 0.35rem 0.6rem;" onchange="onCorrDocClassChange(this.value)"></select>
+              <select id="corrDocStudentSelect" class="class-select-pink" style="min-width: 240px; padding: 0.35rem 0.6rem;" onchange="onCorrDocStudentChange(this.value)"></select>
+              <button class="btn btn-outline-pink btn-sm" onclick="switchTab('editgrade')">
+                📝 แก้ไขคะแนนวิชาที่ไม่ผ่าน
+              </button>
+              <button class="btn btn-pink-solid btn-sm" onclick="printCorrectionForm()" style="padding: 0.4rem 0.9rem;">
+                🖨 พิมพ์คนนี้ (A4)
+              </button>
+              <button class="btn btn-sm" onclick="printAllFailingCorrectionForms()" style="background: #881337; color: white; padding: 0.4rem 0.9rem; font-weight: 600;">
+                🖨 พิมพ์ทั้งห้อง (เฉพาะคนไม่ผ่าน)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ตัวอย่างเอกสารคำร้องขอแก้ไขผลการเรียน A4 ขึ้นด้านบนช่องว่างทันที -->
+        <div class="report-preview-wrapper" style="margin-top: 0;">
+          <div class="official-doc-page" id="correctionDocPreview">
+            <!-- Rendered via JS updateCorrectionPreview() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- แท็บที่ 4: แบบฟอร์มการรับผลการเรียน (แสดงเฉพาะส่วนแบบฟอร์มการรับผลการเรียน ไม่ปนกับส่วนอื่น) -->
+      <div id="tabReceiptContent" style="display: none;">
+        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.75rem; padding: 0.65rem 1rem; border-color: #fbcfe8;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;">
+            <div>
+              <h3 style="font-family: 'Prompt'; font-size: 1.05rem; color: #be185d; font-weight: 700; margin: 0;">
+                📋 บัญชีลงนามการรับใบแจ้งผลการเรียน (ปพ.5)
+              </h3>
+            </div>
+            <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+              <span style="font-weight: 600; font-size: 0.9rem; color: #881337;">ชั้นเรียน:</span>
+              <select id="receiptClassSelect" class="class-select-pink" style="min-width: 140px;" onchange="renderReceiptSheet()"></select>
+              <span style="font-weight: 600; font-size: 0.9rem; color: #881337;">วันที่นัดรับ:</span>
+              <input type="text" id="receiptDateInput" class="search-box-pink" style="width: 150px; margin-top: 0;" value="26 ตุลาคม 2569" oninput="renderReceiptSheet()">
+              <button class="btn btn-pink-solid btn-sm" onclick="printReceiptForm()" style="padding: 0.45rem 1rem;">
+                🖨 พิมพ์แบบฟอร์มลงนามรับ (A4)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ตัวอย่างเอกสารบัญชีลงนามรับผลการเรียน A4 -->
+        <div class="report-preview-wrapper" style="margin-top: 0;">
+          <div class="official-doc-page" id="receiptDocPreview">
+            <!-- Rendered via JS renderReceiptSheet() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- แท็บที่ 5: แก้ไขผลการเรียน (แสดงเฉพาะนักเรียนที่ไม่ผ่านเกณฑ์ และแสดงทุกวิชาที่ไม่ผ่านพร้อมครูประจำวิชา) -->
+      <div id="tabEditgradeContent" style="display: none;">
+        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.85rem; border-color: #fbcfe8; padding: 1.25rem;">
+          <div style="margin-bottom: 0.85rem;">
+            <h3 style="font-family: 'Prompt'; font-size: 1.2rem; color: #be185d; font-weight: 700; margin: 0 0 0.25rem 0;">
+              ✏️ แบบคำร้องขออนุมัติแก้ไขผลการเรียน (ปพ.5)
+            </h3>
+            <p style="font-size: 0.9rem; color: #64748b; margin: 0 0 0.85rem 0;">
+              แสดงเฉพาะนักเรียนที่ไม่ผ่านเกณฑ์ (คะแนนรวมต่ำกว่า 25 คะแนน) พร้อมรายวิชาที่ไม่ผ่านทั้งหมดและชื่อครูประจำวิชา
+            </p>
+            <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+              <button class="btn btn-outline-pink btn-sm" onclick="openStudentScoreModal()" style="padding: 0.45rem 0.9rem; font-size: 0.9rem;" title="เปิดตารางแก้ไขคะแนนทั้ง 15 วิชา">
+                ✏️ แก้ไขคะแนนทั้ง 15 วิชา
+              </button>
+              <button class="btn btn-warning btn-sm" onclick="saveGradeCorrection()" style="background-color: #ea580c; color: white; padding: 0.45rem 1rem; font-size: 0.9rem; font-weight: 600;">
+                💾 บันทึกคะแนนลงระบบทันที
+              </button>
+              <button class="btn btn-outline-pink btn-sm" onclick="switchTab('correction')" style="padding: 0.45rem 1rem; font-size: 0.9rem;">
+                📄 ดูตัวอย่างใบคำร้อง (A4)
+              </button>
+              <button class="btn btn-pink-solid btn-sm" onclick="printCorrectionForm()" style="padding: 0.45rem 1.1rem; font-size: 0.9rem;">
+                🖨 สั่งพิมพ์แบบฟอร์มนี้ (A4/PDF)
+              </button>
+            </div>
+          </div>
+
+          <!-- ตัวเลือกแบบฟอร์ม (แสดงเฉพาะนักเรียนที่ไม่ผ่านเกณฑ์) -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.85rem; background: #fff1f2; padding: 1rem; border-radius: 10px; border: 1px solid #fecdd3;">
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เลือกระดับชั้นเรียน:</label>
+              <select id="corrClassSelect" class="class-select-pink" onchange="onCorrClassChange()"></select>
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เลือกนักเรียน (เฉพาะคนไม่ผ่านเกณฑ์):</label>
+              <select id="corrStudentSelect" class="class-select-pink" onchange="onCorrStudentChange()"></select>
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">วันที่ยื่นคำร้อง:</label>
+              <input type="text" id="corrDate" class="search-box-pink" style="margin-top: 0; background: white;" value="26 ตุลาคม 2569" oninput="updateCorrectionPreview()">
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เหตุผลความจำเป็นในการขอแก้ไข:</label>
+              <select id="corrReasonPreset" class="class-select-pink" onchange="onCorrReasonPresetChange(this.value)">
+                <option value="นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข">นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข</option>
+                <option value="กรอกคะแนนผิดพลาดจากการรวมคะแนน">กรอกคะแนนผิดพลาดจากการรวมคะแนน</option>
+                <option value="บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด">บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด</option>
+                <option value="ตรวจทานข้อสอบใหม่พบข้อผิดพลาด">ตรวจทานข้อสอบใหม่พบข้อผิดพลาด</option>
+                <option value="other">อื่นๆ (ระบุเอง)</option>
+              </select>
+              <input type="text" id="corrReasonCustom" class="search-box-pink" style="display: none; margin-top: 4px; background: white;" placeholder="ระบุเหตุผลอื่นๆ..." oninput="updateCorrectionPreview()">
+            </div>
+          </div>
+
+          <!-- รายการวิชาที่ไม่ผ่านเกณฑ์ทั้งหมดของนักเรียนคนนี้ (แสดงทุกวิชาที่ไม่ผ่านพร้อมชื่อครูประจำวิชา) -->
+          <div id="corrFailingSubjectsContainer" style="margin-top: 0.85rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <!-- Rendered dynamically by renderFailingSubjectsEditor() -->
+          </div>
+        </div>
+      </div>
+
     </section>
+
+    <!-- คอลัมน์ขวา: การเลือกนักเรียนและแถบควบคุม -->
+    <aside class="right-control-sidebar no-print">
+      <!-- แถบปุ่มลัดไอคอนด้านบน -->
+      <div class="right-tab-bar">
+        <button type="button" class="right-tab-pill active" id="rightTabPreview" onclick="switchTab('preview')" title="ใบแจ้งผลการเรียน (A4)">
+          📄 ใบแจ้งผลการเรียน (A4)
+        </button>
+        <button type="button" class="right-icon-btn" id="rightTabOverview" onclick="switchTab('overview')" title="ตารางสรุปคะแนน">
+          📊
+        </button>
+        <button type="button" class="right-icon-btn" id="rightTabCorrection" onclick="switchTab('correction')" title="คำร้องขอแก้ไขผลการเรียน">
+          ✏️
+        </button>
+        <button type="button" class="right-icon-btn" id="rightTabReceipt" onclick="switchTab('receipt')" title="แบบฟอร์มการรับผลการเรียน">
+          📋
+        </button>
+      </div>
+
+      <!-- ดร็อปดาวน์เลือกนักเรียนคนปัจจุบัน -->
+      <div style="margin-top: 0.65rem;">
+        <select id="quickStudentSelect" class="quick-student-select-pink" onchange="selectStudent(parseInt(this.value))">
+          <!-- ตัวเลือกนักเรียนสร้างโดย JS -->
+        </select>
+      </div>
+
+      <!-- ปุ่มคนก่อนหน้า / ถัดไป -->
+      <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+        <button type="button" class="btn btn-outline-pink btn-sm" style="flex: 1;" onclick="nextStudent(-1)">
+          ◀ คนก่อนหน้า
+        </button>
+        <button type="button" class="btn btn-outline-pink btn-sm" style="flex: 1;" onclick="nextStudent(1)">
+          คนถัดไป ▶
+        </button>
+      </div>
+
+      <!-- ปุ่มหลักพิมพ์คนนี้ -->
+      <div style="margin-top: 0.65rem;">
+        <button type="button" class="btn btn-pink-solid" style="width: 100%; font-weight: 700; padding: 0.65rem 1rem;" onclick="printCurrentStudent()">
+          🖨 พิมพ์คนนี้ (A4 1 หน้า)
+        </button>
+      </div>
+
+      <!-- เลือกระดับชั้นเรียน -->
+      <div class="sidebar-pink-card" style="margin-top: 0.85rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+          <span style="font-weight: 700; color: #881337; font-size: 0.95rem; font-family: 'Prompt', sans-serif;">เลือกระดับชั้นเรียน</span>
+          <span class="badge badge-pink" id="totalClassBadge">6 ระดับชั้น</span>
+        </div>
+        <select id="classSelect" class="class-select-pink" onchange="onClassChange()">
+          <!-- ตัวเลือกระดับชั้น -->
+        </select>
+      </div>
+
+      <!-- รายชื่อนักเรียนในห้อง -->
+      <div class="sidebar-pink-card" style="margin-top: 0.85rem; display: flex; flex-direction: column;">
+        <div style="margin-bottom: 0.4rem;">
+          <span style="font-weight: 700; color: #881337; font-size: 0.95rem; font-family: 'Prompt', sans-serif;">รายชื่อนักเรียน (<span id="studentListCount">0</span> คน)</span>
+        </div>
+        <input type="text" id="searchStudent" class="search-box-pink" placeholder="🔍 ค้นหาด้วยชื่อ สกุล หรือเลขที่นักเรียน..." oninput="filterStudents()">
+        <div class="student-list" id="studentList" style="max-height: 380px; overflow-y: auto; margin-top: 0.5rem; padding: 0.2rem;">
+          <!-- รายชื่อนักเรียนสร้างโดย JS -->
+        </div>
+      </div>
+
+      <!-- ปุ่มใหญ่พิมพ์ทั้งห้อง -->
+      <div style="margin-top: 0.85rem;">
+        <button type="button" class="btn btn-pink-solid" style="width: 100%; font-weight: 700; padding: 0.75rem 1rem; font-size: 1.05rem;" onclick="printAllStudentsInClass()">
+          🖨 พิมพ์ใบแจ้งผลฯ ทั้งห้อง
+        </button>
+      </div>
+    </aside>
   </main>
 
   <!-- คอนเทนเนอร์สำหรับพิมพ์ทุกคนพร้อมกัน -->
@@ -1211,13 +1852,26 @@
       setTimeout(() => { box.style.display = 'none'; }, 3000);
     }
 
-    // จัดการความคิดเห็นครูประจำชั้นใน localStorage
+    // จัดการความคิดเห็นครูประจำชั้นใน localStorage และฐานข้อมูลเริ่มต้น
     function getTeacherComment(studentId) {
       try {
-        return localStorage.getItem('teacher_comment_' + studentId) || '';
-      } catch (e) {
-        return '';
-      }
+        const local = localStorage.getItem('teacher_comment_' + studentId);
+        if (local !== null && local !== undefined && local.trim() !== '') {
+          return local;
+        }
+      } catch (e) {}
+
+      // ถ้าใน localStorage ยังไม่มี ให้ดึงจากข้อมูลเริ่มต้นใน PORPHOR_DATA
+      try {
+        const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+        for (const cls of classesList) {
+          const st = cls.Students?.find(s => String(s.StudentId) === String(studentId));
+          if (st && st.TeacherComment) {
+            return st.TeacherComment;
+          }
+        }
+      } catch (e) {}
+      return '';
     }
 
     function saveTeacherComment(studentId, commentText) {
@@ -1367,6 +2021,180 @@
       showToast(`บันทึก ${label} เป็น "${rating}" เรียบร้อย`);
     }
 
+    // ข้อมูลรายวิชา (รหัสวิชา, ชื่อวิชา, ครูประจำวิชา) ตามระดับชั้น ป.1 - ป.6 (ดึงจากไฟล์ รายวิชาเรียน.xlsx และตรวจสอบรหัสวิชา ป.4 ถูกต้องครบถ้วน)
+    const SUBJECT_CATALOG_BY_CLASS = {
+      0: { // ป.1
+        1:  { Code: "ท  11101", Name: "ภาษาไทย", Teacher: "นางสาวสุวรรณี  นิลประดับ" },
+        2:  { Code: "ค  11101", Name: "คณิตศาสตร์", Teacher: "นายณัฏฐ์  ไตรพุทธมาศ" },
+        3:  { Code: "ว  11101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        4:  { Code: "ส  11101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        5:  { Code: "ส  11102", Name: "ประวัติศาสตร์", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        6:  { Code: "พ  11101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  11101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  11101", Name: "การงานอาชีพ", Teacher: "นางสาวนิศารัตน์  ฉิมขันธ์" },
+        9:  { Code: "อ  11101", Name: "ภาษาอังกฤษ", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        10: { Code: "ส  11231", Name: "หน้าที่พลเมือง 1", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        11: { Code: "อ  11201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 1", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        12: { Code: "ว  11201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  11201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        14: { Code: "ส  11202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  11201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุวรรณี  นิลประดับ" }
+      },
+      1: { // ป.2
+        1:  { Code: "ท  12101", Name: "ภาษาไทย", Teacher: "นางสาวนิศารัตน์  ฉิมขันธ์" },
+        2:  { Code: "ค  12101", Name: "คณิตศาสตร์", Teacher: "นางสาวนิศารัตน์  ฉิมขันธ์" },
+        3:  { Code: "ว  12101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        4:  { Code: "ส  12101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        5:  { Code: "ส  12102", Name: "ประวัติศาสตร์", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        6:  { Code: "พ  12101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  12101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  12101", Name: "การงานอาชีพ", Teacher: "นางสาวนิศารัตน์  ฉิมขันธ์" },
+        9:  { Code: "อ  12101", Name: "ภาษาอังกฤษ", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        10: { Code: "ส  12232", Name: "หน้าที่พลเมือง 2", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        11: { Code: "อ  12201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 2", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        12: { Code: "ว  12201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  12201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        14: { Code: "ส  12202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  12201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุวรรณี  นิลประดับ" }
+      },
+      2: { // ป.3
+        1:  { Code: "ท  13101", Name: "ภาษาไทย", Teacher: "นางสาวสุวรรณี  นิลประดับ" },
+        2:  { Code: "ค  13101", Name: "คณิตศาสตร์", Teacher: "นางสาวนิศารัตน์  ฉิมขันธ์" },
+        3:  { Code: "ว  13101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        4:  { Code: "ส  13101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        5:  { Code: "ส  13102", Name: "ประวัติศาสตร์", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        6:  { Code: "พ  13101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  13101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  13101", Name: "การงานอาชีพ", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        9:  { Code: "อ  13101", Name: "ภาษาอังกฤษ", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        10: { Code: "ส  13233", Name: "หน้าที่พลเมือง 3", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        11: { Code: "อ  13201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 3", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        12: { Code: "ว  13201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  13201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        14: { Code: "ส  13202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  13201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุวรรณี  นิลประดับ" }
+      },
+      3: { // ป.4
+        1:  { Code: "ท  14101", Name: "ภาษาไทย", Teacher: "นางสาวสุวรรณี  นิลประดับ" },
+        2:  { Code: "ค  14101", Name: "คณิตศาสตร์", Teacher: "นายณัฏฐ์  ไตรพุทธมาศ" },
+        3:  { Code: "ว  14101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นางสาวสุจิตตรา  ปางสุข" },
+        4:  { Code: "ส  14101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายธนโชค  ขุนพิลึก" },
+        5:  { Code: "ส  14102", Name: "ประวัติศาสตร์", Teacher: "นายธนโชค  ขุนพิลึก" },
+        6:  { Code: "พ  14101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  14101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  14101", Name: "การงานอาชีพ", Teacher: "นางสาวชลลดา  ซ่อนกลิ่น" },
+        9:  { Code: "อ  14101", Name: "ภาษาอังกฤษ", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        10: { Code: "ส  14234", Name: "หน้าที่พลเมือง 4", Teacher: "นายธนโชค  ขุนพิลึก" },
+        11: { Code: "อ  14201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 4", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        12: { Code: "ว  14201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  14201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายธนโชค  ขุนพิลึก" },
+        14: { Code: "ส  14202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  14201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุจิตตรา  ปางสุข" }
+      },
+      4: { // ป.5
+        1:  { Code: "ท  15101", Name: "ภาษาไทย", Teacher: "นางสาวสุจิตตรา  ปางสุข" },
+        2:  { Code: "ค  15101", Name: "คณิตศาสตร์", Teacher: "นายณัฏฐ์  ไตรพุทธมาศ" },
+        3:  { Code: "ว  15101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นางสาวสุจิตตรา  ปางสุข" },
+        4:  { Code: "ส  15101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายธนโชค  ขุนพิลึก" },
+        5:  { Code: "ส  15102", Name: "ประวัติศาสตร์", Teacher: "นายธนโชค  ขุนพิลึก" },
+        6:  { Code: "พ  15101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  15101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  15101", Name: "การงานอาชีพ", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        9:  { Code: "อ  15101", Name: "ภาษาอังกฤษ", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        10: { Code: "ส  15235", Name: "หน้าที่พลเมือง 5", Teacher: "นายธนโชค  ขุนพิลึก" },
+        11: { Code: "อ  15201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 5", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        12: { Code: "ว  15201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  15201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายธนโชค  ขุนพิลึก" },
+        14: { Code: "ส  15202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  15201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุจิตตรา  ปางสุข" }
+      },
+      5: { // ป.6
+        1:  { Code: "ท  16101", Name: "ภาษาไทย", Teacher: "นางสาวสุจิตตรา  ปางสุข" },
+        2:  { Code: "ค  16101", Name: "คณิตศาสตร์", Teacher: "นายณัฏฐ์  ไตรพุทธมาศ" },
+        3:  { Code: "ว  16101", Name: "วิทยาศาสตร์และเทคโนโลยี", Teacher: "นางสาวสุจิตตรา  ปางสุข" },
+        4:  { Code: "ส  16101", Name: "สังคมศึกษา ศาสนาและวัฒนธรรม", Teacher: "นายธนโชค  ขุนพิลึก" },
+        5:  { Code: "ส  16102", Name: "ประวัติศาสตร์", Teacher: "นายธนโชค  ขุนพิลึก" },
+        6:  { Code: "พ  16101", Name: "สุขศึกษาและพลศึกษา", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        7:  { Code: "ศ  16101", Name: "ศิลปะ", Teacher: "นายคเณศ  ชุนสิทธิ์" },
+        8:  { Code: "ง  16101", Name: "การงานอาชีพ", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        9:  { Code: "อ  16101", Name: "ภาษาอังกฤษ", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        10: { Code: "ส  16236", Name: "หน้าที่พลเมือง 6", Teacher: "นายธนโชค  ขุนพิลึก" },
+        11: { Code: "อ  16201", Name: "ภาษาอังกฤษเพื่อการสื่อสาร 6", Teacher: "นางสาววรัญญา  พิศแสนสุวรรณ" },
+        12: { Code: "ว  16201", Name: "เทคโนโลยีเพื่อการเรียนรู้", Teacher: "นายสุโลธร  ธนาวิชิตฤกษ์" },
+        13: { Code: "ส  16201", Name: "เศรษฐกิจพอเพียงและภูมิปัญญาท้องถิ่น", Teacher: "นายธนโชค  ขุนพิลึก" },
+        14: { Code: "ส  16202", Name: "ต้านทุจริตศึกษา", Teacher: "นายพิศณุ  เพียสีนุ้ย" },
+        15: { Code: "ท  16201", Name: "ภาษาไทยเพิ่มเติม", Teacher: "นางสาวสุจิตตรา  ปางสุข" }
+      }
+    };
+
+    function getSubjectTeacher(classIdx, subIndex) {
+      const clsMap = SUBJECT_CATALOG_BY_CLASS[classIdx] || SUBJECT_CATALOG_BY_CLASS[0];
+      return clsMap[subIndex]?.Teacher || (PORPHOR_DATA[classIdx]?.Teacher1 || "");
+    }
+
+    function snapshotOriginalScores() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      classesList.forEach((cls, cIdx) => {
+        const clsCat = SUBJECT_CATALOG_BY_CLASS[cIdx];
+        if (Array.isArray(cls.Subjects) && clsCat) {
+          cls.Subjects.forEach(sub => {
+            const meta = clsCat[sub.Index];
+            if (meta) {
+              sub.Code = meta.Code;
+              sub.Name = meta.Name;
+              sub.Teacher = meta.Teacher;
+            }
+          });
+        }
+        if (!cls.Students) return;
+        cls.Students.forEach(st => {
+          if (!st.Scores) return;
+          st.Scores.forEach(sc => {
+            const meta = clsCat ? clsCat[sc.Index] : null;
+            if (meta) {
+              sc.Code = meta.Code;
+              sc.Name = meta.Name;
+              sc.Teacher = meta.Teacher;
+            } else {
+              sc.Teacher = getSubjectTeacher(cIdx, sc.Index);
+            }
+            if (sc.OrigCollect === undefined) sc.OrigCollect = sc.Collect;
+            if (sc.OrigExam === undefined) sc.OrigExam = sc.Exam;
+            if (sc.OrigTotal === undefined) sc.OrigTotal = sc.Total;
+          });
+        });
+      });
+    }
+
+    function isSubjectFailing(sc) {
+      const origTot = parseFloat(sc.OrigTotal !== undefined ? sc.OrigTotal : sc.Total);
+      const currTot = parseFloat(sc.Total);
+      return (!isNaN(origTot) && origTot < 25) || (!isNaN(currTot) && currTot < 25);
+    }
+
+    function getFailingSubjects(student) {
+      if (!student || !Array.isArray(student.Scores)) return [];
+      return student.Scores.filter(sc => isSubjectFailing(sc));
+    }
+
+    function isStudentFailing(student) {
+      return getFailingSubjects(student).length > 0;
+    }
+
+    function getFailingStudentsOfClass(classIdx) {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      if (!cls || !Array.isArray(cls.Students)) return [];
+      const result = [];
+      cls.Students.forEach((st, idx) => {
+        const failSubs = getFailingSubjects(st);
+        if (failSubs.length > 0) {
+          result.push({ student: st, stIdx: idx, failingSubjects: failSubs });
+        }
+      });
+      return result;
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       if (typeof PORPHOR_DATA !== 'undefined' && PORPHOR_DATA && !Array.isArray(PORPHOR_DATA) && Array.isArray(PORPHOR_DATA.value)) {
         PORPHOR_DATA = PORPHOR_DATA.value;
@@ -1375,9 +2203,49 @@
         alert("ไม่พบข้อมูล PORPHOR_DATA กรุณาตรวจสอบไฟล์ data.js");
         return;
       }
+      snapshotOriginalScores();
+      applyStoredCustomScores();
       populateClassSelect();
       loadClass(0);
     });
+
+    function applyStoredCustomScores() {
+      try {
+        const raw = localStorage.getItem('STUDENT_CUSTOM_SCORES');
+        if (!raw) return;
+        const customMap = JSON.parse(raw);
+        const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+        classesList.forEach(cls => {
+          if (!cls.Students) return;
+          cls.Students.forEach(st => {
+            if (customMap[st.StudentId]) {
+              const custom = customMap[st.StudentId];
+              const savedList = custom.Scores || custom.Subjects;
+              if (Array.isArray(savedList)) {
+                savedList.forEach((sub, sIdx) => {
+                  if (st.Scores && st.Scores[sIdx]) {
+                    st.Scores[sIdx].Collect = sub.Collect;
+                    st.Scores[sIdx].Exam = sub.Exam;
+                    st.Scores[sIdx].Total = sub.Total;
+                  }
+                  if (st.Subjects && st.Subjects[sIdx]) {
+                    st.Subjects[sIdx].Collect = sub.Collect;
+                    st.Subjects[sIdx].Exam = sub.Exam;
+                    st.Subjects[sIdx].Total = sub.Total;
+                  }
+                });
+              }
+              if (custom.TotalCollect !== undefined) st.TotalCollect = custom.TotalCollect;
+              if (custom.TotalExam !== undefined) st.TotalExam = custom.TotalExam;
+              if (custom.TotalScore !== undefined) st.TotalScore = custom.TotalScore;
+              if (custom.AverageScore !== undefined) st.AverageScore = custom.AverageScore;
+            }
+          });
+        });
+      } catch (e) {
+        console.error('Failed to load custom scores from storage', e);
+      }
+    }
 
     function populateClassSelect() {
       const select = document.getElementById('classSelect');
@@ -1404,10 +2272,16 @@
     function loadClass(clsIdx) {
       currentClassIndex = clsIdx;
       const cls = PORPHOR_DATA[clsIdx];
+      const classSelectEl = document.getElementById('classSelect');
+      if (classSelectEl && parseInt(classSelectEl.value, 10) !== clsIdx) {
+        classSelectEl.value = clsIdx;
+      }
 
       document.getElementById('statClass').textContent = cls.ClassName;
       document.getElementById('statTotalStudents').textContent = cls.Students.length + ' คน';
-      document.getElementById('btnBatchCount').textContent = cls.Students.length;
+      if (document.getElementById('btnBatchCount')) {
+        document.getElementById('btnBatchCount').textContent = cls.Students.length;
+      }
 
       let totalScoreSum = 0;
       let totalAttPct = 0;
@@ -1418,20 +2292,44 @@
       const avgScore = cls.Students.length > 0 ? (totalScoreSum / cls.Students.length).toFixed(2) : "0.00";
       document.getElementById('statClassAvg').textContent = avgScore;
 
+      if (typeof currentActiveTab !== 'undefined' && (currentActiveTab === 'correction' || currentActiveTab === 'editgrade')) {
+        const failingList = getFailingStudentsOfClass(clsIdx);
+        if (failingList.length > 0 && !failingList.some(f => f.stIdx === currentStudentIndex)) {
+          currentStudentIndex = failingList[0].stIdx;
+        }
+      }
+
       renderStudentList();
       renderCurrentStudent();
       renderOverviewTable();
       updateTopCommentBox();
       updateQuickStudentSelect();
+      initCorrectionTab();
+
+      if (typeof currentActiveTab !== 'undefined' && currentActiveTab === 'receipt') {
+        initReceiptTab();
+      }
     }
 
     function updateQuickStudentSelect() {
       const cls = PORPHOR_DATA[currentClassIndex];
       const sel = document.getElementById('quickStudentSelect');
       if (!sel) return;
-      sel.innerHTML = cls.Students.map((s, idx) => 
-        `<option value="${idx}" ${idx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${s.No} ${s.FullName}</option>`
-      ).join('');
+      const onlyFailing = (typeof currentActiveTab !== 'undefined') && (currentActiveTab === 'correction' || currentActiveTab === 'editgrade');
+      if (onlyFailing) {
+        const failingList = getFailingStudentsOfClass(currentClassIndex);
+        if (failingList.length === 0) {
+          sel.innerHTML = `<option value="-1">-- ไม่มีนักเรียนที่ไม่ผ่านเกณฑ์ในชั้นนี้ --</option>`;
+          return;
+        }
+        sel.innerHTML = failingList.map(item =>
+          `<option value="${item.stIdx}" ${item.stIdx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${item.student.No} ${item.student.FullName} (ไม่ผ่าน ${item.failingSubjects.length} วิชา)</option>`
+        ).join('');
+      } else {
+        sel.innerHTML = cls.Students.map((s, idx) =>
+          `<option value="${idx}" ${idx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${s.No} ${s.FullName}</option>`
+        ).join('');
+      }
     }
 
     function renderStudentList() {
@@ -1439,13 +2337,21 @@
       const listEl = document.getElementById('studentList');
       listEl.innerHTML = '';
 
+      const onlyFailing = (typeof currentActiveTab !== 'undefined') && (currentActiveTab === 'correction' || currentActiveTab === 'editgrade');
+
       const filtered = cls.Students.filter(s => {
+        if (onlyFailing && !isStudentFailing(s)) return false;
         if (!currentSearchTerm) return true;
         const term = currentSearchTerm.toLowerCase();
         return s.FullName.toLowerCase().includes(term) || String(s.No).includes(term) || String(s.StudentId).includes(term);
       });
 
       document.getElementById('studentListCount').textContent = filtered.length;
+
+      if (onlyFailing && filtered.length === 0) {
+        listEl.innerHTML = `<div style="padding: 1.2rem; text-align: center; color: #059669; font-weight: 600; background: #ecfdf5; border-radius: 8px;">✅ นักเรียนชั้นนี้ผ่านเกณฑ์ทุกรายวิชา</div>`;
+        return;
+      }
 
       filtered.forEach((s) => {
         const originalIndex = cls.Students.findIndex(st => st.No === s.No);
@@ -1454,6 +2360,7 @@
         item.onclick = () => selectStudent(originalIndex);
 
         const hasComment = !!getTeacherComment(s.StudentId);
+        const failCount = getFailingSubjects(s).length;
 
         item.innerHTML = `
           <div class="student-info">
@@ -1461,10 +2368,11 @@
             <div>
               <div style="font-size: 0.92rem; font-weight: 600;">${s.FullName}</div>
               <div class="student-meta">รหัส: ${s.StudentId} | รวม: ${s.TotalScore || 0} คะแนน</div>
+              ${failCount > 0 ? `<div style="font-size: 0.75rem; color: #dc2626; font-weight: 700;">⚠️ ไม่ผ่านเกณฑ์ ${failCount} วิชา</div>` : ''}
             </div>
           </div>
           <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
-            <button class="btn btn-primary btn-sm" style="padding: 2px 7px; font-size: 0.75rem; white-space: nowrap; font-weight: 600;" 
+            <button class="btn btn-sm" style="background-color: #e11d48; color: white; padding: 2px 7px; font-size: 0.75rem; white-space: nowrap; font-weight: 600; border-radius: 4px;" 
               onclick="event.stopPropagation(); printSpecificStudent(${originalIndex})" title="สั่งพิมพ์ใบแจ้งผลคนนี้ (A4)">
               🖨 พิมพ์
             </button>
@@ -1484,15 +2392,36 @@
     }
 
     function selectStudent(idx) {
+      idx = parseInt(idx, 10);
+      if (isNaN(idx) || idx < 0) return;
       currentStudentIndex = idx;
       renderStudentList();
       renderCurrentStudent();
       updateTopCommentBox();
       updateQuickStudentSelect();
+
+      const stSel = document.getElementById('corrStudentSelect');
+      const docStSel = document.getElementById('corrDocStudentSelect');
+      if (stSel && Array.from(stSel.options).some(o => parseInt(o.value, 10) === currentStudentIndex)) {
+        stSel.value = currentStudentIndex;
+        if (docStSel) docStSel.value = currentStudentIndex;
+        renderFailingSubjectsEditor();
+        updateCorrectionPreview();
+      }
     }
 
     function nextStudent(delta) {
       const cls = PORPHOR_DATA[currentClassIndex];
+      const onlyFailing = (typeof currentActiveTab !== 'undefined') && (currentActiveTab === 'correction' || currentActiveTab === 'editgrade');
+      if (onlyFailing) {
+        const failingList = getFailingStudentsOfClass(currentClassIndex);
+        if (failingList.length === 0) return;
+        let pos = failingList.findIndex(f => f.stIdx === currentStudentIndex);
+        if (pos === -1) pos = 0;
+        else pos = (pos + delta + failingList.length) % failingList.length;
+        selectStudent(failingList[pos].stIdx);
+        return;
+      }
       let newIdx = currentStudentIndex + delta;
       if (newIdx < 0) newIdx = cls.Students.length - 1;
       if (newIdx >= cls.Students.length) newIdx = 0;
@@ -1781,7 +2710,8 @@
             </td>
             <td style="text-align: center; white-space: nowrap;">
               <button class="btn btn-outline btn-sm" onclick="selectAndPreviewStudent(${idx})" style="padding: 3px 6px; font-size: 0.8rem;" title="ดูตัวอย่างใบแจ้งผล">👁 ดูตัวอย่าง</button>
-              <button class="btn btn-primary btn-sm" onclick="printSpecificStudent(${idx})" style="padding: 3px 8px; font-size: 0.8rem; margin-left: 4px; font-weight: 600;" title="สั่งพิมพ์ใบแจ้งผลคนนี้ทันที (A4)">🖨 พิมพ์ (A4)</button>
+              <button class="btn btn-warning btn-sm" onclick="openStudentScoreModal(${idx})" style="padding: 3px 6px; font-size: 0.8rem; margin-left: 3px; background-color: #ea580c; color: white;" title="แก้ไขคะแนนรายวิชาของนักเรียนคนนี้">✏️ แก้ไขคะแนน</button>
+              <button class="btn btn-sm" style="background-color: #e11d48; color: white;" onclick="printSpecificStudent(${idx})" style="padding: 3px 8px; font-size: 0.8rem; margin-left: 3px; font-weight: 600;" title="สั่งพิมพ์ใบแจ้งผลคนนี้ทันที (A4)">🖨 พิมพ์ (A4)</button>
             </td>
           </tr>
         `;
@@ -1796,89 +2726,716 @@
       switchTab('preview');
     }
 
+    
+    // ==========================================
+    // จัดการแท็บและการสลับหน้าจอ (Switch Tabs)
+    // ==========================================
+    let currentActiveTab = 'preview';
+    let corrInitialized = false;
+
     function switchTab(tab) {
-      if (tab === 'preview') {
-        document.getElementById('tabPreviewContent').style.display = 'block';
-        document.getElementById('tabOverviewContent').style.display = 'none';
-        document.getElementById('tabPreview').classList.add('active');
-        document.getElementById('tabOverview').classList.remove('active');
+      currentActiveTab = tab;
+      const tabs = ['preview', 'overview', 'correction', 'receipt', 'editgrade'];
+      tabs.forEach(t => {
+        const pane = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1) + 'Content');
+        if (pane) {
+          pane.style.display = (t === tab) ? 'block' : 'none';
+        }
+      });
+
+      // ล้างคอนเทนเนอร์สำหรับสั่งพิมพ์เพื่อไม่ให้แสดงซ้ำซ้อนหรือปะปนกัน
+      const corrPrint = document.getElementById('correctionPrintContainer');
+      if (corrPrint) corrPrint.innerHTML = '';
+      const recPrint = document.getElementById('receiptPrintContainer');
+      if (recPrint) recPrint.innerHTML = '';
+
+      // อัปเดตสถานะเมนูด้านซ้าย
+      const leftMap = {
+        preview: 'leftMenuPreview',
+        overview: 'leftMenuOverview',
+        correction: 'leftMenuCorrection',
+        receipt: 'leftMenuReceipt',
+        editgrade: 'leftMenuEditgrade'
+      };
+      Object.keys(leftMap).forEach(k => {
+        const el = document.getElementById(leftMap[k]);
+        if (el) {
+          if (k === tab) el.classList.add('active');
+          else el.classList.remove('active');
+        }
+      });
+
+      // อัปเดตสถานะไอคอนแถบขวา
+      const rightMap = {
+        preview: 'rightTabPreview',
+        overview: 'rightTabOverview',
+        correction: 'rightTabCorrection',
+        receipt: 'rightTabReceipt'
+      };
+      Object.keys(rightMap).forEach(k => {
+        const el = document.getElementById(rightMap[k]);
+        if (el) {
+          if (k === tab || (tab === 'editgrade' && k === 'correction')) el.classList.add('active');
+          else el.classList.remove('active');
+        }
+      });
+
+      if (tab === 'correction' || tab === 'editgrade') {
+        const failingList = getFailingStudentsOfClass(currentClassIndex);
+        if (failingList.length > 0 && !failingList.some(f => f.stIdx === currentStudentIndex)) {
+          currentStudentIndex = failingList[0].stIdx;
+        }
+        renderStudentList();
+        updateQuickStudentSelect();
+        initCorrectionTab();
       } else {
-        document.getElementById('tabPreviewContent').style.display = 'none';
-        document.getElementById('tabOverviewContent').style.display = 'block';
-        document.getElementById('tabPreview').classList.remove('active');
-        document.getElementById('tabOverview').classList.add('active');
+        renderStudentList();
+        updateQuickStudentSelect();
+        if (tab === 'receipt') {
+          initReceiptTab();
+        }
       }
     }
 
-    // ซิงค์ข้อมูลการประเมินล่าสุดจาก BSD-EVAL Cloud (Google Apps Script API)
-    async function syncFromCloud() {
-      const btn = document.getElementById('btnSync');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '⏳ กำลังดึงข้อมูลจาก BSD-EVAL...';
-      btn.disabled = true;
+    // ========================================================
+    // ฟังก์ชันระบบคำร้องขอแก้ไขผลการเรียน & แก้ไขผลการเรียน
+    // (แสดงเฉพาะนักเรียนที่ไม่ผ่านเกณฑ์ + รวมทุกวิชาที่ไม่ผ่านในฉบับเดียว + ชื่อครูประจำวิชา)
+    // ========================================================
+    function initCorrectionTab() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const classSel = document.getElementById('corrClassSelect');
+      const docClassSel = document.getElementById('corrDocClassSelect');
+      if (!classSel && !docClassSel) return;
 
-      try {
-        const res = await fetch(`${CLOUD_WEBAPP_URL}?action=getAllData&t=${Date.now()}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const result = await res.json();
-        
-        if (!result.success || !result.data) {
-          throw new Error('ไม่พบข้อมูลการประเมินจากระบบคลาวด์');
-        }
+      corrInitialized = true;
+      const optionsHtml = classesList.map((c, idx) => {
+        const failCount = getFailingStudentsOfClass(idx).length;
+        return `<option value="${idx}" ${idx === currentClassIndex ? 'selected' : ''}>${c.Grade || ('ชั้น ป.' + (idx + 1))} (ไม่ผ่าน ${failCount} คน)</option>`;
+      }).join('');
 
-        const cloudData = result.data;
-        const cloudStudentsByCode = {};
-        const cloudStudentsByName = {};
+      if (classSel) classSel.innerHTML = optionsHtml;
+      if (docClassSel) docClassSel.innerHTML = optionsHtml;
 
-        (cloudData.students || []).forEach(st => {
-          if (st.studentCode) cloudStudentsByCode[String(st.studentCode).trim()] = st;
-          const cleanName = ((st.prefix || '') + (st.firstName || '') + (st.lastName || '')).replace(/\s+/g, '');
-          cloudStudentsByName[cleanName] = st;
-        });
+      populateFailingStudentDropdowns(currentClassIndex);
+    }
 
-        function ratingToText(val) {
-          if (val === 3 || val === '3') return 'ดีเยี่ยม';
-          if (val === 2 || val === '2') return 'ดี';
-          if (val === 1 || val === '1') return 'ผ่าน';
-          return 'ไม่ผ่าน';
-        }
+    function populateFailingStudentDropdowns(classIdx) {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      if (!cls || !cls.Students) return;
 
-        let updatedCount = 0;
-        const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
-        classesList.forEach(cls => {
-          cls.Students.forEach(st => {
-            const code = String(st.StudentId || '').trim();
-            const cleanLocalName = ((st.Prefix || '') + (st.FirstName || '') + (st.LastName || '')).replace(/\s+/g, '');
-            const cStudent = (code && cloudStudentsByCode[code]) || cloudStudentsByName[cleanLocalName];
+      const failingList = getFailingStudentsOfClass(classIdx);
+      const stSel = document.getElementById('corrStudentSelect');
+      const docStSel = document.getElementById('corrDocStudentSelect');
+      const summaryEl = document.getElementById('corrFailingCountSummary');
 
-            if (cStudent) {
-              const cId = String(cStudent.id);
-              const rItem = cloudData.readingAssessments?.[cId];
-              const cItem = cloudData.characteristicsAssessments?.[cId];
-              const kItem = cloudData.competenciesAssessments?.[cId];
-
-              const rVal = rItem?.term1?.summary ?? rItem?.summary;
-              const kVal = kItem?.term1?.summary ?? kItem?.summary;
-              const cVal = cItem?.term1?.summary ?? cItem?.summary;
-
-              if (rVal !== undefined) st.Evaluations.Reading = ratingToText(rVal);
-              if (kVal !== undefined) st.Evaluations.Competency = ratingToText(kVal);
-              if (cVal !== undefined) st.Evaluations.Character = ratingToText(cVal);
-              updatedCount++;
-            }
-          });
-        });
-
-        renderCurrentStudent();
-        renderOverviewTable();
-        showToast(`อัปเดตข้อมูลการประเมินจาก BSD-EVAL สำเร็จแล้ว (${updatedCount} คน)`);
-      } catch (err) {
-        console.error('Sync error:', err);
-        showToast('เชื่อมต่อคลาวด์ไม่สำเร็จ (ใช้ข้อมูลประเมินล่าสุดที่บันทึกไว้แทน)');
-      } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+      if (summaryEl) {
+        summaryEl.innerHTML = `${cls.ClassName} : นักเรียนที่ไม่ผ่านเกณฑ์จำนวน <b style="color:#dc2626;">${failingList.length} คน</b> (จากทั้งหมด ${cls.Students.length} คน) — แสดงรายวิชาที่ไม่ผ่านทั้งหมดในใบคำร้องฉบับเดียวกัน`;
       }
+
+      if (failingList.length === 0) {
+        const emptyOpt = `<option value="-1">-- ไม่มีนักเรียนที่ไม่ผ่านเกณฑ์ในระดับชั้นนี้ --</option>`;
+        if (stSel) stSel.innerHTML = emptyOpt;
+        if (docStSel) docStSel.innerHTML = emptyOpt;
+        renderFailingSubjectsEditor();
+        updateCorrectionPreview();
+        return;
+      }
+
+      if (!failingList.some(f => f.stIdx === currentStudentIndex)) {
+        currentStudentIndex = failingList[0].stIdx;
+      }
+
+      const stOptionsHtml = failingList.map(item =>
+        `<option value="${item.stIdx}" ${item.stIdx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${item.student.No} ${item.student.FullName} (ไม่ผ่าน ${item.failingSubjects.length} วิชา)</option>`
+      ).join('');
+
+      if (stSel) stSel.innerHTML = stOptionsHtml;
+      if (docStSel) docStSel.innerHTML = stOptionsHtml;
+
+      renderFailingSubjectsEditor();
+      updateCorrectionPreview();
+    }
+
+    function onCorrClassChange() {
+      const classIdx = parseInt(document.getElementById('corrClassSelect')?.value, 10) || 0;
+      loadClass(classIdx);
+    }
+
+    function onCorrDocClassChange(val) {
+      const classIdx = parseInt(val, 10) || 0;
+      loadClass(classIdx);
+    }
+
+    function onCorrStudentChange() {
+      const stIdx = parseInt(document.getElementById('corrStudentSelect')?.value, 10);
+      if (isNaN(stIdx) || stIdx < 0) return;
+      selectStudent(stIdx);
+    }
+
+    function onCorrDocStudentChange(val) {
+      const stIdx = parseInt(val, 10);
+      if (isNaN(stIdx) || stIdx < 0) return;
+      selectStudent(stIdx);
+    }
+
+    function onCorrReasonPresetChange(val) {
+      const customInput = document.getElementById('corrReasonCustom');
+      if (customInput) {
+        if (val === 'other') {
+          customInput.style.display = 'block';
+          customInput.focus();
+        } else {
+          customInput.style.display = 'none';
+        }
+      }
+      updateCorrectionPreview();
+    }
+
+    function getCorrectionReason() {
+      const preset = document.getElementById('corrReasonPreset')?.value || '';
+      if (preset === 'other') {
+        return document.getElementById('corrReasonCustom')?.value?.trim() || 'นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข';
+      }
+      return preset || 'นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข';
+    }
+
+    function renderFailingSubjectsEditor() {
+      const container = document.getElementById('corrFailingSubjectsContainer');
+      if (!container) return;
+
+      const classIdx = currentClassIndex;
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      const stIdx = parseInt(document.getElementById('corrStudentSelect')?.value ?? currentStudentIndex, 10);
+      const student = (stIdx >= 0) ? cls?.Students?.[stIdx] : null;
+
+      if (!student) {
+        container.innerHTML = `
+          <div style="padding: 1.5rem; text-align: center; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; color: #065f46; font-weight: 600;">
+            ✅ ไม่มีนักเรียนที่ไม่ผ่านเกณฑ์ในระดับชั้นนี้
+          </div>
+        `;
+        return;
+      }
+
+      const failingSubs = getFailingSubjects(student);
+      if (failingSubs.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 1.5rem; text-align: center; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; color: #065f46; font-weight: 600;">
+            ✅ นักเรียนคนนี้ผ่านเกณฑ์ทุกรายวิชา (คะแนนรวมตั้งแต่ 25 คะแนนขึ้นไปทุกวิชา)
+          </div>
+        `;
+        return;
+      }
+
+      let html = `
+        <div style="background: #fff; border: 1.5px solid #fecdd3; border-radius: 10px; padding: 0.9rem 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div style="font-weight: 700; color: #be185d; font-size: 1rem;">
+              📌 รายวิชาที่ไม่ผ่านเกณฑ์ของ ${student.FullName} (เลขที่ ${student.No}) — รวมทั้งหมด ${failingSubs.length} วิชา
+            </div>
+            <div style="font-size: 0.85rem; color: #64748b;">
+              ครูประจำชั้น: <b>${cls.Teacher1 || '-'}</b> | กรอกคะแนนที่ขอแก้ไขแล้วกดบันทึกหรือสั่งพิมพ์ใบคำร้อง
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+      `;
+
+      failingSubs.forEach((sc, idx) => {
+        const subIdx = sc.Index;
+        const maxCollect = (subIdx <= 9) ? 35 : 40;
+        const maxExam = (subIdx <= 9) ? 15 : 10;
+        const origC = sc.OrigCollect !== undefined ? sc.OrigCollect : sc.Collect;
+        const origE = sc.OrigExam !== undefined ? sc.OrigExam : sc.Exam;
+        const origTot = sc.OrigTotal !== undefined ? sc.OrigTotal : sc.Total;
+        const subjectTeacher = getSubjectTeacher(classIdx, subIdx);
+
+        html += `
+          <div style="border: 1px solid #f1f5f9; background: #fdf2f8; border-radius: 8px; padding: 0.75rem 0.9rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem; flex-wrap: wrap; gap: 0.4rem;">
+              <div style="font-weight: 700; color: #9d174d; font-size: 0.95rem;">
+                ${idx + 1}. วิชา${sc.Name} (${sc.Code || '-'})
+              </div>
+              <div style="font-size: 0.85rem; background: #fff; border: 1px solid #fbcfe8; padding: 2px 10px; border-radius: 99px; color: #881337; font-weight: 600;">
+                👩‍🏫 ครูประจำวิชา: ${subjectTeacher}
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.55rem; text-align: center;">
+              <div style="background: #f8fafc; padding: 0.45rem; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 0.75rem; color: #64748b;">เก็บเดิม (เต็ม ${maxCollect})</div>
+                <div style="font-size: 1.05rem; font-weight: 700; color: #475569;">${origC}</div>
+              </div>
+              <div style="background: #f8fafc; padding: 0.45rem; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 0.75rem; color: #64748b;">สอบเดิม (เต็ม ${maxExam})</div>
+                <div style="font-size: 1.05rem; font-weight: 700; color: #475569;">${origE}</div>
+              </div>
+              <div style="background: #fef2f2; padding: 0.45rem; border-radius: 6px; border: 1px solid #fecaca;">
+                <div style="font-size: 0.75rem; color: #dc2626; font-weight: 600;">รวมเดิม (เต็ม 50)</div>
+                <div style="font-size: 1.05rem; font-weight: 700; color: #dc2626;">${origTot}</div>
+              </div>
+              <div style="background: #fff; padding: 0.45rem; border-radius: 6px; border: 1.5px solid #f43f5e;">
+                <div style="font-size: 0.75rem; color: #be185d; font-weight: 700;">เก็บใหม่ (เต็ม ${maxCollect})</div>
+                <input type="number" id="corrNewCollect_${subIdx}" min="0" max="${maxCollect}" value="${sc.Collect}"
+                  style="width: 78px; text-align: center; font-size: 1rem; font-weight: 700; padding: 2px; border: 1px solid #cbd5e1; border-radius: 5px; margin-top: 2px;"
+                  oninput="onCorrMultiScoreInput(${subIdx}, ${maxCollect}, ${maxExam})">
+              </div>
+              <div style="background: #fff; padding: 0.45rem; border-radius: 6px; border: 1.5px solid #f43f5e;">
+                <div style="font-size: 0.75rem; color: #be185d; font-weight: 700;">สอบใหม่ (เต็ม ${maxExam})</div>
+                <input type="number" id="corrNewExam_${subIdx}" min="0" max="${maxExam}" value="${sc.Exam}"
+                  style="width: 78px; text-align: center; font-size: 1rem; font-weight: 700; padding: 2px; border: 1px solid #cbd5e1; border-radius: 5px; margin-top: 2px;"
+                  oninput="onCorrMultiScoreInput(${subIdx}, ${maxCollect}, ${maxExam})">
+              </div>
+              <div style="background: #f0fdf4; padding: 0.45rem; border-radius: 6px; border: 1.5px solid #86efac;">
+                <div style="font-size: 0.75rem; color: #15803d; font-weight: 700;">รวมใหม่ (เต็ม 50)</div>
+                <div id="corrNewTotal_${subIdx}" style="font-size: 1.1rem; font-weight: 700; color: #16a34a; margin-top: 3px;">${sc.Total}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+      container.innerHTML = html;
+    }
+
+    function onCorrMultiScoreInput(subIdx, maxCollect, maxExam) {
+      const cInput = document.getElementById(`corrNewCollect_${subIdx}`);
+      const eInput = document.getElementById(`corrNewExam_${subIdx}`);
+      const totEl = document.getElementById(`corrNewTotal_${subIdx}`);
+      if (!cInput || !eInput || !totEl) return;
+
+      let newC = parseFloat(cInput.value) || 0;
+      let newE = parseFloat(eInput.value) || 0;
+
+      if (newC > maxCollect) {
+        newC = maxCollect;
+        cInput.value = maxCollect;
+        showToast(`คะแนนเก็บสูงสุดของวิชานี้คือ ${maxCollect} คะแนน`);
+      }
+      if (newE > maxExam) {
+        newE = maxExam;
+        eInput.value = maxExam;
+        showToast(`คะแนนสอบสูงสุดของวิชานี้คือ ${maxExam} คะแนน`);
+      }
+      if (newC < 0) { newC = 0; cInput.value = 0; }
+      if (newE < 0) { newE = 0; eInput.value = 0; }
+
+      const newTot = Math.round((newC + newE) * 100) / 100;
+      totEl.innerText = newTot;
+      totEl.style.color = (newTot >= 25) ? '#16a34a' : '#dc2626';
+
+      updateCorrectionPreview();
+    }
+
+    function generateCorrectionDocHtml(classIdx, stIdx, useFormInputs) {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      const student = (stIdx >= 0) ? cls?.Students?.[stIdx] : null;
+
+      if (!cls || !student) {
+        return `
+          <div style="text-align: center; padding: 60px 20px; font-size: 18pt; color: #059669; font-weight: bold;">
+            ✅ ไม่มีนักเรียนที่ไม่ผ่านเกณฑ์ในระดับชั้นนี้ (${cls ? cls.ClassName : ''})
+          </div>
+        `;
+      }
+
+      const failingSubs = getFailingSubjects(student);
+      if (failingSubs.length === 0) {
+        return `
+          <div style="text-align: center; padding: 60px 20px; font-size: 18pt; color: #059669; font-weight: bold;">
+            ✅ นักเรียน ${student.FullName} (เลขที่ ${student.No}) ผ่านเกณฑ์การประเมินทุกรายวิชา
+          </div>
+        `;
+      }
+
+      const homeroomTeacher = cls.Teacher1 || '................................................';
+      const reqDate = document.getElementById('corrDate')?.value?.trim() || '26 ตุลาคม 2569';
+      const reason = getCorrectionReason();
+
+      // รวบรวมรายชื่อครูประจำวิชาที่ไม่ซ้ำกันของวิชาที่ไม่ผ่านทั้งหมดของนักเรียนคนนี้
+      const teacherSubjectsMap = new Map();
+      let rowsHtml = '';
+
+      failingSubs.forEach((sc, idx) => {
+        const subIdx = sc.Index;
+        const origC = sc.OrigCollect !== undefined ? sc.OrigCollect : sc.Collect;
+        const origE = sc.OrigExam !== undefined ? sc.OrigExam : sc.Exam;
+        const origTot = sc.OrigTotal !== undefined ? sc.OrigTotal : sc.Total;
+
+        let newC = sc.Collect;
+        let newE = sc.Exam;
+        if (useFormInputs) {
+          const cEl = document.getElementById(`corrNewCollect_${subIdx}`);
+          const eEl = document.getElementById(`corrNewExam_${subIdx}`);
+          if (cEl) newC = parseFloat(cEl.value) || 0;
+          if (eEl) newE = parseFloat(eEl.value) || 0;
+        }
+        const newTot = Math.round((parseFloat(newC) + parseFloat(newE)) * 100) / 100;
+
+        // ถ้านักเรียนยังไม่ได้แก้คะแนนในระบบ (คะแนนใหม่ยังเท่ากับคะแนนเดิมที่ < 25) ให้แสดงช่องว่างหรือคะแนนที่กรอก
+        const isEdited = (newTot !== parseFloat(origTot)) || (newTot >= 25);
+        const dispNewC = isEdited ? newC : '........';
+        const dispNewE = isEdited ? newE : '........';
+        const dispNewTot = isEdited ? newTot : '........';
+
+        const subjectTeacher = getSubjectTeacher(classIdx, subIdx);
+        if (!teacherSubjectsMap.has(subjectTeacher)) {
+          teacherSubjectsMap.set(subjectTeacher, []);
+        }
+        teacherSubjectsMap.get(subjectTeacher).push(sc.Name);
+
+        rowsHtml += `
+          <tr style="text-align: center;">
+            <td>${idx + 1}</td>
+            <td style="white-space: nowrap;">${sc.Code || '-'}</td>
+            <td style="text-align: left; font-weight: bold;">${sc.Name}</td>
+            <td>${origC}</td>
+            <td>${origE}</td>
+            <td style="font-weight: bold; color: #dc2626;">${origTot}</td>
+            <td style="background: #eff6ff; font-weight: bold; color: #1e40af;">${dispNewC}</td>
+            <td style="background: #eff6ff; font-weight: bold; color: #1e40af;">${dispNewE}</td>
+            <td style="background: #dbeafe; font-weight: bold; color: #1e3a8a;">${dispNewTot}</td>
+            <td style="text-align: left; font-size: 13.5pt; white-space: nowrap;">${subjectTeacher}</td>
+            <td style="color: #64748b; font-size: 12pt;">.................................</td>
+          </tr>
+        `;
+      });
+
+      // สร้างกล่องลงนามของครูประจำวิชาทุกคนที่เกี่ยวข้อง
+      const uniqueTeachers = Array.from(teacherSubjectsMap.entries());
+      const teacherSigCols = uniqueTeachers.length === 1 ? '1fr' : '1fr 1fr';
+      const teacherSignaturesHtml = uniqueTeachers.map(([tName, subNames]) => `
+        <div style="text-align: center; padding: 4px 6px;">
+          <div style="height: 12px;"></div>
+          <div>ลงชื่อ.......................................................ครูประจำวิชา</div>
+          <div style="margin-top: 2px; font-weight: bold;">( ${tName} )</div>
+          <div style="font-size: 12.5pt; color: #334155; line-height: 1.2;">รายวิชา: ${subNames.join(', ')}</div>
+        </div>
+      `).join('');
+
+      return `
+        <div style="text-align: center;">
+          <img src="logo.png" class="doc-header-emblem" alt="ตราโรงเรียน">
+          <div class="doc-title">แบบคำร้องขออนุมัติแก้ไขผลการเรียน (ปพ.5)</div>
+          <div class="doc-subtitle">โรงเรียนบ้านสันดาบ ตำบลชัยมงคล อำเภอเมืองสมุทรสาคร จังหวัดสมุทรสาคร</div>
+        </div>
+
+        <div style="text-align: right; margin-bottom: 4px; font-size: 14.5pt;">
+          วันที่ <b>${reqDate}</b>
+        </div>
+
+        <div style="margin-bottom: 4px; font-size: 14.5pt; line-height: 1.35;">
+          <b>เรื่อง:</b> ขออนุมัติแก้ไขผลการเรียน ภาคเรียนที่ 1 ปีการศึกษา 2569<br>
+          <b>เรียน:</b> ผู้อำนวยการโรงเรียนบ้านสันดาบ
+        </div>
+
+        <div style="text-indent: 2rem; line-height: 1.4; margin-bottom: 6px; font-size: 14.5pt;">
+          ด้วย นักเรียน <b>${student.FullName}</b> ระดับชั้น <b>${cls.Grade || cls.ClassName}</b> เลขประจำตัว <b>${student.StudentId}</b> เลขที่ <b>${student.No}</b>
+          (ครูประจำชั้น: <b>${homeroomTeacher}</b>) มีผลการเรียนไม่ผ่านเกณฑ์การประเมิน (คะแนนรวมต่ำกว่า 25 คะแนน) ในภาคเรียนที่ 1 ปีการศึกษา 2569
+          จำนวน <b>${failingSubs.length} รายวิชา</b> และได้ดำเนินการแก้ไขผลการเรียนเรียบร้อยแล้ว จึงขออนุมัติแก้ไขผลสัมฤทธิ์ทางการเรียน ดังรายละเอียดต่อไปนี้
+        </div>
+
+        <table class="correction-table" style="margin: 6px 0; font-size: 14pt;">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width: 4%;">ที่</th>
+              <th rowspan="2" style="width: 9%;">รหัสวิชา</th>
+              <th rowspan="2" style="width: 19%;">รายวิชาที่ไม่ผ่านเกณฑ์</th>
+              <th colspan="3" style="width: 18%;">คะแนนเดิมในระบบ</th>
+              <th colspan="3" style="width: 18%; background: #eff6ff;">คะแนนที่ขอแก้ไข</th>
+              <th rowspan="2" style="width: 18%;">ครูประจำวิชา</th>
+              <th rowspan="2" style="width: 14%;">ลายมือชื่อ<br>ครูประจำวิชา</th>
+            </tr>
+            <tr>
+              <th style="width: 6%;">เก็บ</th>
+              <th style="width: 6%;">สอบ</th>
+              <th style="width: 6%;">รวม</th>
+              <th style="width: 6%; background: #eff6ff;">เก็บ</th>
+              <th style="width: 6%; background: #eff6ff;">สอบ</th>
+              <th style="width: 6%; background: #dbeafe; font-weight: bold; color: #1e40af;">รวม</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+
+        <div style="margin-top: 4px; line-height: 1.35; font-size: 14.5pt;">
+          <b>เหตุผลความจำเป็นในการขอแก้ไข:</b> ${reason}
+        </div>
+
+        <div style="margin-top: 4px; text-indent: 2rem; line-height: 1.35; font-size: 14.5pt;">
+          จึงเรียนมาเพื่อโปรดพิจารณาให้ความเห็นชอบและอนุมัติแก้ไขในระบบเอกสารหลักฐานทางการศึกษา (ปพ.5) ต่อไป
+        </div>
+
+        <!-- ส่วนที่ (1) ครูประจำวิชาลงนามรับรอง -->
+        <div style="margin-top: 8px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; font-size: 14pt;">
+          <div style="font-weight: bold; text-align: center; margin-bottom: 2px;">
+            (1) ลงนามรับรองผลการเรียนโดยครูประจำวิชา (ตรวจสอบและประเมินผลเรียบร้อยแล้ว)
+          </div>
+          <div style="display: grid; grid-template-columns: ${teacherSigCols}; gap: 4px 12px;">
+            ${teacherSignaturesHtml}
+          </div>
+        </div>
+
+        <!-- ส่วนที่ (2) หัวหน้างานวิชาการ และ ส่วนที่ (3) ผู้อำนวยการโรงเรียน -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 8px; font-size: 14pt;">
+          <div style="text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px;">
+            <div style="font-weight: bold; margin-bottom: 4px;">(2) ความเห็นหัวหน้างานบริหารวิชาการ</div>
+            <div style="text-align: left; font-size: 13.5pt; margin-left: 14px; margin-bottom: 4px;">
+              [ &nbsp; ] ตรวจสอบแล้วถูกต้อง เห็นควรอนุมัติ<br>
+              [ &nbsp; ] อื่นๆ .........................................................
+            </div>
+            <div style="height: 8px;"></div>
+            <div>ลงชื่อ................................................................</div>
+            <div style="margin-top: 2px; font-weight: bold;">( นางสาวสุจิตตรา  ปางสุข )</div>
+            <div style="font-size: 13pt; color: #475569;">หัวหน้างานบริหารวิชาการ</div>
+          </div>
+
+          <div style="text-align: center; border: 1px solid #94a3b8; border-radius: 6px; padding: 6px 8px;">
+            <div style="font-weight: bold; margin-bottom: 4px;">(3) คำสั่ง / การอนุมัติของผู้อำนวยการโรงเรียน</div>
+            <div style="text-align: left; font-size: 13.5pt; margin-left: 14px; margin-bottom: 4px;">
+              [ &nbsp; ] <b>อนุมัติ</b> ให้แก้ไขผลการเรียนใน ปพ.5 ได้<br>
+              [ &nbsp; ] ไม่อนุมัติ เนื่องจาก..........................................
+            </div>
+            <div style="height: 8px;"></div>
+            <div>ลงชื่อ................................................................</div>
+            <div style="margin-top: 2px; font-weight: bold;">( นายกฤษฎา  ผลพล )</div>
+            <div style="font-size: 13pt; color: #475569;">ผู้อำนวยการโรงเรียนบ้านสันดาบ</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateCorrectionPreview() {
+      const classIdx = currentClassIndex;
+      const stSel = document.getElementById('corrStudentSelect');
+      const stIdx = stSel ? parseInt(stSel.value, 10) : currentStudentIndex;
+      const docHtml = generateCorrectionDocHtml(classIdx, stIdx, true);
+      const previewDiv = document.getElementById('correctionDocPreview');
+      if (previewDiv) previewDiv.innerHTML = docHtml;
+    }
+
+    function saveGradeCorrection() {
+      const classIdx = currentClassIndex;
+      const stSel = document.getElementById('corrStudentSelect');
+      const stIdx = stSel ? parseInt(stSel.value, 10) : currentStudentIndex;
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      const student = (stIdx >= 0) ? cls?.Students?.[stIdx] : null;
+      if (!student) {
+        showToast('ไม่พบข้อมูลนักเรียนที่ต้องการบันทึก');
+        return;
+      }
+
+      const failingSubs = getFailingSubjects(student);
+      if (failingSubs.length === 0) return;
+
+      failingSubs.forEach(sc => {
+        const subIdx = sc.Index;
+        const cEl = document.getElementById(`corrNewCollect_${subIdx}`);
+        const eEl = document.getElementById(`corrNewExam_${subIdx}`);
+        if (cEl && eEl) {
+          const newC = parseFloat(cEl.value) || 0;
+          const newE = parseFloat(eEl.value) || 0;
+          const newTot = Math.round((newC + newE) * 100) / 100;
+          sc.Collect = newC;
+          sc.Exam = newE;
+          sc.Total = newTot;
+        }
+      });
+
+      // คำนวณคะแนนรวมและคะแนนเฉลี่ยใหม่ของนักเรียน
+      let totC = 0, totE = 0, tot = 0;
+      student.Scores.forEach(s => {
+        totC += parseFloat(s.Collect) || 0;
+        totE += parseFloat(s.Exam) || 0;
+        tot += parseFloat(s.Total) || 0;
+      });
+      student.TotalCollect = Math.round(totC * 100) / 100;
+      student.TotalExam = Math.round(totE * 100) / 100;
+      student.TotalScore = Math.round(tot * 100) / 100;
+      student.AverageScore = Math.round((student.TotalScore / 15.0) * 100) / 100;
+
+      // บันทึกลง localStorage
+      saveCustomScoresToStorage(student.StudentId, student);
+
+      // อัปเดตหน้าจอทั้งหมด
+      renderStudentList();
+      renderCurrentStudent();
+      renderOverviewTable();
+      renderFailingSubjectsEditor();
+      updateCorrectionPreview();
+
+      showToast(`บันทึกแก้ไขผลการเรียน (${failingSubs.length} วิชา) ของ ${student.FullName} เรียบร้อยแล้ว!`);
+    }
+
+    function printCorrectionForm() {
+      updateCorrectionPreview();
+      const previewDiv = document.getElementById('correctionDocPreview');
+      const printContainer = document.getElementById('correctionPrintContainer');
+      const recContainer = document.getElementById('receiptPrintContainer');
+      if (recContainer) recContainer.innerHTML = '';
+      if (printContainer && previewDiv) {
+        printContainer.innerHTML = `<div class="official-doc-page">${previewDiv.innerHTML}</div>`;
+      }
+      document.body.classList.remove('print-single');
+      document.body.classList.remove('print-batch');
+      document.body.classList.remove('print-receipt');
+      document.body.classList.add('print-correction');
+      setTimeout(() => {
+        window.print();
+      }, 100);
+    }
+
+    function printAllFailingCorrectionForms() {
+      const classIdx = currentClassIndex;
+      const failingList = getFailingStudentsOfClass(classIdx);
+      if (failingList.length === 0) {
+        showToast('ไม่มีนักเรียนที่ไม่ผ่านเกณฑ์ในระดับชั้นนี้');
+        return;
+      }
+      const printContainer = document.getElementById('correctionPrintContainer');
+      const recContainer = document.getElementById('receiptPrintContainer');
+      if (recContainer) recContainer.innerHTML = '';
+      if (printContainer) {
+        printContainer.innerHTML = failingList.map(item =>
+          `<div class="official-doc-page">${generateCorrectionDocHtml(classIdx, item.stIdx, item.stIdx === currentStudentIndex)}</div>`
+        ).join('');
+      }
+      document.body.classList.remove('print-single');
+      document.body.classList.remove('print-batch');
+      document.body.classList.remove('print-receipt');
+      document.body.classList.add('print-correction');
+      setTimeout(() => {
+        window.print();
+      }, 150);
+    }
+
+    // ========================================================
+    // ฟังก์ชันแบบฟอร์มการรับผลการเรียน (Report Card Receipt Sheet)
+    // ========================================================
+    function initReceiptTab() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const sel = document.getElementById('receiptClassSelect');
+      if (!sel) return;
+
+      sel.innerHTML = classesList.map((c, idx) => 
+        `<option value="${idx}" ${idx === currentClassIndex ? 'selected' : ''}>${c.Grade || ('ชั้น ป.' + (idx+1))}</option>`
+      ).join('');
+
+      renderReceiptSheet();
+    }
+
+    function renderReceiptSheet() {
+      const classIdx = parseInt(document.getElementById('receiptClassSelect')?.value) || currentClassIndex;
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      if (!cls || !cls.Students) return;
+
+      const targetDate = document.getElementById('receiptDateInput')?.value?.trim() || '26 ตุลาคม 2569';
+      const teacherName = cls.Teacher1 ? `( ${cls.Teacher1} )` : '(...............................................)';
+
+      let rowsHtml = '';
+      cls.Students.forEach((st, idx) => {
+        rowsHtml += `
+          <tr style="text-align: center;">
+            <td style="font-weight: bold;">${st.No}</td>
+            <td>${st.StudentId}</td>
+            <td style="text-align: left; padding-left: 8px;"><b>${st.FullName}</b></td>
+            <td style="color: #64748b; font-size: 11pt; letter-spacing: 1px;">....../....../......</td>
+            <td style="color: #64748b; font-size: 13pt;">......................................</td>
+            <td style="font-size: 11pt; text-align: left; padding: 3px 8px; line-height: 1.35; white-space: nowrap; color: #1e293b;">
+              ( &nbsp; ) บิดา<br>
+              ( &nbsp; ) มารดา<br>
+              ( &nbsp; ) อื่นๆ
+            </td>
+            <td></td>
+          </tr>
+        `;
+      });
+
+      const gradeTitle = cls.Grade ? cls.Grade : ('ชั้นประถมศึกษาปีที่ ' + (classIdx + 1) + '/1');
+
+      const docHtml = `
+        <div style="text-align: center;">
+          <img src="logo.png" class="doc-header-emblem" alt="ตราโรงเรียน">
+          <div class="doc-title">บัญชีลงนามการรับใบแจ้งผลการเรียน (ปพ.5)</div>
+          <div class="doc-subtitle">
+            ${gradeTitle} ภาคเรียนที่ 1 ปีการศึกษา 2569<br>
+            โรงเรียนบ้านสันดาบ ตำบลชัยมงคล อำเภอเมืองสมุทรสาคร จังหวัดสมุทรสาคร
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14.5pt; font-weight: 600;">
+          <span>ครูประจำชั้น: <b>${cls.Teacher1 || '-'}</b></span>
+          <span>วันที่นัดหมายรับผลการเรียน: <b>${targetDate}</b></span>
+        </div>
+
+        <table class="receipt-table">
+          <thead>
+            <tr>
+              <th style="width: 5%;">เลขที่</th>
+              <th style="width: 11%;">เลขประจำตัว</th>
+              <th style="width: 28%;">ชื่อ - นามสกุล นักเรียน</th>
+              <th style="width: 14%;">วันที่รับ</th>
+              <th style="width: 22%;">ลายมือชื่อผู้ปกครองผู้รับ</th>
+              <th style="width: 14%;">ความสัมพันธ์</th>
+              <th style="width: 6%;">หมายเหตุ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+
+        <div style="margin-top: 10px; font-size: 14pt;">
+          <b>สรุป:</b> จำนวนนักเรียนทั้งหมด <b>${cls.Students.Count || cls.Students.length}</b> คน 
+          ผู้ปกครองลงนามรับผลการเรียนเรียบร้อยแล้ว .................... คน คิดเป็นร้อยละ ....................
+        </div>
+
+        <!-- ส่วนท้ายลงนาม -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; margin-top: 18px; text-align: center;">
+          <div>
+            <div>ลงชื่อ........................................................</div>
+            <div style="margin-top: 4px;">${teacherName}</div>
+            <div style="font-size: 14pt; color: #475569;">ครูประจำชั้น</div>
+          </div>
+          <div>
+            <div>ลงชื่อ........................................................</div>
+            <div style="margin-top: 4px;">( นางสาวสุจิตตรา  ปางสุข )</div>
+            <div style="font-size: 14pt; color: #475569;">หัวหน้างานบริหารวิชาการ</div>
+          </div>
+          <div>
+            <div>ลงชื่อ........................................................</div>
+            <div style="margin-top: 4px; font-weight: bold;">( นายกฤษฎา  ผลพล )</div>
+            <div style="font-size: 14pt; color: #475569;">ผู้อำนวยการโรงเรียนบ้านสันดาบ</div>
+          </div>
+        </div>
+      `;
+
+      const previewDiv = document.getElementById('receiptDocPreview');
+      if (previewDiv) previewDiv.innerHTML = docHtml;
+    }
+
+    function printReceiptForm() {
+      renderReceiptSheet();
+      const previewDiv = document.getElementById('receiptDocPreview');
+      const printContainer = document.getElementById('receiptPrintContainer');
+      const corrContainer = document.getElementById('correctionPrintContainer');
+      if (corrContainer) corrContainer.innerHTML = '';
+      if (printContainer && previewDiv) {
+        printContainer.innerHTML = `<div class="official-doc-page">${previewDiv.innerHTML}</div>`;
+      }
+      document.body.classList.remove('print-single');
+      document.body.classList.remove('print-batch');
+      document.body.classList.remove('print-correction');
+      document.body.classList.add('print-receipt');
+      setTimeout(() => {
+        window.print();
+      }, 100);
     }
 
     function printSpecificStudent(idx) {
@@ -1918,15 +3475,429 @@
     }
 
     window.addEventListener('beforeprint', () => {
-      if (!document.body.classList.contains('print-batch')) {
-        document.body.classList.add('print-single');
+      if (!document.body.classList.contains('print-batch') &&
+          !document.body.classList.contains('print-correction') &&
+          !document.body.classList.contains('print-receipt') &&
+          !document.body.classList.contains('print-single')) {
+        if (currentActiveTab === 'correction' || currentActiveTab === 'editgrade') {
+          const previewDiv = document.getElementById('correctionDocPreview');
+          const printContainer = document.getElementById('correctionPrintContainer');
+          if (printContainer && previewDiv) {
+            printContainer.innerHTML = `<div class="official-doc-page">${previewDiv.innerHTML}</div>`;
+          }
+          document.body.classList.add('print-correction');
+        } else if (currentActiveTab === 'receipt') {
+          const previewDiv = document.getElementById('receiptDocPreview');
+          const printContainer = document.getElementById('receiptPrintContainer');
+          if (printContainer && previewDiv) {
+            printContainer.innerHTML = `<div class="official-doc-page">${previewDiv.innerHTML}</div>`;
+          }
+          document.body.classList.add('print-receipt');
+        } else {
+          document.body.classList.add('print-single');
+        }
       }
     });
 
     window.addEventListener('afterprint', () => {
       document.body.classList.remove('print-single');
       document.body.classList.remove('print-batch');
+      document.body.classList.remove('print-correction');
+      document.body.classList.remove('print-receipt');
+      const corrContainer = document.getElementById('correctionPrintContainer');
+      if (corrContainer) corrContainer.innerHTML = '';
+      const recContainer = document.getElementById('receiptPrintContainer');
+      if (recContainer) recContainer.innerHTML = '';
     });
+
+    // ========================================================
+    // ฟังก์ชันระบบแก้ไขผลการเรียนสำหรับครู (Score Editor Modal)
+    // ========================================================
+    let modalEditingStudentIndex = 0;
+    let modalScoresTemp = [];
+
+    function openStudentScoreModal(studentIdx) {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      if (!cls || !cls.Students || cls.Students.length === 0) return;
+
+      if (studentIdx !== undefined && studentIdx >= 0 && studentIdx < cls.Students.length) {
+        modalEditingStudentIndex = studentIdx;
+      } else {
+        modalEditingStudentIndex = currentStudentIndex;
+      }
+
+      // สร้างตัวเลือกเปลี่ยนนักเรียนใน Modal
+      const switcher = document.getElementById('modalStudentSwitcher');
+      if (switcher) {
+        switcher.innerHTML = cls.Students.map((st, i) => 
+          `<option value="${i}" ${i === modalEditingStudentIndex ? 'selected' : ''}>เลขที่ ${st.No} ${st.FullName}</option>`
+        ).join('');
+      }
+
+      loadStudentIntoModal(modalEditingStudentIndex);
+
+      const modal = document.getElementById('scoreEditModal');
+      if (modal) modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function switchModalStudent(newIdx) {
+      modalEditingStudentIndex = newIdx;
+      loadStudentIntoModal(newIdx);
+    }
+
+    function loadStudentIntoModal(idx) {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      const student = cls.Students[idx];
+      if (!student) return;
+
+      const titleEl = document.getElementById('scoreModalStudentTitle');
+      const subEl = document.getElementById('scoreModalStudentSubtitle');
+      if (titleEl) titleEl.textContent = `แก้ไขคะแนนผลการเรียน - ${student.FullName}`;
+      if (subEl) subEl.textContent = `${cls.ClassName || cls.Grade} | เลขประจำตัว ${student.StudentId} | เลขที่ ${student.No}`;
+
+      // โหลดคะแนน 15 รายวิชา
+      const scoresList = (student.Scores && student.Scores.length > 0) ? student.Scores : (student.Subjects || []);
+      modalScoresTemp = scoresList.map((sub, sIdx) => {
+        const isBasic = sIdx < 9;
+        const maxC = sub.MaxCollect || (isBasic ? 35 : 40);
+        const maxE = sub.MaxExam || (isBasic ? 15 : 10);
+        return {
+          Index: sub.Index || (sIdx + 1),
+          Code: sub.Code || '',
+          Name: sub.Name || '',
+          Type: sub.Type || (isBasic ? 'พื้นฐาน' : 'เพิ่มเติม'),
+          maxC: maxC,
+          maxE: maxE,
+          Collect: sub.Collect !== undefined ? Number(sub.Collect) : 0,
+          Exam: sub.Exam !== undefined ? Number(sub.Exam) : 0,
+          Total: sub.Total !== undefined ? Number(sub.Total) : 0
+        };
+      });
+
+      renderModalScoreTable();
+    }
+
+    function renderModalScoreTable() {
+      const tbody = document.getElementById('modalScoreTableBody');
+      if (!tbody) return;
+
+      let html = '';
+      modalScoresTemp.forEach((sub, sIdx) => {
+        const cVal = sub.Collect;
+        const eVal = sub.Exam;
+        const tot = cVal + eVal;
+        const cInvalid = cVal < 0 || cVal > sub.maxC;
+        const eInvalid = eVal < 0 || eVal > sub.maxE;
+
+        html += `
+          <tr>
+            <td style="text-align: center; color: var(--gray-600); font-weight: 600;">${sIdx + 1}</td>
+            <td style="text-align: center; font-family: monospace; font-size: 0.95rem; font-weight: 600; color: #1e40af;">${sub.Code}</td>
+            <td style="font-weight: 600; color: #1e293b;">${sub.Name}</td>
+            <td style="text-align: center;">
+              <span class="badge ${sub.Type === 'พื้นฐาน' ? 'badge-primary' : 'badge-warning'}" style="font-size: 0.75rem; padding: 2px 8px;">
+                ${sub.Type}
+              </span>
+            </td>
+            <td style="text-align: center;">
+              <input type="number" 
+                class="score-input ${cInvalid ? 'invalid-score' : ''}" 
+                id="modalCollectInput_${sIdx}" 
+                min="0" 
+                max="${sub.maxC}" 
+                step="0.5" 
+                value="${cVal}" 
+                oninput="onModalScoreChanged(${sIdx}, 'Collect', this.value)"
+                title="คะแนนเก็บเต็ม ${sub.maxC}">
+              <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">เต็ม ${sub.maxC}</div>
+            </td>
+            <td style="text-align: center;">
+              <input type="number" 
+                class="score-input ${eInvalid ? 'invalid-score' : ''}" 
+                id="modalExamInput_${sIdx}" 
+                min="0" 
+                max="${sub.maxE}" 
+                step="0.5" 
+                value="${eVal}" 
+                oninput="onModalScoreChanged(${sIdx}, 'Exam', this.value)"
+                title="คะแนนสอบเต็ม ${sub.maxE}">
+              <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">เต็ม ${sub.maxE}</div>
+            </td>
+            <td class="score-total-cell" id="modalSubjectTotal_${sIdx}">
+              ${tot}
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+      recalculateModalSummary();
+    }
+
+    function onModalScoreChanged(sIdx, type, val) {
+      if (!modalScoresTemp[sIdx]) return;
+      let num = parseFloat(val);
+      if (isNaN(num)) num = 0;
+
+      modalScoresTemp[sIdx][type] = num;
+      modalScoresTemp[sIdx].Total = (modalScoresTemp[sIdx].Collect || 0) + (modalScoresTemp[sIdx].Exam || 0);
+
+      // ตรวจสอบความถูกต้องของคะแนน
+      const inputEl = document.getElementById('modal' + type + 'Input_' + sIdx);
+      const maxLimit = type === 'Collect' ? modalScoresTemp[sIdx].maxC : modalScoresTemp[sIdx].maxE;
+      if (inputEl) {
+        if (num < 0 || num > maxLimit) {
+          inputEl.classList.add('invalid-score');
+        } else {
+          inputEl.classList.remove('invalid-score');
+        }
+      }
+
+      // อัปเดตช่องผลรวมวิชานี้
+      const totCell = document.getElementById('modalSubjectTotal_' + sIdx);
+      if (totCell) {
+        totCell.textContent = modalScoresTemp[sIdx].Total;
+      }
+
+      recalculateModalSummary();
+    }
+
+    function recalculateModalSummary() {
+      let sumCollect = 0;
+      let sumExam = 0;
+      let sumTotal = 0;
+
+      modalScoresTemp.forEach(s => {
+        sumCollect += (Number(s.Collect) || 0);
+        sumExam += (Number(s.Exam) || 0);
+        sumTotal += (Number(s.Total) || 0);
+      });
+
+      const avg = modalScoresTemp.length > 0 ? (sumTotal / modalScoresTemp.length).toFixed(2) : '0.00';
+
+      const collEl = document.getElementById('modalTotalCollect');
+      const examEl = document.getElementById('modalTotalExam');
+      const totEl = document.getElementById('modalTotalScore');
+      const avgEl = document.getElementById('modalAvgScore');
+
+      if (collEl) collEl.textContent = sumCollect;
+      if (examEl) examEl.textContent = sumExam;
+      if (totEl) totEl.textContent = `${sumTotal} / 750`;
+      if (avgEl) avgEl.textContent = avg;
+    }
+
+    function closeStudentScoreModal() {
+      const modal = document.getElementById('scoreEditModal');
+      if (modal) modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    function onModalOverlayClick(e) {
+      if (e.target.id === 'scoreEditModal') {
+        closeStudentScoreModal();
+      }
+    }
+
+    function saveModalStudentScores() {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      const student = cls.Students[modalEditingStudentIndex];
+      if (!student) return;
+
+      // ตรวจสอบคะแนน
+      for (let i = 0; i < modalScoresTemp.length; i++) {
+        const item = modalScoresTemp[i];
+        if (item.Collect < 0 || item.Collect > item.maxC) {
+          alert(`วิชา "${item.Name}" คะแนนเก็บไม่ถูกต้อง (ต้องอยู่ระหว่าง 0 - ${item.maxC})`);
+          return;
+        }
+        if (item.Exam < 0 || item.Exam > item.maxE) {
+          alert(`วิชา "${item.Name}" คะแนนสอบไม่ถูกต้อง (ต้องอยู่ระหว่าง 0 - ${item.maxE})`);
+          return;
+        }
+      }
+
+      // บันทึกลง student.Scores และ student.Subjects
+      let sumCollect = 0;
+      let sumExam = 0;
+      let sumTotal = 0;
+
+      modalScoresTemp.forEach((sub, sIdx) => {
+        if (student.Scores && student.Scores[sIdx]) {
+          student.Scores[sIdx].Collect = sub.Collect;
+          student.Scores[sIdx].Exam = sub.Exam;
+          student.Scores[sIdx].Total = sub.Total;
+        }
+        if (student.Subjects && student.Subjects[sIdx]) {
+          student.Subjects[sIdx].Collect = sub.Collect;
+          student.Subjects[sIdx].Exam = sub.Exam;
+          student.Subjects[sIdx].Total = sub.Total;
+        }
+        sumCollect += sub.Collect;
+        sumExam += sub.Exam;
+        sumTotal += sub.Total;
+      });
+
+      student.TotalCollect = sumCollect;
+      student.TotalExam = sumExam;
+      student.TotalScore = sumTotal;
+      student.AverageScore = Number((sumTotal / 15.0).toFixed(2));
+
+      // บันทึกลง localStorage เพื่อให้ข้อมูลคงอยู่ถาวร
+      saveCustomScoresToStorage(student.StudentId, student);
+
+      // อัปเดตการแสดงผลหน้าจอ
+      if (currentStudentIndex === modalEditingStudentIndex) {
+        renderCurrentStudent();
+      }
+      renderStudentList();
+      renderOverviewTable();
+      if (typeof currentActiveTab !== 'undefined' && (currentActiveTab === 'correction' || currentActiveTab === 'editgrade')) {
+        renderFailingSubjectsEditor();
+        updateCorrectionPreview();
+      }
+
+      closeStudentScoreModal();
+      showToast(`✅ บันทึกคะแนนของ ${student.FullName} เรียบร้อยแล้ว (คะแนนรวม: ${student.TotalScore}, เฉลี่ย: ${student.AverageScore})`);
+    }
+
+    function saveCustomScoresToStorage(studentId, student) {
+      try {
+        let store = {};
+        const raw = localStorage.getItem('STUDENT_CUSTOM_SCORES');
+        if (raw) {
+          store = JSON.parse(raw);
+        }
+        const savedScores = (student.Scores || student.Subjects || []).map(s => ({
+          Index: s.Index,
+          Code: s.Code,
+          Name: s.Name,
+          Collect: s.Collect,
+          Exam: s.Exam,
+          Total: s.Total
+        }));
+        store[studentId] = {
+          Scores: savedScores,
+          Subjects: savedScores,
+          TotalCollect: student.TotalCollect,
+          TotalExam: student.TotalExam,
+          TotalScore: student.TotalScore,
+          AverageScore: student.AverageScore,
+          UpdatedAt: new Date().toISOString()
+        };
+        localStorage.setItem('STUDENT_CUSTOM_SCORES', JSON.stringify(store));
+      } catch (e) {
+        console.error('Failed to save score to localStorage', e);
+      }
+    }
+
+    function resetCurrentStudentScores() {
+      const cls = PORPHOR_DATA[currentClassIndex];
+      const student = cls.Students[modalEditingStudentIndex];
+      if (!student) return;
+
+      if (!confirm(`คุณต้องการคืนค่าคะแนนเดิมของ "${student.FullName}" จากฐานข้อมูลใช่หรือไม่?`)) {
+        return;
+      }
+
+      try {
+        const raw = localStorage.getItem('STUDENT_CUSTOM_SCORES');
+        if (raw) {
+          const store = JSON.parse(raw);
+          delete store[student.StudentId];
+          localStorage.setItem('STUDENT_CUSTOM_SCORES', JSON.stringify(store));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      location.reload();
+    }
   </script>
+  <!-- ภาชนะพิมพ์คำร้องขอแก้ไขผลการเรียน (Print Only) -->
+  <div id="correctionPrintContainer"></div>
+
+  <!-- ภาชนะพิมพ์แบบฟอร์มลงนามรับผลการเรียน (Print Only) -->
+  <div id="receiptPrintContainer"></div>
+
+  <!-- Modal สำหรับครูแก้ไขผลการเรียนของนักเรียน -->
+  <div id="scoreEditModal" class="score-modal-overlay no-print" style="display: none;" onclick="onModalOverlayClick(event)">
+    <div class="score-modal-box" onclick="event.stopPropagation()">
+      <div class="score-modal-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="font-size: 1.5rem;">✏️</div>
+          <div>
+            <h3 style="font-family: 'Prompt', sans-serif; font-size: 1.25rem; font-weight: 700; margin: 0;" id="scoreModalStudentTitle">
+              แก้ไขคะแนนผลการเรียน
+            </h3>
+            <p style="font-size: 0.9rem; margin: 0; opacity: 0.9;" id="scoreModalStudentSubtitle">
+              กำลังโหลดข้อมูล...
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <select id="modalStudentSwitcher" onchange="switchModalStudent(parseInt(this.value))" style="font-family: inherit; font-size: 0.9rem; padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.15); color: white; font-weight: 600; cursor: pointer;">
+            <!-- student options -->
+          </select>
+          <button class="modal-close-btn" onclick="closeStudentScoreModal()" title="ปิดหน้าต่าง">✕</button>
+        </div>
+      </div>
+
+      <div class="score-modal-body">
+        <div class="score-modal-notice">
+          ℹ️ <b>เกณฑ์คะแนน:</b> 
+          วิชาพื้นฐาน (1-9): คะแนนเก็บเต็ม 35, คะแนนสอบเต็ม 15, รวม 50 | 
+          วิชาเพิ่มเติม (10-15): คะแนนเก็บเต็ม 40, คะแนนสอบเต็ม 10, รวม 50
+        </div>
+
+        <div class="score-table-wrapper">
+          <table class="score-edit-table">
+            <thead>
+              <tr>
+                <th style="width: 45px; text-align: center;">ที่</th>
+                <th style="width: 100px; text-align: center;">รหัสวิชา</th>
+                <th>รายวิชา</th>
+                <th style="width: 90px; text-align: center;">กลุ่ม</th>
+                <th style="width: 120px; text-align: center;">คะแนนเก็บ</th>
+                <th style="width: 120px; text-align: center;">คะแนนสอบ</th>
+                <th style="width: 100px; text-align: center;">รวม (50)</th>
+              </tr>
+            </thead>
+            <tbody id="modalScoreTableBody">
+              <!-- Subject rows generated by JS -->
+            </tbody>
+            <tfoot>
+              <tr class="score-total-row">
+                <td colspan="4" style="text-align: right; font-weight: bold; padding-right: 12px;">รวมทั้งหมด (15 วิชา):</td>
+                <td style="text-align: center; font-weight: bold; color: #1e3a8a;" id="modalTotalCollect">0</td>
+                <td style="text-align: center; font-weight: bold; color: #1e3a8a;" id="modalTotalExam">0</td>
+                <td style="text-align: center; font-weight: 800; font-size: 1.1rem; color: #059669;" id="modalTotalScore">0 / 750</td>
+              </tr>
+              <tr class="score-avg-row">
+                <td colspan="6" style="text-align: right; font-weight: bold; padding-right: 12px; font-size: 1.05rem;">คะแนนเฉลี่ย (เต็ม 50.00):</td>
+                <td style="text-align: center; font-weight: 800; font-size: 1.25rem; color: #2563eb;" id="modalAvgScore">0.00</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div class="score-modal-footer">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <button class="btn btn-outline btn-sm" onclick="resetCurrentStudentScores()" style="color: #dc2626; border-color: #fca5a5; background: #fff5f5;" title="ลบคะแนนที่เคยแก้ไขเฉพาะคนนี้และกลับไปใช้คะแนนเดิม">
+            🔄 คืนค่าคะแนนเดิมของคนนี้
+          </button>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <button class="btn btn-outline" onclick="closeStudentScoreModal()" style="color: #475569; border-color: #cbd5e1;">
+            ยกเลิก
+          </button>
+          <button class="btn btn-success" onclick="saveModalStudentScores()" style="padding: 0.6rem 1.6rem; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 6px rgba(5, 150, 105, 0.3);">
+            💾 บันทึกคะแนนลงระบบ
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
