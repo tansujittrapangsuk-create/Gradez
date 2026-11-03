@@ -1709,8 +1709,14 @@
           cls.Students.forEach(st => {
             if (customMap[st.StudentId]) {
               const custom = customMap[st.StudentId];
-              if (Array.isArray(custom.Subjects)) {
-                custom.Subjects.forEach((sub, sIdx) => {
+              const savedList = custom.Scores || custom.Subjects;
+              if (Array.isArray(savedList)) {
+                savedList.forEach((sub, sIdx) => {
+                  if (st.Scores && st.Scores[sIdx]) {
+                    st.Scores[sIdx].Collect = sub.Collect;
+                    st.Scores[sIdx].Exam = sub.Exam;
+                    st.Scores[sIdx].Total = sub.Total;
+                  }
                   if (st.Subjects && st.Subjects[sIdx]) {
                     st.Subjects[sIdx].Collect = sub.Collect;
                     st.Subjects[sIdx].Exam = sub.Exam;
@@ -2695,14 +2701,16 @@
       if (subEl) subEl.textContent = `${cls.ClassName || cls.Grade} | เลขประจำตัว ${student.StudentId} | เลขที่ ${student.No}`;
 
       // โหลดคะแนน 15 รายวิชา
-      modalScoresTemp = (student.Subjects || []).map((sub, sIdx) => {
+      const scoresList = (student.Scores && student.Scores.length > 0) ? student.Scores : (student.Subjects || []);
+      modalScoresTemp = scoresList.map((sub, sIdx) => {
         const isBasic = sIdx < 9;
-        const maxC = isBasic ? 35 : 40;
-        const maxE = isBasic ? 15 : 10;
+        const maxC = sub.MaxCollect || (isBasic ? 35 : 40);
+        const maxE = sub.MaxExam || (isBasic ? 15 : 10);
         return {
+          Index: sub.Index || (sIdx + 1),
           Code: sub.Code || '',
           Name: sub.Name || '',
-          Type: isBasic ? 'พื้นฐาน' : 'เพิ่มเติม',
+          Type: sub.Type || (isBasic ? 'พื้นฐาน' : 'เพิ่มเติม'),
           maxC: maxC,
           maxE: maxE,
           Collect: sub.Collect !== undefined ? Number(sub.Collect) : 0,
@@ -2853,13 +2861,18 @@
         }
       }
 
-      // บันทึกลง student.Subjects
+      // บันทึกลง student.Scores และ student.Subjects
       let sumCollect = 0;
       let sumExam = 0;
       let sumTotal = 0;
 
       modalScoresTemp.forEach((sub, sIdx) => {
-        if (student.Subjects[sIdx]) {
+        if (student.Scores && student.Scores[sIdx]) {
+          student.Scores[sIdx].Collect = sub.Collect;
+          student.Scores[sIdx].Exam = sub.Exam;
+          student.Scores[sIdx].Total = sub.Total;
+        }
+        if (student.Subjects && student.Subjects[sIdx]) {
           student.Subjects[sIdx].Collect = sub.Collect;
           student.Subjects[sIdx].Exam = sub.Exam;
           student.Subjects[sIdx].Total = sub.Total;
@@ -2895,14 +2908,17 @@
         if (raw) {
           store = JSON.parse(raw);
         }
+        const savedScores = (student.Scores || student.Subjects || []).map(s => ({
+          Index: s.Index,
+          Code: s.Code,
+          Name: s.Name,
+          Collect: s.Collect,
+          Exam: s.Exam,
+          Total: s.Total
+        }));
         store[studentId] = {
-          Subjects: student.Subjects.map(s => ({
-            Code: s.Code,
-            Name: s.Name,
-            Collect: s.Collect,
-            Exam: s.Exam,
-            Total: s.Total
-          })),
+          Scores: savedScores,
+          Subjects: savedScores,
           TotalCollect: student.TotalCollect,
           TotalExam: student.TotalExam,
           TotalScore: student.TotalScore,
