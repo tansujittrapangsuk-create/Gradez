@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -1025,6 +1025,161 @@
         break-after: auto !important;
       }
     }
+
+    /* ปุ่มสีพิเศษ */
+    .btn-warning {
+      background-color: #d97706;
+      color: white;
+    }
+    .btn-warning:hover {
+      background-color: #b45309;
+      transform: translateY(-1px);
+    }
+    .btn-info {
+      background-color: #0284c7;
+      color: white;
+    }
+    .btn-info:hover {
+      background-color: #0369a1;
+      transform: translateY(-1px);
+    }
+
+    /* กล่องเอกสารทางการ (คำร้องขอแก้ไข / แบบฟอร์มรับผลการเรียน) */
+    .official-doc-page {
+      background: white;
+      width: 100%;
+      max-width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 2rem auto;
+      padding: 14mm 16mm;
+      box-shadow: var(--shadow-md);
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-family: 'TH Sarabun PSK', 'THSarabunPSK', 'TH Sarabun New', 'Sarabun', sans-serif;
+      font-size: 15.5pt;
+      line-height: 1.28;
+      color: black;
+    }
+
+    .doc-header-emblem {
+      height: 0.8in;
+      display: block;
+      margin: 0 auto 4px auto;
+      object-fit: contain;
+    }
+
+    .doc-title {
+      text-align: center;
+      font-weight: bold;
+      font-size: 17pt;
+      line-height: 1.2;
+      margin-bottom: 2px;
+    }
+
+    .doc-subtitle {
+      text-align: center;
+      font-size: 15pt;
+      margin-bottom: 8px;
+    }
+
+    .correction-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      font-size: 14.5pt;
+    }
+    .correction-table th, .correction-table td {
+      border: 1px solid black;
+      padding: 4px 6px;
+    }
+    .correction-table th {
+      background-color: #f8fafc;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6px 0;
+      font-size: 13.5pt;
+    }
+    .receipt-table th, .receipt-table td {
+      border: 1px solid black;
+      padding: 3px 5px;
+    }
+    .receipt-table th {
+      background-color: #f1f5f9;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* กฎการพิมพ์แยกเฉพาะสำหรับคำร้องขอแก้ไข และแบบฟอร์มลงนามรับ */
+    @media print {
+      body.print-correction {
+        background: white !important;
+      }
+      body.print-correction #correctionPrintContainer {
+        display: block !important;
+      }
+      body.print-correction .official-doc-page {
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        padding: 4mm 6mm !important;
+        max-width: 194mm !important;
+        max-height: 288mm !important;
+        overflow: hidden !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      body.print-correction .app-header,
+      body.print-correction .sidebar,
+      body.print-correction .preview-toolbar,
+      body.print-correction .stats-grid,
+      body.print-correction .comment-editor-card,
+      body.print-correction #tabPreviewContent,
+      body.print-correction #tabOverviewContent,
+      body.print-correction #tabCorrectionContent,
+      body.print-correction #tabReceiptContent,
+      body.print-correction #singlePrintCard,
+      body.print-correction #batchPrintContainer,
+      body.print-correction .no-print {
+        display: none !important;
+      }
+
+      body.print-receipt {
+        background: white !important;
+      }
+      body.print-receipt #receiptPrintContainer {
+        display: block !important;
+      }
+      body.print-receipt .official-doc-page {
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        padding: 4mm 6mm !important;
+        max-width: 194mm !important;
+        page-break-inside: auto !important;
+      }
+      body.print-receipt .app-header,
+      body.print-receipt .sidebar,
+      body.print-receipt .preview-toolbar,
+      body.print-receipt .stats-grid,
+      body.print-receipt .comment-editor-card,
+      body.print-receipt #tabPreviewContent,
+      body.print-receipt #tabOverviewContent,
+      body.print-receipt #tabCorrectionContent,
+      body.print-receipt #tabReceiptContent,
+      body.print-receipt #singlePrintCard,
+      body.print-receipt #batchPrintContainer,
+      body.print-receipt .no-print {
+        display: none !important;
+      }
+
+      body:not(.print-batch):not(.print-correction):not(.print-receipt) #correctionPrintContainer,
+      body:not(.print-batch):not(.print-correction):not(.print-receipt) #receiptPrintContainer {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1043,11 +1198,17 @@
         <button class="btn btn-cloud btn-sm" onclick="syncFromCloud()" id="btnSync">
           🔄 ซิงค์การประเมินจาก BSD-EVAL
         </button>
+        <button class="btn btn-warning btn-sm" onclick="switchTab('correction')" title="แบบฟอร์มคำร้องและระบบแก้ไขผลการเรียน">
+          ✏️ คำร้องขอแก้ไขผลการเรียน
+        </button>
+        <button class="btn btn-info btn-sm" onclick="switchTab('receipt')" title="แบบฟอร์มบัญชีลงนามรับใบแจ้งผลการเรียน">
+          📋 แบบฟอร์มการรับผลการเรียน
+        </button>
         <button class="btn btn-primary" onclick="printCurrentStudent()">
           🖨 พิมพ์ใบแจ้งผลการเรียน (คนนี้)
         </button>
         <button class="btn btn-success" onclick="printAllStudentsInClass()">
-          📑 พิมพ์ทั้งห้องพร้อมกัน (<span id="btnBatchCount">0</span> คน)
+          📑 พิมพ์ทั้งห้อง (<span id="btnBatchCount">0</span> คน)
         </button>
       </div>
     </div>
@@ -1092,8 +1253,10 @@
       <!-- แถบเครื่องมือด้านบน -->
       <div class="preview-toolbar no-print">
         <div class="toolbar-left">
-          <button class="tab-btn active" id="tabPreview" onclick="switchTab('preview')">📄 ตัวอย่างใบแจ้งผลการเรียน (แบบปรับใหม่ A4)</button>
-          <button class="tab-btn" id="tabOverview" onclick="switchTab('overview')">📊 ตารางสรุปคะแนน ปพ.5 ทั้งชั้นเรียน</button>
+          <button class="tab-btn active" id="tabPreview" onclick="switchTab('preview')">📄 ใบแจ้งผลการเรียน (A4)</button>
+          <button class="tab-btn" id="tabOverview" onclick="switchTab('overview')">📊 ตารางสรุปคะแนน</button>
+          <button class="tab-btn" id="tabCorrection" onclick="switchTab('correction')">✏️ คำร้องขอแก้ไขผลการเรียน</button>
+          <button class="tab-btn" id="tabReceipt" onclick="switchTab('receipt')">📋 แบบฟอร์มการรับผลการเรียน</button>
         </div>
         <div class="toolbar-right" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
           <select id="quickStudentSelect" onchange="selectStudent(parseInt(this.value))" style="font-family: inherit; font-size: 0.85rem; padding: 4px 8px; border-radius: 6px; border: 1.5px solid #2563eb; background: white; color: #1e3a8a; font-weight: 600; cursor: pointer;" title="เลือกนักเรียนรายบุคคลเพื่อดูและพิมพ์">
@@ -1179,6 +1342,142 @@
             <!-- เรนเดอร์ข้อมูลตาราง -->
           </table>
         </div>
+      <!-- แท็บที่ 3: คำร้องขอแก้ไขผลการเรียน และระบบแก้ไขคะแนน -->
+      <div id="tabCorrectionContent" style="display: none;">
+        <div class="table-container" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; border-bottom: 1.5px solid var(--gray-200); padding-bottom: 0.8rem;">
+            <div>
+              <h2 style="font-family: 'Prompt'; font-size: 1.25rem; color: #b45309; font-weight: 700; margin-bottom: 4px;">
+                ✏️ ระบบจัดการคำร้องและแก้ไขผลการเรียน (ปพ.5)
+              </h2>
+              <p style="font-size: 0.9rem; color: var(--gray-600);">
+                คุณครูสามารถเลือกนักเรียนเพื่อแก้ไขคะแนนในระบบได้ทันที และพิมพ์แบบฟอร์มคำร้องขออนุมัติแก้ไขผลการเรียนเป็นไฟล์ PDF / กระดาษ A4
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="btn btn-warning" onclick="saveGradeCorrection()">
+                💾 บันทึกคะแนนลงระบบทันที
+              </button>
+              <button class="btn btn-primary" onclick="printCorrectionForm()">
+                🖨 พิมพ์แบบฟอร์มคำร้อง (PDF/A4)
+              </button>
+            </div>
+          </div>
+
+          <!-- แบบฟอร์มควบคุมการแก้ไขสำหรับครู -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; background: #fffbeb; padding: 1.25rem; border-radius: 10px; border: 1px solid #fde68a; margin-bottom: 1.5rem;">
+            <div>
+              <label style="font-weight: 600; font-size: 0.95rem; color: #92400e; display: block; margin-bottom: 4px;">เลือกระดับชั้นเรียน:</label>
+              <select id="corrClassSelect" class="class-select" onchange="onCorrClassChange()" style="background: white; border: 1.5px solid #d97706;">
+              </select>
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.95rem; color: #92400e; display: block; margin-bottom: 4px;">เลือกนักเรียน:</label>
+              <select id="corrStudentSelect" class="class-select" onchange="onCorrStudentChange()" style="background: white; border: 1.5px solid #d97706;">
+              </select>
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.95rem; color: #92400e; display: block; margin-bottom: 4px;">เลือกรายวิชาที่ขอแก้ไข:</label>
+              <select id="corrSubjectSelect" class="class-select" onchange="onCorrSubjectChange()" style="background: white; border: 1.5px solid #d97706;">
+              </select>
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.95rem; color: #92400e; display: block; margin-bottom: 4px;">ชื่อครูผู้สอน / ผู้ยื่นคำร้อง:</label>
+              <input type="text" id="corrTeacherName" class="search-box" style="background: white; border: 1.5px solid #d97706;" placeholder="ระบุชื่อ-สกุลครูผู้สอน" oninput="updateCorrectionPreview()">
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.95rem; color: #92400e; display: block; margin-bottom: 4px;">วันที่ยื่นคำร้อง:</label>
+              <input type="text" id="corrDate" class="search-box" style="background: white; border: 1.5px solid #d97706;" value="26 ตุลาคม 2569" oninput="updateCorrectionPreview()">
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.95rem; color: #92400e; display: block; margin-bottom: 4px;">เหตุผลความจำเป็นในการขอแก้ไข:</label>
+              <select id="corrReasonPreset" class="class-select" style="background: white; border: 1.5px solid #d97706; margin-bottom: 4px;" onchange="onCorrReasonPresetChange(this.value)">
+                <option value="กรอกคะแนนผิดพลาดจากการรวมคะแนน">กรอกคะแนนผิดพลาดจากการรวมคะแนน</option>
+                <option value="บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด">บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด</option>
+                <option value="นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข">นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข</option>
+                <option value="ตรวจทานข้อสอบใหม่พบข้อผิดพลาด">ตรวจทานข้อสอบใหม่พบข้อผิดพลาด</option>
+                <option value="other">อื่นๆ (ระบุเอง)</option>
+              </select>
+              <input type="text" id="corrReasonCustom" class="search-box" style="background: white; border: 1.5px solid #d97706; display: none;" placeholder="ระบุเหตุผลอื่นๆ..." oninput="updateCorrectionPreview()">
+            </div>
+          </div>
+
+          <!-- แผงเปรียบเทียบคะแนนเดิม vs คะแนนใหม่ -->
+          <div style="background: white; border-radius: 8px; border: 1.5px solid var(--gray-200); padding: 1rem; margin-bottom: 1.5rem;">
+            <h3 style="font-family: 'Prompt'; font-size: 1.05rem; color: #1e3a8a; margin-bottom: 0.75rem;">
+              📊 ปรับปรุงคะแนนรายวิชา: <span id="corrSubjectTitle" style="color: #2563eb;">-</span>
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; text-align: center;">
+              <div style="background: #f1f5f9; padding: 0.75rem; border-radius: 8px;">
+                <div style="font-size: 0.85rem; color: var(--gray-600); font-weight: 600;">คะแนนเก็บเดิม (เต็ม <span id="corrMaxCollect">-</span>)</div>
+                <div id="corrOldCollect" style="font-size: 1.4rem; font-weight: 700; color: #334155;">0</div>
+              </div>
+              <div style="background: #f1f5f9; padding: 0.75rem; border-radius: 8px;">
+                <div style="font-size: 0.85rem; color: var(--gray-600); font-weight: 600;">คะแนนสอบเดิม (เต็ม <span id="corrMaxExam">-</span>)</div>
+                <div id="corrOldExam" style="font-size: 1.4rem; font-weight: 700; color: #334155;">0</div>
+              </div>
+              <div style="background: #f1f5f9; padding: 0.75rem; border-radius: 8px;">
+                <div style="font-size: 0.85rem; color: var(--gray-600); font-weight: 600;">รวมเดิม (เต็ม 50)</div>
+                <div id="corrOldTotal" style="font-size: 1.4rem; font-weight: 700; color: #334155;">0</div>
+              </div>
+              <div style="background: #eff6ff; padding: 0.75rem; border-radius: 8px; border: 2px solid #3b82f6;">
+                <div style="font-size: 0.85rem; color: #1e40af; font-weight: 700;">คะแนนเก็บใหม่ (เต็ม <span id="corrMaxCollect2">-</span>)</div>
+                <input type="number" id="corrNewCollect" style="width: 90px; text-align: center; font-size: 1.3rem; font-weight: 700; border: 1.5px solid #2563eb; border-radius: 6px; padding: 2px;" oninput="onCorrScoreInput()">
+              </div>
+              <div style="background: #eff6ff; padding: 0.75rem; border-radius: 8px; border: 2px solid #3b82f6;">
+                <div style="font-size: 0.85rem; color: #1e40af; font-weight: 700;">คะแนนสอบใหม่ (เต็ม <span id="corrMaxExam2">-</span>)</div>
+                <input type="number" id="corrNewExam" style="width: 90px; text-align: center; font-size: 1.3rem; font-weight: 700; border: 1.5px solid #2563eb; border-radius: 6px; padding: 2px;" oninput="onCorrScoreInput()">
+              </div>
+              <div style="background: #f0fdf4; padding: 0.75rem; border-radius: 8px; border: 2px solid #10b981;">
+                <div style="font-size: 0.85rem; color: #065f46; font-weight: 700;">รวมใหม่ (เต็ม 50)</div>
+                <div id="corrNewTotal" style="font-size: 1.4rem; font-weight: 700; color: #059669;">0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ตัวอย่างแบบฟอร์มคำร้องที่จะพิมพ์ (A4) -->
+          <div style="margin-top: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span style="font-weight: 700; color: var(--gray-700);">📄 ตัวอย่างเอกสารแบบคำร้องขออนุมัติแก้ไขผลการเรียน (พิมพ์ออก A4 พอดี 1 หน้า):</span>
+              <button class="btn btn-primary btn-sm" onclick="printCorrectionForm()">🖨 สั่งพิมพ์แบบฟอร์มนี้ (A4/PDF)</button>
+            </div>
+            <div class="official-doc-page" id="correctionDocPreview">
+              <!-- Rendered via JS updateCorrectionPreview() -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- แท็บที่ 4: แบบฟอร์มการรับผลการเรียน -->
+      <div id="tabReceiptContent" style="display: none;">
+        <div class="table-container">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; border-bottom: 1.5px solid var(--gray-200); padding-bottom: 0.8rem;">
+            <div>
+              <h2 style="font-family: 'Prompt'; font-size: 1.25rem; color: #0f766e; font-weight: 700; margin-bottom: 4px;">
+                📋 บัญชีลงนามการรับใบแจ้งผลการเรียน (ปพ.5)
+              </h2>
+              <p style="font-size: 0.9rem; color: var(--gray-600);">
+                แบบฟอร์มสำหรับผู้ปกครองลงลายมือชื่อรับผลการเรียน เพื่อเก็บเป็นหลักฐานงานทะเบียนและวัดผลของโรงเรียน
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+              <span style="font-weight: 600; font-size: 0.9rem;">ชั้นเรียน:</span>
+              <select id="receiptClassSelect" class="class-select" style="min-width: 150px;" onchange="renderReceiptSheet()">
+              </select>
+              <span style="font-weight: 600; font-size: 0.9rem; margin-left: 0.5rem;">วันที่นัดรับ:</span>
+              <input type="text" id="receiptDateInput" class="search-box" style="width: 160px;" value="26 ตุลาคม 2569" oninput="renderReceiptSheet()">
+              <button class="btn btn-success" onclick="printReceiptForm()">
+                🖨 พิมพ์แบบฟอร์มลงนามรับ (A4)
+              </button>
+            </div>
+          </div>
+
+          <!-- เอกสารตัวอย่างที่จะพิมพ์ -->
+          <div class="official-doc-page" id="receiptDocPreview">
+            <!-- Rendered via JS renderReceiptSheet() -->
+          </div>
+        </div>
+      </div>
       </div>
 
     </section>
@@ -1809,89 +2108,453 @@
       switchTab('preview');
     }
 
+    
+    // ==========================================
+    // จัดการแท็บและการสลับหน้าจอ (Switch Tabs)
+    // ==========================================
     function switchTab(tab) {
-      if (tab === 'preview') {
-        document.getElementById('tabPreviewContent').style.display = 'block';
-        document.getElementById('tabOverviewContent').style.display = 'none';
-        document.getElementById('tabPreview').classList.add('active');
-        document.getElementById('tabOverview').classList.remove('active');
-      } else {
-        document.getElementById('tabPreviewContent').style.display = 'none';
-        document.getElementById('tabOverviewContent').style.display = 'block';
-        document.getElementById('tabPreview').classList.remove('active');
-        document.getElementById('tabOverview').classList.add('active');
+      const tabs = ['preview', 'overview', 'correction', 'receipt'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+        const pane = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1) + 'Content');
+        if (btn) {
+          if (t === tab) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+        if (pane) {
+          pane.style.display = (t === tab) ? 'block' : 'none';
+        }
+      });
+
+      if (tab === 'correction') {
+        initCorrectionTab();
+      } else if (tab === 'receipt') {
+        initReceiptTab();
       }
     }
 
-    // ซิงค์ข้อมูลการประเมินล่าสุดจาก BSD-EVAL Cloud (Google Apps Script API)
-    async function syncFromCloud() {
-      const btn = document.getElementById('btnSync');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '⏳ กำลังดึงข้อมูลจาก BSD-EVAL...';
-      btn.disabled = true;
+    // ========================================================
+    // ฟังก์ชันระบบคำร้องขอแก้ไขผลการเรียน (Grade Amendment Request)
+    // ========================================================
+    function initCorrectionTab() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const classSel = document.getElementById('corrClassSelect');
+      if (!classSel) return;
+      
+      classSel.innerHTML = classesList.map((c, idx) => 
+        `<option value="${idx}" ${idx === currentClassIndex ? 'selected' : ''}>${c.Grade || ('ชั้น ป.' + (idx+1))}</option>`
+      ).join('');
 
-      try {
-        const res = await fetch(`${CLOUD_WEBAPP_URL}?action=getAllData&t=${Date.now()}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const result = await res.json();
-        
-        if (!result.success || !result.data) {
-          throw new Error('ไม่พบข้อมูลการประเมินจากระบบคลาวด์');
-        }
+      onCorrClassChange();
+    }
 
-        const cloudData = result.data;
-        const cloudStudentsByCode = {};
-        const cloudStudentsByName = {};
+    function onCorrClassChange() {
+      const classIdx = parseInt(document.getElementById('corrClassSelect').value) || 0;
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      if (!cls || !cls.Students) return;
 
-        (cloudData.students || []).forEach(st => {
-          if (st.studentCode) cloudStudentsByCode[String(st.studentCode).trim()] = st;
-          const cleanName = ((st.prefix || '') + (st.firstName || '') + (st.lastName || '')).replace(/\s+/g, '');
-          cloudStudentsByName[cleanName] = st;
-        });
+      const stSel = document.getElementById('corrStudentSelect');
+      stSel.innerHTML = cls.Students.map((s, idx) => 
+        `<option value="${idx}" ${idx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${s.No} ${s.FullName}</option>`
+      ).join('');
 
-        function ratingToText(val) {
-          if (val === 3 || val === '3') return 'ดีเยี่ยม';
-          if (val === 2 || val === '2') return 'ดี';
-          if (val === 1 || val === '1') return 'ผ่าน';
-          return 'ไม่ผ่าน';
-        }
-
-        let updatedCount = 0;
-        const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
-        classesList.forEach(cls => {
-          cls.Students.forEach(st => {
-            const code = String(st.StudentId || '').trim();
-            const cleanLocalName = ((st.Prefix || '') + (st.FirstName || '') + (st.LastName || '')).replace(/\s+/g, '');
-            const cStudent = (code && cloudStudentsByCode[code]) || cloudStudentsByName[cleanLocalName];
-
-            if (cStudent) {
-              const cId = String(cStudent.id);
-              const rItem = cloudData.readingAssessments?.[cId];
-              const cItem = cloudData.characteristicsAssessments?.[cId];
-              const kItem = cloudData.competenciesAssessments?.[cId];
-
-              const rVal = rItem?.term1?.summary ?? rItem?.summary;
-              const kVal = kItem?.term1?.summary ?? kItem?.summary;
-              const cVal = cItem?.term1?.summary ?? cItem?.summary;
-
-              if (rVal !== undefined) st.Evaluations.Reading = ratingToText(rVal);
-              if (kVal !== undefined) st.Evaluations.Competency = ratingToText(kVal);
-              if (cVal !== undefined) st.Evaluations.Character = ratingToText(cVal);
-              updatedCount++;
-            }
-          });
-        });
-
-        renderCurrentStudent();
-        renderOverviewTable();
-        showToast(`อัปเดตข้อมูลการประเมินจาก BSD-EVAL สำเร็จแล้ว (${updatedCount} คน)`);
-      } catch (err) {
-        console.error('Sync error:', err);
-        showToast('เชื่อมต่อคลาวด์ไม่สำเร็จ (ใช้ข้อมูลประเมินล่าสุดที่บันทึกไว้แทน)');
-      } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+      const teacherInput = document.getElementById('corrTeacherName');
+      if (teacherInput && (!teacherInput.value || teacherInput.value.trim() === '')) {
+        teacherInput.value = cls.Teacher1 || '';
       }
+
+      onCorrStudentChange();
+    }
+
+    function onCorrStudentChange() {
+      const classIdx = parseInt(document.getElementById('corrClassSelect').value) || 0;
+      const stIdx = parseInt(document.getElementById('corrStudentSelect').value) || 0;
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const student = classesList[classIdx]?.Students?.[stIdx];
+      if (!student || !student.Scores) return;
+
+      const subSel = document.getElementById('corrSubjectSelect');
+      subSel.innerHTML = student.Scores.map((sc, idx) => 
+        `<option value="${sc.Index}">วิชาที่ ${sc.Index}: ${sc.Name} (${sc.Code || '-'})</option>`
+      ).join('');
+
+      onCorrSubjectChange();
+    }
+
+    function onCorrSubjectChange() {
+      const classIdx = parseInt(document.getElementById('corrClassSelect').value) || 0;
+      const stIdx = parseInt(document.getElementById('corrStudentSelect').value) || 0;
+      const subIdx = parseInt(document.getElementById('corrSubjectSelect').value) || 1;
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const student = classesList[classIdx]?.Students?.[stIdx];
+      const sc = student?.Scores?.find(s => s.Index === subIdx);
+      if (!sc) return;
+
+      const maxCollect = (subIdx <= 9) ? 35 : 40;
+      const maxExam = (subIdx <= 9) ? 15 : 10;
+
+      document.getElementById('corrSubjectTitle').innerText = `${sc.Name} (${sc.Code || ''})`;
+      document.getElementById('corrMaxCollect').innerText = maxCollect;
+      document.getElementById('corrMaxExam').innerText = maxExam;
+      document.getElementById('corrMaxCollect2').innerText = maxCollect;
+      document.getElementById('corrMaxExam2').innerText = maxExam;
+
+      document.getElementById('corrOldCollect').innerText = sc.Collect;
+      document.getElementById('corrOldExam').innerText = sc.Exam;
+      document.getElementById('corrOldTotal').innerText = sc.Total;
+
+      document.getElementById('corrNewCollect').value = sc.Collect;
+      document.getElementById('corrNewExam').value = sc.Exam;
+      document.getElementById('corrNewTotal').innerText = sc.Total;
+
+      updateCorrectionPreview();
+    }
+
+    function onCorrReasonPresetChange(val) {
+      const customInput = document.getElementById('corrReasonCustom');
+      if (val === 'other') {
+        customInput.style.display = 'block';
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+      }
+      updateCorrectionPreview();
+    }
+
+    function onCorrScoreInput() {
+      const subIdx = parseInt(document.getElementById('corrSubjectSelect').value) || 1;
+      const maxCollect = (subIdx <= 9) ? 35 : 40;
+      const maxExam = (subIdx <= 9) ? 15 : 10;
+
+      let newC = parseFloat(document.getElementById('corrNewCollect').value) || 0;
+      let newE = parseFloat(document.getElementById('corrNewExam').value) || 0;
+
+      if (newC > maxCollect) {
+        newC = maxCollect;
+        document.getElementById('corrNewCollect').value = maxCollect;
+        showToast(`คะแนนเก็บสูงสุดของวิชานี้คือ ${maxCollect} คะแนน`);
+      }
+      if (newE > maxExam) {
+        newE = maxExam;
+        document.getElementById('corrNewExam').value = maxExam;
+        showToast(`คะแนนสอบสูงสุดของวิชานี้คือ ${maxExam} คะแนน`);
+      }
+      if (newC < 0) { newC = 0; document.getElementById('corrNewCollect').value = 0; }
+      if (newE < 0) { newE = 0; document.getElementById('corrNewExam').value = 0; }
+
+      const newTot = Math.round((newC + newE) * 100) / 100;
+      document.getElementById('corrNewTotal').innerText = newTot;
+
+      updateCorrectionPreview();
+    }
+
+    function getCorrectionReason() {
+      const preset = document.getElementById('corrReasonPreset')?.value || '';
+      if (preset === 'other') {
+        return document.getElementById('corrReasonCustom')?.value?.trim() || 'มีความจำเป็นต้องแก้ไขตามระเบียบการวัดผล';
+      }
+      return preset;
+    }
+
+    function updateCorrectionPreview() {
+      const classIdx = parseInt(document.getElementById('corrClassSelect').value) || 0;
+      const stIdx = parseInt(document.getElementById('corrStudentSelect').value) || 0;
+      const subIdx = parseInt(document.getElementById('corrSubjectSelect').value) || 1;
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      const student = cls?.Students?.[stIdx];
+      const sc = student?.Scores?.find(s => s.Index === subIdx);
+      if (!student || !sc) return;
+
+      const teacherName = document.getElementById('corrTeacherName')?.value?.trim() || (cls.Teacher1 || '................................................');
+      const reqDate = document.getElementById('corrDate')?.value?.trim() || '26 ตุลาคม 2569';
+      const reason = getCorrectionReason();
+
+      const oldC = sc.Collect;
+      const oldE = sc.Exam;
+      const oldTot = sc.Total;
+
+      const newC = parseFloat(document.getElementById('corrNewCollect')?.value) || oldC;
+      const newE = parseFloat(document.getElementById('corrNewExam')?.value) || oldE;
+      const newTot = Math.round((newC + newE) * 100) / 100;
+
+      const maxC = (subIdx <= 9) ? 35 : 40;
+      const maxE = (subIdx <= 9) ? 15 : 10;
+
+      const docHtml = `
+        <div style="text-align: center;">
+          <img src="logo.png" class="doc-header-emblem" alt="ตราโรงเรียน">
+          <div class="doc-title">แบบคำร้องขออนุมัติแก้ไขผลการเรียน (ปพ.5)</div>
+          <div class="doc-subtitle">โรงเรียนบ้านสันดาบ ตำบลชัยมงคล อำเภอเมืองสมุทรสาคร จังหวัดสมุทรสาคร</div>
+        </div>
+
+        <div style="text-align: right; margin-bottom: 8px;">
+          วันที่ <b>${reqDate}</b>
+        </div>
+
+        <div style="margin-bottom: 6px;">
+          <b>เรื่อง:</b> ขออนุมัติแก้ไขผลการเรียน ภาคเรียนที่ 1 ปีการศึกษา 2569<br>
+          <b>เรียน:</b> ผู้อำนวยการโรงเรียนบ้านสันดาบ
+        </div>
+
+        <div style="text-indent: 2.5rem; line-height: 1.45; margin-bottom: 8px;">
+          ด้วย ข้าพเจ้า <b>${teacherName}</b> ตำแหน่ง ครูผู้สอน/ครูประจำชั้น มีความประสงค์ขออนุมัติแก้ไขผลสัมฤทธิ์ทางการเรียนของนักเรียน
+          <b>${cls.Grade || 'ชั้นประถมศึกษา'}</b> ภาคเรียนที่ 1 ปีการศึกษา 2569 ของ <b>${student.FullName}</b>
+          เลขประจำตัว <b>${student.StudentId}</b> เลขที่ <b>${student.No}</b>
+          ในรายวิชา <b>${sc.Name} (รหัสวิชา ${sc.Code || '-'})</b> โดยมีรายละเอียดการขอแก้ไขคะแนน ดังต่อไปนี้
+        </div>
+
+        <table class="correction-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width: 25%;">รายการ</th>
+              <th colspan="3">คะแนนเดิมในระบบ</th>
+              <th colspan="3" style="background: #eff6ff;">คะแนนที่ถูกต้อง (ขอแก้ไข)</th>
+            </tr>
+            <tr>
+              <th style="width: 12%;">คะแนนเก็บ (${maxC})</th>
+              <th style="width: 12%;">คะแนนสอบ (${maxE})</th>
+              <th style="width: 14%;">รวม (50)</th>
+              <th style="width: 12%; background: #eff6ff;">คะแนนเก็บ (${maxC})</th>
+              <th style="width: 12%; background: #eff6ff;">คะแนนสอบ (${maxE})</th>
+              <th style="width: 15%; background: #dbeafe; font-weight: bold; color: #1e40af;">รวม (50)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="text-align: center;">
+              <td style="text-align: left; font-weight: bold;">${sc.Name}</td>
+              <td>${oldC}</td>
+              <td>${oldE}</td>
+              <td style="font-weight: bold;">${oldTot}</td>
+              <td style="background: #eff6ff; font-weight: bold; color: #1e40af;">${newC}</td>
+              <td style="background: #eff6ff; font-weight: bold; color: #1e40af;">${newE}</td>
+              <td style="background: #dbeafe; font-weight: bold; font-size: 16pt; color: #1e3a8a;">${newTot}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 6px; line-height: 1.4;">
+          <b>เหตุผลความจำเป็นในการขอแก้ไข:</b> ${reason}
+        </div>
+
+        <div style="margin-top: 10px; text-indent: 2.5rem; line-height: 1.35;">
+          จึงเรียนมาเพื่อโปรดพิจารณาให้ความเห็นชอบและอนุมัติแก้ไขในระบบเอกสารหลักฐานทางการศึกษา (ปพ.5) ต่อไป
+        </div>
+
+        <!-- กล่องลงนาม 3 ส่วน (ครูผู้สอน, วิชาการ, ผู้อำนวยการ) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 15px;">
+          <div style="text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px;">
+            <div style="font-weight: bold; margin-bottom: 8px;">(1) ครูผู้สอน / ผู้ยื่นคำร้อง</div>
+            <div style="height: 18px;"></div>
+            <div>ลงชื่อ......................................................................</div>
+            <div style="margin-top: 4px;">( ${teacherName} )</div>
+            <div style="font-size: 14pt; color: #475569;">ครูผู้สอน / ครูประจำชั้น</div>
+          </div>
+
+          <div style="text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px;">
+            <div style="font-weight: bold; margin-bottom: 8px;">(2) ความเห็นหัวหน้างานบริหารวิชาการ</div>
+            <div style="text-align: left; font-size: 14pt; margin-left: 20px; margin-bottom: 4px;">
+              [ &nbsp; ] ตรวจสอบแล้วถูกต้อง เห็นควรอนุมัติ<br>
+              [ &nbsp; ] อื่นๆ ..............................................................
+            </div>
+            <div>ลงชื่อ......................................................................</div>
+            <div style="margin-top: 4px;">( นางสาวสุจิตตรา  ปางสุข )</div>
+            <div style="font-size: 14pt; color: #475569;">หัวหน้างานบริหารวิชาการ</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 12px; border: 1.5px solid #94a3b8; border-radius: 6px; padding: 8px 16px; text-align: center;">
+          <div style="font-weight: bold; margin-bottom: 4px;">(3) คำสั่ง / การอนุมัติของผู้อำนวยการโรงเรียน</div>
+          <div style="display: inline-block; text-align: left; margin: 4px 0 8px 0; font-size: 15pt;">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ &nbsp; ] <b>อนุมัติ</b> ให้ดำเนินการแก้ไขผลการเรียนใน ปพ.5 ได้ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ &nbsp; ] ไม่อนุมัติ
+          </div>
+          <div style="height: 14px;"></div>
+          <div>ลงชื่อ......................................................................</div>
+          <div style="margin-top: 4px; font-weight: bold;">( นายกฤษฎา  ผลพล )</div>
+          <div style="font-size: 14pt; color: #475569;">ผู้อำนวยการโรงเรียนบ้านสันดาบ</div>
+        </div>
+      `;
+
+      const previewDiv = document.getElementById('correctionDocPreview');
+      if (previewDiv) previewDiv.innerHTML = docHtml;
+
+      const printContainer = document.getElementById('correctionPrintContainer');
+      if (printContainer) printContainer.innerHTML = `<div class="official-doc-page">${docHtml}</div>`;
+    }
+
+    function saveGradeCorrection() {
+      const classIdx = parseInt(document.getElementById('corrClassSelect').value) || 0;
+      const stIdx = parseInt(document.getElementById('corrStudentSelect').value) || 0;
+      const subIdx = parseInt(document.getElementById('corrSubjectSelect').value) || 1;
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      const student = cls?.Students?.[stIdx];
+      const sc = student?.Scores?.find(s => s.Index === subIdx);
+      if (!student || !sc) return;
+
+      const newC = parseFloat(document.getElementById('corrNewCollect').value) || 0;
+      const newE = parseFloat(document.getElementById('corrNewExam').value) || 0;
+      const newTot = Math.round((newC + newE) * 100) / 100;
+
+      // Update in memory
+      sc.Collect = newC;
+      sc.Exam = newE;
+      sc.Total = newTot;
+
+      // Recalculate student total scores
+      let totC = 0, totE = 0, tot = 0;
+      student.Scores.forEach(s => {
+        totC += parseFloat(s.Collect) || 0;
+        totE += parseFloat(s.Exam) || 0;
+        tot += parseFloat(s.Total) || 0;
+      });
+      student.TotalCollect = Math.round(totC * 100) / 100;
+      student.TotalExam = Math.round(totE * 100) / 100;
+      student.TotalScore = Math.round(tot * 100) / 100;
+      student.AverageScore = Math.round((student.TotalScore / 15.0) * 100) / 100;
+
+      // Save to localStorage
+      try {
+        const key = 'custom_scores_' + student.StudentId + '_' + subIdx;
+        localStorage.setItem(key, JSON.stringify({ collect: newC, exam: newE, total: newTot }));
+      } catch (e) {}
+
+      // Refresh screens
+      renderCurrentStudent();
+      renderOverviewTable();
+      updateCorrectionPreview();
+
+      showToast(`บันทึกแก้ไขคะแนนวิชา ${sc.Name} ของ ${student.FullName} เป็น [รวม ${newTot}] เรียบร้อยแล้ว!`);
+    }
+
+    function printCorrectionForm() {
+      updateCorrectionPreview();
+      document.body.classList.remove('print-single');
+      document.body.classList.remove('print-batch');
+      document.body.classList.remove('print-receipt');
+      document.body.classList.add('print-correction');
+      setTimeout(() => {
+        window.print();
+      }, 100);
+    }
+
+    // ========================================================
+    // ฟังก์ชันแบบฟอร์มการรับผลการเรียน (Report Card Receipt Sheet)
+    // ========================================================
+    function initReceiptTab() {
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const sel = document.getElementById('receiptClassSelect');
+      if (!sel) return;
+
+      sel.innerHTML = classesList.map((c, idx) => 
+        `<option value="${idx}" ${idx === currentClassIndex ? 'selected' : ''}>${c.Grade || ('ชั้น ป.' + (idx+1))}</option>`
+      ).join('');
+
+      renderReceiptSheet();
+    }
+
+    function renderReceiptSheet() {
+      const classIdx = parseInt(document.getElementById('receiptClassSelect')?.value) || currentClassIndex;
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      if (!cls || !cls.Students) return;
+
+      const targetDate = document.getElementById('receiptDateInput')?.value?.trim() || '26 ตุลาคม 2569';
+      const teacherName = cls.Teacher1 ? `( ${cls.Teacher1} )` : '(...............................................)';
+
+      let rowsHtml = '';
+      cls.Students.forEach((st, idx) => {
+        rowsHtml += `
+          <tr style="text-align: center;">
+            <td style="font-weight: bold;">${st.No}</td>
+            <td>${st.StudentId}</td>
+            <td style="text-align: left; padding-left: 8px;"><b>${st.FullName}</b></td>
+            <td style="font-weight: bold;">${st.TotalScore}</td>
+            <td style="font-weight: bold; color: #1e40af;">${st.AverageScore}</td>
+            <td style="font-size: 12.5pt;">${targetDate}</td>
+            <td style="color: #64748b; font-size: 13pt;">......................................</td>
+            <td style="font-size: 12.5pt; color: #475569;">[ &nbsp; ] บิดา [ &nbsp; ] มารดา [ &nbsp; ] อื่นๆ</td>
+            <td></td>
+          </tr>
+        `;
+      });
+
+      const docHtml = `
+        <div style="text-align: center;">
+          <img src="logo.png" class="doc-header-emblem" alt="ตราโรงเรียน">
+          <div class="doc-title">บัญชีลงนามการรับใบแจ้งผลการเรียน (ปพ.5)</div>
+          <div class="doc-subtitle">
+            ${cls.Grade || 'ชั้นประถมศึกษา'} ภาคเรียนที่ 1 ปีการศึกษา 2569<br>
+            โรงเรียนบ้านสันดาบ ตำบลชัยมงคล อำเภอเมืองสมุทรสาคร จังหวัดสมุทรสาคร
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14.5pt; font-weight: 600;">
+          <span>ครูประจำชั้น: <b>${cls.Teacher1 || '-'}</b></span>
+          <span>วันที่นัดหมายรับผลการเรียน: <b>${targetDate}</b></span>
+        </div>
+
+        <table class="receipt-table">
+          <thead>
+            <tr>
+              <th style="width: 5%;">เลขที่</th>
+              <th style="width: 10%;">เลขประจำตัว</th>
+              <th style="width: 25%;">ชื่อ - นามสกุล นักเรียน</th>
+              <th style="width: 9%;">คะแนนรวม</th>
+              <th style="width: 9%;">คะแนนเฉลี่ย</th>
+              <th style="width: 12%;">วันที่รับ</th>
+              <th style="width: 16%;">ลายมือชื่อผู้ปกครองผู้รับ</th>
+              <th style="width: 12%;">ความสัมพันธ์</th>
+              <th style="width: 6%;">หมายเหตุ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+
+        <div style="margin-top: 10px; font-size: 14pt;">
+          <b>สรุป:</b> จำนวนนักเรียนทั้งหมด <b>${cls.Students.Count || cls.Students.length}</b> คน 
+          ผู้ปกครองลงนามรับผลการเรียนเรียบร้อยแล้ว .................... คน คิดเป็นร้อยละ ....................
+        </div>
+
+        <!-- ส่วนท้ายลงนาม -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; margin-top: 18px; text-align: center;">
+          <div>
+            <div>ลงชื่อ........................................................</div>
+            <div style="margin-top: 4px;">${teacherName}</div>
+            <div style="font-size: 14pt; color: #475569;">ครูประจำชั้น</div>
+          </div>
+          <div>
+            <div>ลงชื่อ........................................................</div>
+            <div style="margin-top: 4px;">( นางสาวสุจิตตรา  ปางสุข )</div>
+            <div style="font-size: 14pt; color: #475569;">หัวหน้างานบริหารวิชาการ</div>
+          </div>
+          <div>
+            <div>ลงชื่อ........................................................</div>
+            <div style="margin-top: 4px; font-weight: bold;">( นายกฤษฎา  ผลพล )</div>
+            <div style="font-size: 14pt; color: #475569;">ผู้อำนวยการโรงเรียนบ้านสันดาบ</div>
+          </div>
+        </div>
+      `;
+
+      const previewDiv = document.getElementById('receiptDocPreview');
+      if (previewDiv) previewDiv.innerHTML = docHtml;
+
+      const printContainer = document.getElementById('receiptPrintContainer');
+      if (printContainer) printContainer.innerHTML = `<div class="official-doc-page">${docHtml}</div>`;
+    }
+
+    function printReceiptForm() {
+      renderReceiptSheet();
+      document.body.classList.remove('print-single');
+      document.body.classList.remove('print-batch');
+      document.body.classList.remove('print-correction');
+      document.body.classList.add('print-receipt');
+      setTimeout(() => {
+        window.print();
+      }, 100);
     }
 
     function printSpecificStudent(idx) {
@@ -1939,7 +2602,14 @@
     window.addEventListener('afterprint', () => {
       document.body.classList.remove('print-single');
       document.body.classList.remove('print-batch');
+      document.body.classList.remove('print-correction');
+      document.body.classList.remove('print-receipt');
     });
   </script>
+  <!-- ภาชนะพิมพ์คำร้องขอแก้ไขผลการเรียน (Print Only) -->
+  <div id="correctionPrintContainer"></div>
+
+  <!-- ภาชนะพิมพ์แบบฟอร์มลงนามรับผลการเรียน (Print Only) -->
+  <div id="receiptPrintContainer"></div>
 </body>
 </html>
