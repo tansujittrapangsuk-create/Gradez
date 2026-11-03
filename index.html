@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -2470,9 +2470,7 @@
             <td style="font-weight: bold;">${st.No}</td>
             <td>${st.StudentId}</td>
             <td style="text-align: left; padding-left: 8px;"><b>${st.FullName}</b></td>
-            <td style="font-weight: bold;">${st.TotalScore}</td>
-            <td style="font-weight: bold; color: #1e40af;">${st.AverageScore}</td>
-            <td style="font-size: 12.5pt;">${targetDate}</td>
+            <td style="color: #64748b; font-size: 11pt; letter-spacing: 1px;">....../....../......</td>
             <td style="color: #64748b; font-size: 13pt;">......................................</td>
             <td style="font-size: 12.5pt; color: #475569;">[ &nbsp; ] บิดา [ &nbsp; ] มารดา [ &nbsp; ] อื่นๆ</td>
             <td></td>
@@ -2480,12 +2478,14 @@
         `;
       });
 
+      const gradeTitle = cls.Grade ? cls.Grade : ('ชั้นประถมศึกษาปีที่ ' + (classIdx + 1) + '/1');
+
       const docHtml = `
         <div style="text-align: center;">
           <img src="logo.png" class="doc-header-emblem" alt="ตราโรงเรียน">
           <div class="doc-title">บัญชีลงนามการรับใบแจ้งผลการเรียน (ปพ.5)</div>
           <div class="doc-subtitle">
-            ${cls.Grade || 'ชั้นประถมศึกษา'} ภาคเรียนที่ 1 ปีการศึกษา 2569<br>
+            ${gradeTitle} ภาคเรียนที่ 1 ปีการศึกษา 2569<br>
             โรงเรียนบ้านสันดาบ ตำบลชัยมงคล อำเภอเมืองสมุทรสาคร จังหวัดสมุทรสาคร
           </div>
         </div>
@@ -2498,13 +2498,11 @@
         <table class="receipt-table">
           <thead>
             <tr>
-              <th style="width: 5%;">เลขที่</th>
-              <th style="width: 10%;">เลขประจำตัว</th>
-              <th style="width: 25%;">ชื่อ - นามสกุล นักเรียน</th>
-              <th style="width: 9%;">คะแนนรวม</th>
-              <th style="width: 9%;">คะแนนเฉลี่ย</th>
-              <th style="width: 12%;">วันที่รับ</th>
-              <th style="width: 16%;">ลายมือชื่อผู้ปกครองผู้รับ</th>
+              <th style="width: 6%;">เลขที่</th>
+              <th style="width: 12%;">เลขประจำตัว</th>
+              <th style="width: 28%;">ชื่อ - นามสกุล นักเรียน</th>
+              <th style="width: 14%;">วันที่รับ</th>
+              <th style="width: 22%;">ลายมือชื่อผู้ปกครองผู้รับ</th>
               <th style="width: 12%;">ความสัมพันธ์</th>
               <th style="width: 6%;">หมายเหตุ</th>
             </tr>
