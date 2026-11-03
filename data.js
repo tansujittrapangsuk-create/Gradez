@@ -7443,8 +7443,8 @@
                                                 "MaxExam":  10,
                                                 "MaxTotal":  50,
                                                 "Collect":  38,
-                                                "Exam":  20,
-                                                "Total":  58
+                                                "Exam":  10,
+                                                "Total":  48
                                             },
                                             {
                                                 "Index":  12,
@@ -7496,9 +7496,9 @@
                                             }
                                         ],
                              "TotalCollect":  499,
-                             "TotalExam":  159,
-                             "TotalScore":  658,
-                             "AverageScore":  43.87,
+                             "TotalExam":  149,
+                             "TotalScore":  648,
+                             "AverageScore":  43.2,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดี",
