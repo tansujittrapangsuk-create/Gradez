@@ -2410,6 +2410,12 @@
                 recalcNeeded = true;
               }
             }
+            if (cIdx === 2 && sc.Index === 13 && [2, 4, 11, 14].includes(Number(st.No)) && Number(sc.Total) === 24) {
+              sc.Collect = 22;
+              sc.Exam = 3;
+              sc.Total = 25;
+              recalcNeeded = true;
+            }
             if (sc.OrigCollect === undefined) sc.OrigCollect = sc.Collect;
             if (sc.OrigExam === undefined) sc.OrigExam = sc.Exam;
             if (sc.OrigTotal === undefined) sc.OrigTotal = sc.Total;

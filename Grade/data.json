@@ -1,4 +1,4 @@
-[
+﻿[
     {
         "Id":  "ปพ.5 ป.1 69",
         "FileName":  "ปพ.5 ป.1 69.xlsx",
@@ -8852,8 +8852,8 @@
                                                 "MaxExam":  10,
                                                 "MaxTotal":  50,
                                                 "Collect":  22,
-                                                "Exam":  2,
-                                                "Total":  24,
+                                                "Exam":  3,
+                                                "Total":  25,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -8883,8 +8883,8 @@
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalScore":  429,
-                             "AverageScore":  28.6,
+                             "TotalScore":  430,
+                             "AverageScore":  28.67,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดี",
@@ -8895,7 +8895,7 @@
                                              },
                              "TeacherComment":  "มีความพยายามในการเรียนรู้ดี มีความรับผิดชอบพอใช้ หากผู้ปกรองเสริมด้านการอ่านให้มากขึ้นจะดีมาก",
                              "TotalCollect":  355,
-                             "TotalExam":  74
+                             "TotalExam":  75
                          },
                          {
                              "No":  3,
@@ -9306,8 +9306,8 @@
                                                 "MaxExam":  10,
                                                 "MaxTotal":  50,
                                                 "Collect":  22,
-                                                "Exam":  2,
-                                                "Total":  24,
+                                                "Exam":  3,
+                                                "Total":  25,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -9337,8 +9337,8 @@
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalScore":  525,
-                             "AverageScore":  35,
+                             "TotalScore":  526,
+                             "AverageScore":  35.07,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดีเยี่ยม",
@@ -9349,7 +9349,7 @@
                                              },
                              "TeacherComment":  "มีความพยายามในการเรียนรู้ดี การเรียนพอใช้ มีความเป็นตัวของตัวเองสูง",
                              "TotalCollect":  408,
-                             "TotalExam":  117
+                             "TotalExam":  118
                          },
                          {
                              "No":  5,
@@ -10895,8 +10895,8 @@
                                                 "MaxExam":  10,
                                                 "MaxTotal":  50,
                                                 "Collect":  22,
-                                                "Exam":  2,
-                                                "Total":  24,
+                                                "Exam":  3,
+                                                "Total":  25,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -10926,8 +10926,8 @@
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalScore":  439,
-                             "AverageScore":  29.27,
+                             "TotalScore":  440,
+                             "AverageScore":  29.33,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดีเยี่ยม",
@@ -10938,7 +10938,7 @@
                                              },
                              "TeacherComment":  "จำคำศัพท์ได้หลายคำ ร่าเริง และเข้ากับเพื่อน ๆ ได้ดี",
                              "TotalCollect":  356,
-                             "TotalExam":  83
+                             "TotalExam":  84
                          },
                          {
                              "No":  12,
@@ -11576,8 +11576,8 @@
                                                 "MaxExam":  10,
                                                 "MaxTotal":  50,
                                                 "Collect":  22,
-                                                "Exam":  2,
-                                                "Total":  24,
+                                                "Exam":  3,
+                                                "Total":  25,
                                                 "Teacher":  "นายคเณศ  ชุนสิทธิ์"
                                             },
                                             {
@@ -11607,8 +11607,8 @@
                                                 "Teacher":  "นางสาวสุวรรณี  นิลประดับ"
                                             }
                                         ],
-                             "TotalScore":  456,
-                             "AverageScore":  30.4,
+                             "TotalScore":  457,
+                             "AverageScore":  30.47,
                              "Evaluations":  {
                                                  "Reading":  "ดีเยี่ยม",
                                                  "Competency":  "ดี",
@@ -11619,7 +11619,7 @@
                                              },
                              "TeacherComment":  "มีความพยายามในการเรียนรู้ดี ความประพฤติเรียบร้อย หากผู้ปกรองเสริมด้านการอ่านให้มากขึ้นจะดีมาก",
                              "TotalCollect":  369,
-                             "TotalExam":  87
+                             "TotalExam":  88
                          },
                          {
                              "No":  15,
