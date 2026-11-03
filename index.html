@@ -1442,6 +1442,7 @@
       body.print-correction #tabOverviewContent,
       body.print-correction #tabCorrectionContent,
       body.print-correction #tabReceiptContent,
+      body.print-correction #tabEditgradeContent,
       body.print-correction #singlePrintCard,
       body.print-correction #batchPrintContainer,
       body.print-correction .no-print {
@@ -1474,6 +1475,7 @@
       body.print-receipt #tabOverviewContent,
       body.print-receipt #tabCorrectionContent,
       body.print-receipt #tabReceiptContent,
+      body.print-receipt #tabEditgradeContent,
       body.print-receipt #singlePrintCard,
       body.print-receipt #batchPrintContainer,
       body.print-receipt .no-print {
@@ -1531,6 +1533,9 @@
           </button>
           <button type="button" class="nav-menu-item" id="leftMenuReceipt" onclick="switchTab('receipt')">
             <span class="nav-icon">📋</span> <span>แบบฟอร์มการรับผลการเรียน</span>
+          </button>
+          <button type="button" class="nav-menu-item" id="leftMenuEditgrade" onclick="switchTab('editgrade')">
+            <span class="nav-icon">📝</span> <span>แก้ไขผลการเรียน</span>
           </button>
           <button type="button" class="nav-menu-item" onclick="printCurrentStudent()">
             <span class="nav-icon">🖨</span> <span>พิมพ์ใบแจ้งการเรียน</span>
@@ -1620,104 +1625,23 @@
         </div>
       </div>
 
-      <!-- แท็บที่ 3: คำร้องขอแก้ไขผลการเรียน (แสดงเฉพาะส่วนคำร้องขอแก้ไขผลการเรียน ไม่ปนกับส่วนอื่น) -->
+      <!-- แท็บที่ 3: คำร้องขอแก้ไขผลการเรียน (แสดงเอกสาร A4 ขึ้นมาด้านบนสุดทันที) -->
       <div id="tabCorrectionContent" style="display: none;">
-        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.85rem; border-color: #fbcfe8;">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 0.8rem;">
-            <div>
-              <h3 style="font-family: 'Prompt'; font-size: 1.15rem; color: #be185d; font-weight: 700; margin: 0;">
-                ✏️ แบบคำร้องขออนุมัติแก้ไขผลการเรียน (ปพ.5)
-              </h3>
-              <p style="font-size: 0.88rem; color: #64748b; margin: 0;">
-                เลือกนักเรียนและรายวิชาเพื่อสร้างแบบคำร้อง และสั่งพิมพ์ออกกระดาษ A4 หรือบันทึกลงระบบ
-              </p>
-            </div>
-            <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-              <button class="btn btn-outline-pink btn-sm" onclick="openStudentScoreModal()" title="เปิดตารางแก้ไขคะแนนทั้ง 15 วิชา">
-                ✏️ แก้ไขคะแนนทั้ง 15 วิชา
-              </button>
-              <button class="btn btn-warning btn-sm" onclick="saveGradeCorrection()" style="background-color: #ea580c; color: white;">
-                💾 บันทึกคะแนนลงระบบทันที
-              </button>
-              <button class="btn btn-pink-solid btn-sm" onclick="printCorrectionForm()" style="padding: 0.45rem 1rem;">
-                🖨 สั่งพิมพ์แบบฟอร์มนี้ (A4/PDF)
-              </button>
-            </div>
+        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.75rem; padding: 0.65rem 1rem; border-color: #fbcfe8; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <div style="font-family: 'Prompt'; font-size: 1.05rem; color: #be185d; font-weight: 700;">
+            📄 เอกสารแบบคำร้องขออนุมัติแก้ไขผลการเรียน (ปพ.5)
           </div>
-
-          <!-- ตัวเลือกแบบฟอร์ม -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; background: #fff1f2; padding: 0.85rem; border-radius: 8px; border: 1px solid #fecdd3;">
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">เลือกระดับชั้นเรียน:</label>
-              <select id="corrClassSelect" class="class-select-pink" onchange="onCorrClassChange()"></select>
-            </div>
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">เลือกนักเรียน:</label>
-              <select id="corrStudentSelect" class="class-select-pink" onchange="onCorrStudentChange()"></select>
-            </div>
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">เลือกรายวิชาที่ขอแก้ไข:</label>
-              <select id="corrSubjectSelect" class="class-select-pink" onchange="onCorrSubjectChange()"></select>
-            </div>
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">ชื่อครูผู้สอน / ผู้ยื่นคำร้อง:</label>
-              <input type="text" id="corrTeacherName" class="search-box-pink" style="margin-top: 0;" placeholder="ระบุชื่อ-สกุลครูผู้สอน" oninput="updateCorrectionPreview()">
-            </div>
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">วันที่ยื่นคำร้อง:</label>
-              <input type="text" id="corrDate" class="search-box-pink" style="margin-top: 0;" value="26 ตุลาคม 2569" oninput="updateCorrectionPreview()">
-            </div>
-            <div>
-              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 2px;">เหตุผลความจำเป็นในการขอแก้ไข:</label>
-              <select id="corrReasonPreset" class="class-select-pink" onchange="onCorrReasonPresetChange(this.value)">
-                <option value="กรอกคะแนนผิดพลาดจากการรวมคะแนน">กรอกคะแนนผิดพลาดจากการรวมคะแนน</option>
-                <option value="บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด">บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด</option>
-                <option value="นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข">นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข</option>
-                <option value="ตรวจทานข้อสอบใหม่พบข้อผิดพลาด">ตรวจทานข้อสอบใหม่พบข้อผิดพลาด</option>
-                <option value="other">อื่นๆ (ระบุเอง)</option>
-              </select>
-              <input type="text" id="corrReasonCustom" class="search-box-pink" style="display: none; margin-top: 4px;" placeholder="ระบุเหตุผลอื่นๆ..." oninput="updateCorrectionPreview()">
-            </div>
-          </div>
-
-          <!-- แผงเปรียบเทียบคะแนนเดิม vs คะแนนใหม่ -->
-          <div style="background: white; border-radius: 8px; border: 1px solid #fbcfe8; padding: 0.75rem 1rem; margin-top: 0.75rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap;">
-              <span style="font-weight: 700; color: #881337; font-size: 0.95rem;">
-                📊 วิชา: <span id="corrSubjectTitle" style="color: #be185d;">-</span>
-              </span>
-              <span style="font-size: 0.85rem; color: #64748b;">กรอกคะแนนใหม่เพื่อแสดงในเอกสาร</span>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; text-align: center;">
-              <div style="background: #f8fafc; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <div style="font-size: 0.78rem; color: #64748b;">เก็บเดิม (เต็ม <span id="corrMaxCollect">-</span>)</div>
-                <div id="corrOldCollect" style="font-size: 1.2rem; font-weight: 700; color: #334155;">0</div>
-              </div>
-              <div style="background: #f8fafc; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <div style="font-size: 0.78rem; color: #64748b;">สอบเดิม (เต็ม <span id="corrMaxExam">-</span>)</div>
-                <div id="corrOldExam" style="font-size: 1.2rem; font-weight: 700; color: #334155;">0</div>
-              </div>
-              <div style="background: #f8fafc; padding: 0.5rem; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <div style="font-size: 0.78rem; color: #64748b;">รวมเดิม (เต็ม 50)</div>
-                <div id="corrOldTotal" style="font-size: 1.2rem; font-weight: 700; color: #334155;">0</div>
-              </div>
-              <div style="background: #fff1f2; padding: 0.5rem; border-radius: 6px; border: 1.5px solid #f43f5e;">
-                <div style="font-size: 0.78rem; color: #881337; font-weight: 700;">เก็บใหม่ (เต็ม <span id="corrMaxCollect2">-</span>)</div>
-                <input type="number" id="corrNewCollect" style="width: 75px; text-align: center; font-size: 1.15rem; font-weight: 700; border: 1.5px solid #e11d48; border-radius: 6px; padding: 2px;" oninput="onCorrScoreInput()">
-              </div>
-              <div style="background: #fff1f2; padding: 0.5rem; border-radius: 6px; border: 1.5px solid #f43f5e;">
-                <div style="font-size: 0.78rem; color: #881337; font-weight: 700;">สอบใหม่ (เต็ม <span id="corrMaxExam2">-</span>)</div>
-                <input type="number" id="corrNewExam" style="width: 75px; text-align: center; font-size: 1.15rem; font-weight: 700; border: 1.5px solid #e11d48; border-radius: 6px; padding: 2px;" oninput="onCorrScoreInput()">
-              </div>
-              <div style="background: #f0fdf4; padding: 0.5rem; border-radius: 6px; border: 1.5px solid #10b981;">
-                <div style="font-size: 0.78rem; color: #065f46; font-weight: 700;">รวมใหม่ (เต็ม 50)</div>
-                <div id="corrNewTotal" style="font-size: 1.2rem; font-weight: 700; color: #059669;">0</div>
-              </div>
-            </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            <button class="btn btn-outline-pink btn-sm" onclick="switchTab('editgrade')">
+              📝 ไปหน้าแก้ไขผลการเรียน
+            </button>
+            <button class="btn btn-pink-solid btn-sm" onclick="printCorrectionForm()" style="padding: 0.4rem 1rem;">
+              🖨 สั่งพิมพ์คำร้อง (A4/PDF)
+            </button>
           </div>
         </div>
 
-        <!-- ตัวอย่างเอกสารคำร้องขอแก้ไขผลการเรียน A4 -->
+        <!-- ตัวอย่างเอกสารคำร้องขอแก้ไขผลการเรียน A4 ขึ้นด้านบนช่องว่างทันที -->
         <div class="report-preview-wrapper" style="margin-top: 0;">
           <div class="official-doc-page" id="correctionDocPreview">
             <!-- Rendered via JS updateCorrectionPreview() -->
@@ -1727,15 +1651,12 @@
 
       <!-- แท็บที่ 4: แบบฟอร์มการรับผลการเรียน (แสดงเฉพาะส่วนแบบฟอร์มการรับผลการเรียน ไม่ปนกับส่วนอื่น) -->
       <div id="tabReceiptContent" style="display: none;">
-        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.85rem; border-color: #fbcfe8;">
+        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.75rem; padding: 0.65rem 1rem; border-color: #fbcfe8;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;">
             <div>
-              <h3 style="font-family: 'Prompt'; font-size: 1.15rem; color: #be185d; font-weight: 700; margin: 0;">
+              <h3 style="font-family: 'Prompt'; font-size: 1.05rem; color: #be185d; font-weight: 700; margin: 0;">
                 📋 บัญชีลงนามการรับใบแจ้งผลการเรียน (ปพ.5)
               </h3>
-              <p style="font-size: 0.88rem; color: #64748b; margin: 0;">
-                แบบฟอร์มสำหรับผู้ปกครองลงลายมือชื่อรับผลการเรียน (พิมพ์ออกกระดาษ A4)
-              </p>
             </div>
             <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
               <span style="font-weight: 600; font-size: 0.9rem; color: #881337;">ชั้นเรียน:</span>
@@ -1753,6 +1674,102 @@
         <div class="report-preview-wrapper" style="margin-top: 0;">
           <div class="official-doc-page" id="receiptDocPreview">
             <!-- Rendered via JS renderReceiptSheet() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- แท็บที่ 5: แก้ไขผลการเรียน (แสดงแบบคำร้องขออนุมัติแก้ไขผลการเรียน ปพ.5 ตามไฟล์แนบ) -->
+      <div id="tabEditgradeContent" style="display: none;">
+        <div class="sidebar-pink-card no-print" style="margin-bottom: 0.85rem; border-color: #fbcfe8; padding: 1.25rem;">
+          <div style="margin-bottom: 0.85rem;">
+            <h3 style="font-family: 'Prompt'; font-size: 1.2rem; color: #be185d; font-weight: 700; margin: 0 0 0.25rem 0;">
+              ✏️ แบบคำร้องขออนุมัติแก้ไขผลการเรียน (ปพ.5)
+            </h3>
+            <p style="font-size: 0.9rem; color: #64748b; margin: 0 0 0.85rem 0;">
+              เลือกนักเรียนและรายวิชาเพื่อสร้างแบบคำร้อง และสั่งพิมพ์ออกกระดาษ A4 หรือบันทึกลงระบบ
+            </p>
+            <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+              <button class="btn btn-outline-pink btn-sm" onclick="openStudentScoreModal()" style="padding: 0.45rem 0.9rem; font-size: 0.9rem;" title="เปิดตารางแก้ไขคะแนนทั้ง 15 วิชา">
+                ✏️ แก้ไขคะแนนทั้ง 15 วิชา
+              </button>
+              <button class="btn btn-warning btn-sm" onclick="saveGradeCorrection()" style="background-color: #ea580c; color: white; padding: 0.45rem 1rem; font-size: 0.9rem; font-weight: 600;">
+                💾 บันทึกคะแนนลงระบบทันที
+              </button>
+              <button class="btn btn-pink-solid btn-sm" onclick="printCorrectionForm()" style="padding: 0.45rem 1.1rem; font-size: 0.9rem;">
+                🖨 สั่งพิมพ์แบบฟอร์มนี้ (A4/PDF)
+              </button>
+            </div>
+          </div>
+
+          <!-- ตัวเลือกแบบฟอร์ม -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.85rem; background: #fff1f2; padding: 1rem; border-radius: 10px; border: 1px solid #fecdd3;">
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เลือกระดับชั้นเรียน:</label>
+              <select id="corrClassSelect" class="class-select-pink" onchange="onCorrClassChange()"></select>
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เลือกนักเรียน:</label>
+              <select id="corrStudentSelect" class="class-select-pink" onchange="onCorrStudentChange()"></select>
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เลือกรายวิชาที่ขอแก้ไข:</label>
+              <select id="corrSubjectSelect" class="class-select-pink" onchange="onCorrSubjectChange()"></select>
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">ชื่อครูผู้สอน / ผู้ยื่นคำร้อง:</label>
+              <input type="text" id="corrTeacherName" class="search-box-pink" style="margin-top: 0; background: white;" placeholder="ระบุชื่อ-สกุลครูผู้สอน" oninput="updateCorrectionPreview()">
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">วันที่ยื่นคำร้อง:</label>
+              <input type="text" id="corrDate" class="search-box-pink" style="margin-top: 0; background: white;" value="26 ตุลาคม 2569" oninput="updateCorrectionPreview()">
+            </div>
+            <div>
+              <label style="font-weight: 600; font-size: 0.85rem; color: #881337; display: block; margin-bottom: 4px;">เหตุผลความจำเป็นในการขอแก้ไข:</label>
+              <select id="corrReasonPreset" class="class-select-pink" onchange="onCorrReasonPresetChange(this.value)">
+                <option value="กรอกคะแนนผิดพลาดจากการรวมคะแนน">กรอกคะแนนผิดพลาดจากการรวมคะแนน</option>
+                <option value="บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด">บันทึกคะแนนสลับช่อง / พิมพ์ผิดพลาด</option>
+                <option value="นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข">นักเรียนส่งงานและประเมินผลเพิ่มเติมตามเงื่อนไข</option>
+                <option value="ตรวจทานข้อสอบใหม่พบข้อผิดพลาด">ตรวจทานข้อสอบใหม่พบข้อผิดพลาด</option>
+                <option value="other">อื่นๆ (ระบุเอง)</option>
+              </select>
+              <input type="text" id="corrReasonCustom" class="search-box-pink" style="display: none; margin-top: 4px; background: white;" placeholder="ระบุเหตุผลอื่นๆ..." oninput="updateCorrectionPreview()">
+            </div>
+          </div>
+
+          <!-- แผงเปรียบเทียบคะแนนเดิม vs คะแนนใหม่ -->
+          <div style="background: white; border-radius: 10px; border: 1px solid #fbcfe8; padding: 0.85rem 1rem; margin-top: 0.85rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem; flex-wrap: wrap;">
+              <span style="font-weight: 700; color: #881337; font-size: 0.95rem;">
+                📊 วิชา: <span id="corrSubjectTitle" style="color: #be185d;">-</span>
+              </span>
+              <span style="font-size: 0.85rem; color: #64748b;">กรอกคะแนนใหม่เพื่อแสดงในเอกสาร</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); gap: 0.65rem; text-align: center;">
+              <div style="background: #f8fafc; padding: 0.6rem 0.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 4px;">เก็บเดิม (เต็ม <span id="corrMaxCollect">-</span>)</div>
+                <div id="corrOldCollect" style="font-size: 1.25rem; font-weight: 700; color: #334155;">0</div>
+              </div>
+              <div style="background: #f8fafc; padding: 0.6rem 0.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 4px;">สอบเดิม (เต็ม <span id="corrMaxExam">-</span>)</div>
+                <div id="corrOldExam" style="font-size: 1.25rem; font-weight: 700; color: #334155;">0</div>
+              </div>
+              <div style="background: #f8fafc; padding: 0.6rem 0.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 4px;">รวมเดิม (เต็ม 50)</div>
+                <div id="corrOldTotal" style="font-size: 1.25rem; font-weight: 700; color: #334155;">0</div>
+              </div>
+              <div style="background: #fff1f2; padding: 0.6rem 0.5rem; border-radius: 8px; border: 1.5px solid #f43f5e;">
+                <div style="font-size: 0.78rem; color: #881337; font-weight: 700; margin-bottom: 4px;">เก็บใหม่ (เต็ม <span id="corrMaxCollect2">-</span>)</div>
+                <input type="number" id="corrNewCollect" style="width: 80px; text-align: center; font-size: 1.15rem; font-weight: 700; border: 1.5px solid #e11d48; border-radius: 6px; padding: 2px; background: white;" oninput="onCorrScoreInput()">
+              </div>
+              <div style="background: #fff1f2; padding: 0.6rem 0.5rem; border-radius: 8px; border: 1.5px solid #f43f5e;">
+                <div style="font-size: 0.78rem; color: #881337; font-weight: 700; margin-bottom: 4px;">สอบใหม่ (เต็ม <span id="corrMaxExam2">-</span>)</div>
+                <input type="number" id="corrNewExam" style="width: 80px; text-align: center; font-size: 1.15rem; font-weight: 700; border: 1.5px solid #e11d48; border-radius: 6px; padding: 2px; background: white;" oninput="onCorrScoreInput()">
+              </div>
+              <div style="background: #f0fdf4; padding: 0.6rem 0.5rem; border-radius: 8px; border: 1.5px solid #10b981;">
+                <div style="font-size: 0.78rem; color: #065f46; font-weight: 700; margin-bottom: 4px;">รวมใหม่ (เต็ม 50)</div>
+                <div id="corrNewTotal" style="font-size: 1.25rem; font-weight: 700; color: #059669;">0</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2125,10 +2142,10 @@
       renderOverviewTable();
       updateTopCommentBox();
       updateQuickStudentSelect();
+      initCorrectionTab();
 
-      if (typeof currentActiveTab !== 'undefined') {
-        if (currentActiveTab === 'correction') initCorrectionTab();
-        else if (currentActiveTab === 'receipt') initReceiptTab();
+      if (typeof currentActiveTab !== 'undefined' && currentActiveTab === 'receipt') {
+        initReceiptTab();
       }
     }
 
@@ -2197,15 +2214,13 @@
       updateTopCommentBox();
       updateQuickStudentSelect();
 
-      if (typeof currentActiveTab !== 'undefined' && currentActiveTab === 'correction') {
-        const classSel = document.getElementById('corrClassSelect');
-        const stSel = document.getElementById('corrStudentSelect');
-        if (classSel && parseInt(classSel.value) !== currentClassIndex) {
-          initCorrectionTab();
-        } else if (stSel) {
-          stSel.value = currentStudentIndex;
-          onCorrStudentChange();
-        }
+      const classSel = document.getElementById('corrClassSelect');
+      const stSel = document.getElementById('corrStudentSelect');
+      if (classSel && parseInt(classSel.value) !== currentClassIndex) {
+        initCorrectionTab();
+      } else if (stSel) {
+        stSel.value = currentStudentIndex;
+        onCorrStudentChange();
       }
     }
 
@@ -2520,10 +2535,11 @@
     // จัดการแท็บและการสลับหน้าจอ (Switch Tabs)
     // ==========================================
     let currentActiveTab = 'preview';
+    let corrInitialized = false;
 
     function switchTab(tab) {
       currentActiveTab = tab;
-      const tabs = ['preview', 'overview', 'correction', 'receipt'];
+      const tabs = ['preview', 'overview', 'correction', 'receipt', 'editgrade'];
       tabs.forEach(t => {
         const pane = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1) + 'Content');
         if (pane) {
@@ -2542,7 +2558,8 @@
         preview: 'leftMenuPreview',
         overview: 'leftMenuOverview',
         correction: 'leftMenuCorrection',
-        receipt: 'leftMenuReceipt'
+        receipt: 'leftMenuReceipt',
+        editgrade: 'leftMenuEditgrade'
       };
       Object.keys(leftMap).forEach(k => {
         const el = document.getElementById(leftMap[k]);
@@ -2567,8 +2584,12 @@
         }
       });
 
-      if (tab === 'correction') {
-        initCorrectionTab();
+      if (tab === 'correction' || tab === 'editgrade') {
+        if (!corrInitialized) {
+          initCorrectionTab();
+        } else {
+          updateCorrectionPreview();
+        }
       } else if (tab === 'receipt') {
         initReceiptTab();
       }
@@ -2582,6 +2603,7 @@
       const classSel = document.getElementById('corrClassSelect');
       if (!classSel) return;
       
+      corrInitialized = true;
       classSel.innerHTML = classesList.map((c, idx) => 
         `<option value="${idx}" ${idx === currentClassIndex ? 'selected' : ''}>${c.Grade || ('ชั้น ป.' + (idx+1))}</option>`
       ).join('');
@@ -3052,7 +3074,7 @@
           !document.body.classList.contains('print-correction') &&
           !document.body.classList.contains('print-receipt') &&
           !document.body.classList.contains('print-single')) {
-        if (currentActiveTab === 'correction') {
+        if (currentActiveTab === 'correction' || currentActiveTab === 'editgrade') {
           const previewDiv = document.getElementById('correctionDocPreview');
           const printContainer = document.getElementById('correctionPrintContainer');
           if (printContainer && previewDiv) {
