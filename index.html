@@ -1537,14 +1537,14 @@
           <button type="button" class="nav-menu-item" id="leftMenuEditgrade" onclick="switchTab('editgrade')">
             <span class="nav-icon">📝</span> <span>แก้ไขผลการเรียน</span>
           </button>
-          <button type="button" class="nav-menu-item" id="leftMenuAdmin" onclick="switchTab('admin')">
-            <span class="nav-icon">🛠️</span> <span>แก้ไขข้อมูล (Admin)</span>
-          </button>
           <button type="button" class="nav-menu-item" onclick="printCurrentStudent()">
             <span class="nav-icon">🖨</span> <span>พิมพ์ใบแจ้งการเรียน</span>
           </button>
           <button type="button" class="nav-menu-item" onclick="syncFromCloud()">
             <span class="nav-icon">📊</span> <span>องค์ประเมินจาก BSD-EVAL</span>
+          </button>
+          <button type="button" class="nav-menu-item" id="leftMenuAdmin" onclick="switchTab('admin')" style="margin-top: 0.35rem; border-top: 1px dashed #fbcfe8; padding-top: 0.65rem;">
+            <span class="nav-icon">🛠️</span> <span>แก้ไขข้อมูล (Admin)</span>
           </button>
         </div>
       </div>
@@ -1775,6 +1775,9 @@
               <button type="button" class="btn btn-sm" onclick="exportUpdatedDataJs()" style="background: #1e3a8a; color: white; font-weight: 700; padding: 0.45rem 0.9rem;" title="ดาวน์โหลดไฟล์ data.js ที่อัปเดตแล้วไปทับในโฟลเดอร์ระบบ">
                 📥 ดาวน์โหลดไฟล์ data.js ใหม่
               </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="lockAdminSession()" style="border-color: #cbd5e1; color: #475569; font-weight: 700; padding: 0.45rem 0.85rem;" title="ล็อกหน้าต่าง Admin">
+                🔒 ล็อก Admin
+              </button>
             </div>
           </div>
 
@@ -1859,22 +1862,23 @@
                 <table class="score-edit-table" style="width: 100%; border-collapse: collapse;">
                   <thead>
                     <tr style="background: #fdf2f8; color: #881337;">
-                      <th style="width: 40px; text-align: center; padding: 8px;">ที่</th>
-                      <th style="width: 105px; text-align: center; padding: 8px;">รหัสวิชา</th>
-                      <th style="padding: 8px;">ชื่อรายวิชา</th>
-                      <th style="width: 190px; padding: 8px;">ครูประจำวิชา</th>
-                      <th style="width: 115px; text-align: center; padding: 8px;">คะแนนเก็บ</th>
-                      <th style="width: 115px; text-align: center; padding: 8px;">คะแนนสอบ</th>
-                      <th style="width: 95px; text-align: center; padding: 8px;">รวม (50)</th>
+                      <th style="width: 42px; text-align: center; padding: 8px; border: 1px solid #fbcfe8;">ที่</th>
+                      <th style="width: 105px; text-align: center; padding: 8px; border: 1px solid #fbcfe8;">รหัสวิชา</th>
+                      <th style="padding: 8px; border: 1px solid #fbcfe8;">ชื่อรายวิชา</th>
+                      <th style="width: 190px; padding: 8px; border: 1px solid #fbcfe8;">ครูประจำวิชา</th>
+                      <th style="width: 115px; text-align: center; padding: 8px; border: 1px solid #fbcfe8;">คะแนนเก็บ</th>
+                      <th style="width: 115px; text-align: center; padding: 8px; border: 1px solid #fbcfe8;">คะแนนสอบ</th>
+                      <th style="width: 95px; text-align: center; padding: 8px; border: 1px solid #fbcfe8;">รวม (50)</th>
+                      <th style="width: 105px; text-align: center; padding: 8px; border: 1px solid #fbcfe8;">สถานะ</th>
                     </tr>
                   </thead>
                   <tbody id="adminScoreTableBody"></tbody>
                   <tfoot>
                     <tr style="background: #f8fafc; font-weight: 800; font-size: 1rem;">
-                      <td colspan="4" style="text-align: right; padding: 8px 12px;">คะแนนรวมทั้งหมด (15 วิชา) / คะแนนเฉลี่ย:</td>
-                      <td style="text-align: center; color: #1e3a8a; padding: 8px;" id="adminSumCollect">0</td>
-                      <td style="text-align: center; color: #1e3a8a; padding: 8px;" id="adminSumExam">0</td>
-                      <td style="text-align: center; color: #059669; padding: 8px;" id="adminSumTotalAvg">0 (เฉลี่ย 0.00)</td>
+                      <td colspan="4" style="text-align: right; padding: 8px 12px; border: 1px solid #cbd5e1;">คะแนนรวมทั้งหมด (15 วิชา) / คะแนนเฉลี่ย:</td>
+                      <td style="text-align: center; color: #1e3a8a; padding: 8px; border: 1px solid #cbd5e1;" id="adminSumCollect">0</td>
+                      <td style="text-align: center; color: #1e3a8a; padding: 8px; border: 1px solid #cbd5e1;" id="adminSumExam">0</td>
+                      <td colspan="2" style="text-align: center; color: #059669; padding: 8px; border: 1px solid #cbd5e1;" id="adminSumTotalAvg">0 (เฉลี่ย 0.00)</td>
                     </tr>
                   </tfoot>
                 </table>
@@ -3023,8 +3027,14 @@
     // ==========================================
     let currentActiveTab = 'preview';
     let corrInitialized = false;
+    let isAdminUnlocked = false;
+    const ADMIN_PASSWORD_CODE = '1234';
 
     function switchTab(tab) {
+      if (tab === 'admin' && !isAdminUnlocked) {
+        openAdminPasswordModal();
+        return;
+      }
       currentActiveTab = tab;
       const tabs = ['preview', 'overview', 'correction', 'receipt', 'editgrade', 'admin'];
       tabs.forEach(t => {
@@ -4138,6 +4148,61 @@
     // ========================================================
     let currentAdminMode = 'student';
 
+    function openAdminPasswordModal() {
+      const modal = document.getElementById('adminPasswordModal');
+      const input = document.getElementById('adminPasswordInput');
+      const errEl = document.getElementById('adminPasswordError');
+      if (errEl) errEl.style.display = 'none';
+      if (input) input.value = '';
+      if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => {
+          if (input) input.focus();
+        }, 60);
+      }
+    }
+
+    function closeAdminPasswordModal() {
+      const modal = document.getElementById('adminPasswordModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function onAdminPasswordKeydown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitAdminPassword();
+      } else if (e.key === 'Escape') {
+        closeAdminPasswordModal();
+      }
+    }
+
+    function submitAdminPassword() {
+      const input = document.getElementById('adminPasswordInput');
+      const errEl = document.getElementById('adminPasswordError');
+      const val = (input?.value || '').trim();
+      if (val === ADMIN_PASSWORD_CODE) {
+        isAdminUnlocked = true;
+        closeAdminPasswordModal();
+        switchTab('admin');
+        showToast('🔓 เข้าสู่โหมดผู้ดูแลระบบ (Admin) เรียบร้อยแล้ว');
+      } else {
+        if (errEl) {
+          errEl.textContent = '❌ รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง';
+          errEl.style.display = 'block';
+        }
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }
+
+    function lockAdminSession() {
+      isAdminUnlocked = false;
+      switchTab('preview');
+      showToast('🔒 ล็อกโหมดผู้ดูแลระบบ (Admin) เรียบร้อยแล้ว');
+    }
+
     function initAdminTab() {
       const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
       const admClsSel = document.getElementById('adminClassSelect');
@@ -4164,8 +4229,8 @@
       currentAdminMode = mode;
       const stPane = document.getElementById('adminStudentModePane');
       const subPane = document.getElementById('adminSubjectModePane');
-      const btnSt = document.getElementById('adminModeStudentBtn');
-      const btnSub = document.getElementById('adminModeSubjectBtn');
+      const btnSt = document.getElementById('btnAdminModeStudent');
+      const btnSub = document.getElementById('btnAdminModeSubject');
 
       if (mode === 'student') {
         if (stPane) stPane.style.display = 'block';
@@ -4177,8 +4242,8 @@
         }
         if (btnSub) {
           btnSub.style.background = 'white';
-          btnSub.style.color = '#334155';
-          btnSub.style.border = '1.5px solid #cbd5e1';
+          btnSub.style.color = '#be185d';
+          btnSub.style.border = '1.5px solid #f43f5e';
         }
         loadAdminStudentForm();
       } else {
@@ -4191,8 +4256,8 @@
         }
         if (btnSt) {
           btnSt.style.background = 'white';
-          btnSt.style.color = '#334155';
-          btnSt.style.border = '1.5px solid #cbd5e1';
+          btnSt.style.color = '#be185d';
+          btnSt.style.border = '1.5px solid #f43f5e';
         }
         populateAdminBulkSubjectSelect();
         renderAdminBulkSubjectTable();
@@ -4235,6 +4300,31 @@
       }
     }
 
+    function getAdminStudentScoresArray(cls, st) {
+      if (Array.isArray(st.Scores) && st.Scores.length > 0) return st.Scores;
+      if (Array.isArray(st.Subjects) && st.Subjects.length > 0) {
+        st.Scores = st.Subjects;
+        return st.Scores;
+      }
+      // Fallback if Scores is missing
+      const clsCat = SUBJECT_CATALOG_BY_CLASS[currentClassIndex] || {};
+      const built = [];
+      for (let idx = 1; idx <= 15; idx++) {
+        const meta = clsCat[idx] || {};
+        built.push({
+          Index: idx,
+          Code: meta.Code || '',
+          Name: meta.Name || `วิชาที่ ${idx}`,
+          Teacher: meta.Teacher || '',
+          Collect: 0,
+          Exam: 0,
+          Total: 0
+        });
+      }
+      st.Scores = built;
+      return st.Scores;
+    }
+
     function loadAdminStudentForm() {
       const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
       const cls = classesList[currentClassIndex];
@@ -4265,11 +4355,16 @@
       if (elAttAbsent) elAttAbsent.value = att.Absent ?? 0;
       if (elAttPercent) elAttPercent.value = att.Percent ?? 100;
 
-      // 2. ตารางคะแนนทั้ง 15 รายวิชา
-      const tbody = document.getElementById('adminScoresTableBody');
-      if (tbody && Array.isArray(st.Scores)) {
+      // 2. ตารางคะแนนทั้ง 15 รายวิชา (แสดงครบทั้ง 15 รายวิชาและแก้ไขได้ทุกช่อง)
+      const tbody = document.getElementById('adminScoreTableBody') || document.getElementById('adminScoresTableBody');
+      const scoresList = getAdminStudentScoresArray(cls, st);
+      if (tbody && Array.isArray(scoresList)) {
         let sumC = 0, sumE = 0, sumT = 0;
-        tbody.innerHTML = st.Scores.map((sc, sIdx) => {
+        tbody.innerHTML = scoresList.map((sc, sIdx) => {
+          const subIdx = sc.Index || (sIdx + 1);
+          const isBasic = subIdx <= 9;
+          const maxCollect = isBasic ? 35 : 40;
+          const maxExam = isBasic ? 15 : 10;
           const c = parseFloat(sc.Collect) || 0;
           const e = parseFloat(sc.Exam) || 0;
           const t = parseFloat(sc.Total) || 0;
@@ -4283,7 +4378,7 @@
 
           return `
             <tr id="adminScoreRow_${sIdx}" style="background: ${isFail ? '#fff1f2' : (sIdx % 2 === 0 ? '#ffffff' : '#f8fafc')};">
-              <td style="padding: 6px; border: 1px solid #cbd5e1; text-align: center; font-weight: 700;">${sc.Index}</td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1; text-align: center; font-weight: 700;">${subIdx}</td>
               <td style="padding: 6px; border: 1px solid #cbd5e1;">
                 <input type="text" id="adminSubCode_${sIdx}" value="${sc.Code || ''}" style="width: 100%; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-family: 'Sarabun', sans-serif; font-size: 0.85rem; text-align: center;">
               </td>
@@ -4291,18 +4386,25 @@
                 <input type="text" id="adminSubName_${sIdx}" value="${sc.Name || ''}" style="width: 100%; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-family: 'Sarabun', sans-serif; font-size: 0.85rem; font-weight: 600;">
               </td>
               <td style="padding: 6px; border: 1px solid #cbd5e1;">
-                <input type="text" id="adminSubTeacher_${sIdx}" value="${sc.Teacher || getSubjectTeacher(currentClassIndex, sc.Index) || ''}" style="width: 100%; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-family: 'Sarabun', sans-serif; font-size: 0.82rem;">
+                <input type="text" id="adminSubTeacher_${sIdx}" value="${sc.Teacher || getSubjectTeacher(currentClassIndex, subIdx) || ''}" style="width: 100%; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-family: 'Sarabun', sans-serif; font-size: 0.82rem;">
               </td>
               <td style="padding: 6px; border: 1px solid #cbd5e1; text-align: center; background: #fffbeb;">
-                <input type="number" id="adminSubCollect_${sIdx}" min="0" max="50" step="0.5" value="${sc.Collect ?? 0}" oninput="onAdminScoreInput(${sIdx})"
-                  style="width: 72px; padding: 5px; border: 1.5px solid #f59e0b; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 0.95rem; text-align: center;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <input type="number" id="adminSubCollect_${sIdx}" min="0" max="50" step="0.5" value="${sc.Collect ?? 0}" oninput="onAdminScoreInput(${sIdx})"
+                    style="width: 68px; padding: 4px; border: 1.5px solid #f59e0b; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 0.95rem; text-align: center;">
+                  <span style="font-size: 0.72rem; color: #94a3b8;">/${maxCollect}</span>
+                </div>
               </td>
               <td style="padding: 6px; border: 1px solid #cbd5e1; text-align: center; background: #eff6ff;">
-                <input type="number" id="adminSubExam_${sIdx}" min="0" max="50" step="0.5" value="${sc.Exam ?? 0}" oninput="onAdminScoreInput(${sIdx})"
-                  style="width: 72px; padding: 5px; border: 1.5px solid #3b82f6; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 0.95rem; text-align: center;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <input type="number" id="adminSubExam_${sIdx}" min="0" max="50" step="0.5" value="${sc.Exam ?? 0}" oninput="onAdminScoreInput(${sIdx})"
+                    style="width: 68px; padding: 4px; border: 1.5px solid #3b82f6; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 0.95rem; text-align: center;">
+                  <span style="font-size: 0.72rem; color: #94a3b8;">/${maxExam}</span>
+                </div>
               </td>
-              <td id="adminSubTotal_${sIdx}" style="padding: 6px; border: 1px solid #cbd5e1; text-align: center; font-weight: 800; font-size: 1rem; color: ${isFail ? '#dc2626' : '#15803d'}; background: #f0fdf4;">
-                ${t}
+              <td style="padding: 6px; border: 1px solid #cbd5e1; text-align: center; background: #f0fdf4;">
+                <input type="number" id="adminSubTotal_${sIdx}" min="0" max="100" step="0.5" value="${t}" oninput="onAdminTotalDirectInput(${sIdx})"
+                  style="width: 68px; padding: 4px; border: 1.5px solid #10b981; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-weight: 800; font-size: 0.95rem; text-align: center; color: ${isFail ? '#dc2626' : '#15803d'}; background: #ffffff;">
               </td>
               <td id="adminSubStatus_${sIdx}" style="padding: 6px; border: 1px solid #cbd5e1; text-align: center;">
                 ${statusHtml}
@@ -4311,26 +4413,38 @@
           `;
         }).join('');
 
-        const elSumC = document.getElementById('adminSumCollect');
-        const elSumE = document.getElementById('adminSumExam');
-        const elSumT = document.getElementById('adminSumTotal');
-        const elAvg = document.getElementById('adminAvgScore');
-        if (elSumC) elSumC.textContent = Math.round(sumC * 100) / 100;
-        if (elSumE) elSumE.textContent = Math.round(sumE * 100) / 100;
-        if (elSumT) elSumT.textContent = Math.round(sumT * 100) / 100;
-        if (elAvg) elAvg.textContent = (sumT / 15.0).toFixed(2);
+        updateAdminScoreTotalsFooter(sumC, sumE, sumT);
       }
 
       // 3. ผลประเมินข้อ 3-5 และความคิดเห็นครูประจำชั้น
       const elEvalRead = document.getElementById('adminEvalReading');
-      const elEvalComp = document.getElementById('adminEvalCompetency');
-      const elEvalChar = document.getElementById('adminEvalCharacter');
-      const elComment = document.getElementById('adminTeacherComment');
+      const elEvalComp = document.getElementById('adminEvalComp') || document.getElementById('adminEvalCompetency');
+      const elEvalChar = document.getElementById('adminEvalChar') || document.getElementById('adminEvalCharacter');
+      const elComment = document.getElementById('adminCommentText') || document.getElementById('adminTeacherComment');
 
       if (elEvalRead) elEvalRead.value = getStudentEval(st, 'Reading') || 'ดี';
       if (elEvalComp) elEvalComp.value = getStudentEval(st, 'Competency') || 'ดี';
       if (elEvalChar) elEvalChar.value = getStudentEval(st, 'Character') || 'ดี';
       if (elComment) elComment.value = getTeacherComment(st.StudentId) || '';
+    }
+
+    function updateAdminScoreTotalsFooter(sumC, sumE, sumT) {
+      const cleanC = Math.round(sumC * 100) / 100;
+      const cleanE = Math.round(sumE * 100) / 100;
+      const cleanT = Math.round(sumT * 100) / 100;
+      const avgStr = (cleanT / 15.0).toFixed(2);
+
+      const elSumC = document.getElementById('adminSumCollect');
+      const elSumE = document.getElementById('adminSumExam');
+      const elSumTotalAvg = document.getElementById('adminSumTotalAvg');
+      const elSumT = document.getElementById('adminSumTotal');
+      const elAvg = document.getElementById('adminAvgScore');
+
+      if (elSumC) elSumC.textContent = cleanC;
+      if (elSumE) elSumE.textContent = cleanE;
+      if (elSumTotalAvg) elSumTotalAvg.textContent = `${cleanT} (เฉลี่ย ${avgStr})`;
+      if (elSumT) elSumT.textContent = cleanT;
+      if (elAvg) elAvg.textContent = avgStr;
     }
 
     function onAdminAttInput() {
@@ -4345,7 +4459,7 @@
     function onAdminScoreInput(sIdx) {
       const cInput = document.getElementById(`adminSubCollect_${sIdx}`);
       const eInput = document.getElementById(`adminSubExam_${sIdx}`);
-      const totEl = document.getElementById(`adminSubTotal_${sIdx}`);
+      const totInput = document.getElementById(`adminSubTotal_${sIdx}`);
       const statusEl = document.getElementById(`adminSubStatus_${sIdx}`);
       const rowEl = document.getElementById(`adminScoreRow_${sIdx}`);
 
@@ -4354,9 +4468,9 @@
       const t = Math.round((c + e) * 100) / 100;
       const isFail = t < 25;
 
-      if (totEl) {
-        totEl.textContent = t;
-        totEl.style.color = isFail ? '#dc2626' : '#15803d';
+      if (totInput) {
+        totInput.value = t;
+        totInput.style.color = isFail ? '#dc2626' : '#15803d';
       }
       if (statusEl) {
         statusEl.innerHTML = isFail
@@ -4367,23 +4481,44 @@
         rowEl.style.background = isFail ? '#fff1f2' : (sIdx % 2 === 0 ? '#ffffff' : '#f8fafc');
       }
 
-      // คำนวณยอดรวมทั้งหมด
+      recalcAdminFooterFromInputs();
+    }
+
+    function onAdminTotalDirectInput(sIdx) {
+      const totInput = document.getElementById(`adminSubTotal_${sIdx}`);
+      const statusEl = document.getElementById(`adminSubStatus_${sIdx}`);
+      const rowEl = document.getElementById(`adminScoreRow_${sIdx}`);
+
+      const t = parseFloat(totInput?.value) || 0;
+      const isFail = t < 25;
+
+      if (totInput) {
+        totInput.style.color = isFail ? '#dc2626' : '#15803d';
+      }
+      if (statusEl) {
+        statusEl.innerHTML = isFail
+          ? `<span style="background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;">ไม่ผ่าน (<25)</span>`
+          : `<span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;">ผ่านเกณฑ์</span>`;
+      }
+      if (rowEl) {
+        rowEl.style.background = isFail ? '#fff1f2' : (sIdx % 2 === 0 ? '#ffffff' : '#f8fafc');
+      }
+
+      recalcAdminFooterFromInputs();
+    }
+
+    function recalcAdminFooterFromInputs() {
       let sumC = 0, sumE = 0, sumT = 0;
       for (let i = 0; i < 15; i++) {
         const ci = parseFloat(document.getElementById(`adminSubCollect_${i}`)?.value) || 0;
         const ei = parseFloat(document.getElementById(`adminSubExam_${i}`)?.value) || 0;
+        const tiEl = document.getElementById(`adminSubTotal_${i}`);
+        const ti = tiEl ? (parseFloat(tiEl.value) || 0) : (ci + ei);
         sumC += ci;
         sumE += ei;
-        sumT += (ci + ei);
+        sumT += ti;
       }
-      const elSumC = document.getElementById('adminSumCollect');
-      const elSumE = document.getElementById('adminSumExam');
-      const elSumT = document.getElementById('adminSumTotal');
-      const elAvg = document.getElementById('adminAvgScore');
-      if (elSumC) elSumC.textContent = Math.round(sumC * 100) / 100;
-      if (elSumE) elSumE.textContent = Math.round(sumE * 100) / 100;
-      if (elSumT) elSumT.textContent = Math.round(sumT * 100) / 100;
-      if (elAvg) elAvg.textContent = (sumT / 15.0).toFixed(2);
+      updateAdminScoreTotalsFooter(sumC, sumE, sumT);
     }
 
     function saveAdminStudentAllData() {
@@ -4410,15 +4545,17 @@
       // 2. บันทึกคะแนนทั้ง 15 วิชา
       const updateOrig = !!document.getElementById('adminUpdateOrigCheck')?.checked;
       let sumC = 0, sumE = 0, sumT = 0;
+      const scoresList = getAdminStudentScoresArray(cls, st);
 
-      if (Array.isArray(st.Scores)) {
-        st.Scores.forEach((sc, sIdx) => {
+      if (Array.isArray(scoresList)) {
+        scoresList.forEach((sc, sIdx) => {
           const codeVal = (document.getElementById(`adminSubCode_${sIdx}`)?.value || '').trim();
           const nameVal = (document.getElementById(`adminSubName_${sIdx}`)?.value || '').trim();
           const teacherVal = (document.getElementById(`adminSubTeacher_${sIdx}`)?.value || '').trim();
           const cVal = parseFloat(document.getElementById(`adminSubCollect_${sIdx}`)?.value) || 0;
           const eVal = parseFloat(document.getElementById(`adminSubExam_${sIdx}`)?.value) || 0;
-          const tVal = Math.round((cVal + eVal) * 100) / 100;
+          const totEl = document.getElementById(`adminSubTotal_${sIdx}`);
+          const tVal = totEl ? (parseFloat(totEl.value) || 0) : Math.round((cVal + eVal) * 100) / 100;
 
           if (codeVal) sc.Code = codeVal;
           if (nameVal) sc.Name = nameVal;
@@ -4450,9 +4587,13 @@
 
       // 3. บันทึกผลประเมินข้อ 3-5 และความคิดเห็นครู
       const readVal = document.getElementById('adminEvalReading')?.value || 'ดี';
-      const compVal = document.getElementById('adminEvalCompetency')?.value || 'ดี';
-      const charVal = document.getElementById('adminEvalCharacter')?.value || 'ดี';
-      const commentVal = document.getElementById('adminTeacherComment')?.value || '';
+      const compEl = document.getElementById('adminEvalComp') || document.getElementById('adminEvalCompetency');
+      const charEl = document.getElementById('adminEvalChar') || document.getElementById('adminEvalCharacter');
+      const commentEl = document.getElementById('adminCommentText') || document.getElementById('adminTeacherComment');
+
+      const compVal = compEl?.value || 'ดี';
+      const charVal = charEl?.value || 'ดี';
+      const commentVal = commentEl?.value || '';
 
       if (!st.Evaluations) st.Evaluations = {};
       st.Evaluations.Reading = readVal;
@@ -4477,7 +4618,7 @@
 
       // คำนวณคะแนนเฉลี่ยทั้งห้องใหม่
       const avgAll = cls.Students.reduce((acc, s) => acc + (s.AverageScore || 0), 0) / cls.Students.length;
-      const statAvgEl = document.getElementById('statAvgScore');
+      const statAvgEl = document.getElementById('statClassAvg') || document.getElementById('statAvgScore');
       if (statAvgEl) statAvgEl.textContent = avgAll.toFixed(2);
 
       showToast(`✅ บันทึกข้อมูลทั้งหมดของ "${st.FullName}" เรียบร้อยแล้ว`);
@@ -4544,8 +4685,8 @@
       const clsIdx = isNaN(bulkClsIdx) ? currentClassIndex : bulkClsIdx;
       const cls = classesList[clsIdx];
       const sIdx = parseInt(document.getElementById('adminBulkSubjectSelect')?.value ?? '0', 10) || 0;
-      const tbody = document.getElementById('adminBulkTableBody');
-      const infoBanner = document.getElementById('adminBulkSubjectInfoBanner');
+      const tbody = document.getElementById('adminBulkSubjectTableBody') || document.getElementById('adminBulkTableBody');
+      const infoBanner = document.getElementById('adminBulkSubjectHeaderInfo') || document.getElementById('adminBulkSubjectInfoBanner');
       if (!tbody || !cls || !Array.isArray(cls.Students)) return;
 
       const sampleSub = cls.Students[0]?.Scores?.[sIdx];
@@ -4657,7 +4798,7 @@
       renderOverviewTable();
 
       const avgAll = cls.Students.reduce((acc, s) => acc + (s.AverageScore || 0), 0) / cls.Students.length;
-      const statAvgEl = document.getElementById('statAvgScore');
+      const statAvgEl = document.getElementById('statClassAvg') || document.getElementById('statAvgScore');
       if (statAvgEl) statAvgEl.textContent = avgAll.toFixed(2);
 
       const subName = cls.Students[0]?.Scores?.[sIdx]?.Name || '';
@@ -4693,6 +4834,36 @@
 
   <!-- ภาชนะพิมพ์แบบฟอร์มลงนามรับผลการเรียน (Print Only) -->
   <div id="receiptPrintContainer"></div>
+
+  <!-- Modal ยืนยันรหัสผ่านเข้าสู่โหมด Admin -->
+  <div id="adminPasswordModal" class="score-modal-overlay no-print" style="display: none; z-index: 10000;" onclick="if(event.target===this) closeAdminPasswordModal()">
+    <div style="background: white; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(136, 19, 55, 0.25); overflow: hidden; border: 2px solid #fbcfe8;" onclick="event.stopPropagation()">
+      <div style="background: linear-gradient(135deg, #be185d, #e11d48); color: white; padding: 1.1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 1.4rem;">🔒</span>
+          <div>
+            <div style="font-family: 'Prompt', sans-serif; font-weight: 700; font-size: 1.1rem;">ยืนยันรหัสผ่านผู้ดูแลระบบ (Admin)</div>
+            <div style="font-size: 0.8rem; opacity: 0.9;">กรุณากรอกรหัสผ่านเพื่อเข้าแก้ไขข้อมูล</div>
+          </div>
+        </div>
+        <button type="button" onclick="closeAdminPasswordModal()" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: 700;">✕</button>
+      </div>
+      <div style="padding: 1.35rem 1.5rem;">
+        <label style="display: block; font-weight: 700; color: #881337; margin-bottom: 0.5rem; font-size: 0.92rem;">รหัสผ่าน Admin:</label>
+        <input type="password" id="adminPasswordInput" onkeydown="onAdminPasswordKeydown(event)" placeholder="กรอกรหัสผ่าน..."
+          style="width: 100%; padding: 0.7rem 1rem; border: 2px solid #f43f5e; border-radius: 10px; font-size: 1.25rem; font-weight: 800; text-align: center; letter-spacing: 6px; outline: none; background: #fff1f2; color: #881337;">
+        <div id="adminPasswordError" style="display: none; margin-top: 0.6rem; color: #dc2626; font-size: 0.85rem; font-weight: 700; text-align: center; background: #fee2e2; padding: 0.4rem; border-radius: 6px;"></div>
+        <div style="display: flex; gap: 0.6rem; margin-top: 1.2rem;">
+          <button type="button" class="btn btn-outline" onclick="closeAdminPasswordModal()" style="flex: 1; padding: 0.6rem; font-weight: 700; border-color: #cbd5e1; color: #475569;">
+            ยกเลิก
+          </button>
+          <button type="button" class="btn btn-pink-solid" onclick="submitAdminPassword()" style="flex: 1.4; padding: 0.6rem; font-weight: 700; font-size: 0.95rem;">
+            🔓 เข้าสู่ระบบ Admin
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal สำหรับครูแก้ไขผลการเรียนของนักเรียน -->
   <div id="scoreEditModal" class="score-modal-overlay no-print" style="display: none;" onclick="onModalOverlayClick(event)">
