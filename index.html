@@ -2436,6 +2436,16 @@
       });
     }
 
+    function isSubjectCurrentlyFailing(sc) {
+      const currTot = parseFloat(sc.Total);
+      return !isNaN(currTot) && currTot < 25;
+    }
+
+    function getCurrentlyFailingSubjects(student) {
+      if (!student || !Array.isArray(student.Scores)) return [];
+      return student.Scores.filter(sc => isSubjectCurrentlyFailing(sc));
+    }
+
     function isSubjectFailing(sc) {
       const origTot = parseFloat(sc.OrigTotal !== undefined ? sc.OrigTotal : sc.Total);
       const currTot = parseFloat(sc.Total);
@@ -2488,8 +2498,8 @@
         classesList.forEach((cls, cIdx) => {
           if (!cls.Students) return;
           cls.Students.forEach(st => {
-            if (customMap[st.StudentId]) {
-              const custom = customMap[st.StudentId];
+            const custom = customMap[String(st.StudentId)] || customMap[st.StudentId];
+            if (custom) {
               if (custom.FullName) st.FullName = custom.FullName;
               if (custom.No !== undefined) st.No = custom.No;
               if (custom.Attendance) {
@@ -2498,24 +2508,31 @@
               const savedList = custom.Scores || custom.Subjects;
               if (Array.isArray(savedList)) {
                 savedList.forEach((sub, sIdx) => {
-                  if (cIdx === 2 && sIdx === 6 && (!sub.Total || Number(sub.Total) === 0)) {
+                  const subIndexNum = Number(sub.Index || (sIdx + 1));
+                  if (cIdx === 2 && subIndexNum === 7 && (!sub.Total || Number(sub.Total) === 0)) {
                     return; // คงค่าคะแนนจริงของวิชาศิลปะ ป.3 ที่ดึงจากไฟล์ Excel
                   }
-                  if (st.Scores && st.Scores[sIdx]) {
-                    if (sub.Code) st.Scores[sIdx].Code = sub.Code;
-                    if (sub.Name) st.Scores[sIdx].Name = sub.Name;
-                    if (sub.Teacher) st.Scores[sIdx].Teacher = sub.Teacher;
-                    st.Scores[sIdx].Collect = sub.Collect;
-                    st.Scores[sIdx].Exam = sub.Exam;
-                    st.Scores[sIdx].Total = sub.Total;
-                    if (sub.OrigCollect !== undefined) st.Scores[sIdx].OrigCollect = sub.OrigCollect;
-                    if (sub.OrigExam !== undefined) st.Scores[sIdx].OrigExam = sub.OrigExam;
-                    if (sub.OrigTotal !== undefined) st.Scores[sIdx].OrigTotal = sub.OrigTotal;
+                  if (cIdx === 2 && subIndexNum === 13 && [2, 4, 11, 14].includes(Number(st.No)) && Number(sub.Total) === 24 && Number(sub.Exam) === 2) {
+                    return; // คงค่าคะแนนจริงของวิชาเศรษฐกิจพอเพียง ป.3 ที่อัปเดตจากไฟล์ Excel
+                  }
+                  const targetScore = Array.isArray(st.Scores)
+                    ? (st.Scores.find(x => Number(x.Index) === subIndexNum) || st.Scores[sIdx])
+                    : null;
+                  if (targetScore) {
+                    if (sub.Code) targetScore.Code = sub.Code;
+                    if (sub.Name) targetScore.Name = sub.Name;
+                    if (sub.Teacher) targetScore.Teacher = sub.Teacher;
+                    targetScore.Collect = Number(sub.Collect) || 0;
+                    targetScore.Exam = Number(sub.Exam) || 0;
+                    targetScore.Total = Number(sub.Total !== undefined ? sub.Total : (targetScore.Collect + targetScore.Exam)) || 0;
+                    if (sub.OrigCollect !== undefined) targetScore.OrigCollect = Number(sub.OrigCollect);
+                    if (sub.OrigExam !== undefined) targetScore.OrigExam = Number(sub.OrigExam);
+                    if (sub.OrigTotal !== undefined) targetScore.OrigTotal = Number(sub.OrigTotal);
                   }
                   if (st.Subjects && st.Subjects[sIdx]) {
-                    st.Subjects[sIdx].Collect = sub.Collect;
-                    st.Subjects[sIdx].Exam = sub.Exam;
-                    st.Subjects[sIdx].Total = sub.Total;
+                    st.Subjects[sIdx].Collect = Number(sub.Collect) || 0;
+                    st.Subjects[sIdx].Exam = Number(sub.Exam) || 0;
+                    st.Subjects[sIdx].Total = Number(sub.Total) || 0;
                   }
                 });
               }
@@ -2615,9 +2632,13 @@
           sel.innerHTML = `<option value="-1">-- ไม่มีนักเรียนที่ไม่ผ่านเกณฑ์ในชั้นนี้ --</option>`;
           return;
         }
-        sel.innerHTML = failingList.map(item =>
-          `<option value="${item.stIdx}" ${item.stIdx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${item.student.No} ${item.student.FullName} (ไม่ผ่าน ${item.failingSubjects.length} วิชา)</option>`
-        ).join('');
+        sel.innerHTML = failingList.map(item => {
+          const currFailCount = getCurrentlyFailingSubjects(item.student).length;
+          const statusText = currFailCount > 0
+            ? `(ไม่ผ่าน ${currFailCount} วิชา)`
+            : `(แก้ไขผลการเรียนแล้ว ✅)`;
+          return `<option value="${item.stIdx}" ${item.stIdx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${item.student.No} ${item.student.FullName} ${statusText}</option>`;
+        }).join('');
       } else {
         sel.innerHTML = cls.Students.map((s, idx) =>
           `<option value="${idx}" ${idx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${s.No} ${s.FullName}</option>`
@@ -2653,7 +2674,14 @@
         item.onclick = () => selectStudent(originalIndex);
 
         const hasComment = !!getTeacherComment(s.StudentId);
-        const failCount = getFailingSubjects(s).length;
+        const totalFailHistCount = getFailingSubjects(s).length;
+        const currFailCount = getCurrentlyFailingSubjects(s).length;
+        let failBadgeHtml = '';
+        if (currFailCount > 0) {
+          failBadgeHtml = `<div style="font-size: 0.75rem; color: #dc2626; font-weight: 700;">⚠️ ไม่ผ่านเกณฑ์ ${currFailCount} วิชา</div>`;
+        } else if (totalFailHistCount > 0) {
+          failBadgeHtml = `<div style="font-size: 0.75rem; color: #059669; font-weight: 700;">✅ แก้ไขผลการเรียนแล้ว (${totalFailHistCount} วิชา)</div>`;
+        }
 
         item.innerHTML = `
           <div class="student-info">
@@ -2661,7 +2689,7 @@
             <div>
               <div style="font-size: 0.92rem; font-weight: 600;">${s.FullName}</div>
               <div class="student-meta">รหัส: ${s.StudentId} | รวม: ${s.TotalScore || 0} คะแนน</div>
-              ${failCount > 0 ? `<div style="font-size: 0.75rem; color: #dc2626; font-weight: 700;">⚠️ ไม่ผ่านเกณฑ์ ${failCount} วิชา</div>` : ''}
+              ${failBadgeHtml}
             </div>
           </div>
           <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
@@ -3138,8 +3166,14 @@
 
       corrInitialized = true;
       const optionsHtml = classesList.map((c, idx) => {
-        const failCount = getFailingStudentsOfClass(idx).length;
-        return `<option value="${idx}" ${idx === currentClassIndex ? 'selected' : ''}>${c.Grade || ('ชั้น ป.' + (idx + 1))} (ไม่ผ่าน ${failCount} คน)</option>`;
+        const failList = getFailingStudentsOfClass(idx);
+        const stillFailingCount = failList.filter(item => getCurrentlyFailingSubjects(item.student).length > 0).length;
+        const labelSuffix = failList.length === 0
+          ? '(ผ่านเกณฑ์ทุกคน)'
+          : (stillFailingCount === 0
+              ? `(แก้ไขครบทั้ง ${failList.length} คนแล้ว ✅)`
+              : `(ต้องแก้ไข ${failList.length} คน)`);
+        return `<option value="${idx}" ${idx === currentClassIndex ? 'selected' : ''}>${c.Grade || ('ชั้น ป.' + (idx + 1))} ${labelSuffix}</option>`;
       }).join('');
 
       if (classSel) classSel.innerHTML = optionsHtml;
@@ -3158,8 +3192,11 @@
       const docStSel = document.getElementById('corrDocStudentSelect');
       const summaryEl = document.getElementById('corrFailingCountSummary');
 
+      const fixedStudentsCount = failingList.filter(item => getCurrentlyFailingSubjects(item.student).length === 0).length;
+      const remainingStudentsCount = failingList.length - fixedStudentsCount;
+
       if (summaryEl) {
-        summaryEl.innerHTML = `${cls.ClassName} : นักเรียนที่ไม่ผ่านเกณฑ์จำนวน <b style="color:#dc2626;">${failingList.length} คน</b> (จากทั้งหมด ${cls.Students.length} คน) — แสดงรายวิชาที่ไม่ผ่านทั้งหมดในใบคำร้องฉบับเดียวกัน`;
+        summaryEl.innerHTML = `${cls.ClassName} : นักเรียนในบัญชีขอแก้ไขผลการเรียน <b style="color:#be185d;">${failingList.length} คน</b> (แก้ไขผ่านแล้ว <b style="color:#059669;">${fixedStudentsCount} คน</b> / รอแก้ไข <b style="color:#dc2626;">${remainingStudentsCount} คน</b>) — ระบบบันทึกคะแนนที่แก้ไขลงใบ ปพ.5 อัตโนมัติทันที`;
       }
 
       if (failingList.length === 0) {
@@ -3175,9 +3212,13 @@
         currentStudentIndex = failingList[0].stIdx;
       }
 
-      const stOptionsHtml = failingList.map(item =>
-        `<option value="${item.stIdx}" ${item.stIdx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${item.student.No} ${item.student.FullName} (ไม่ผ่าน ${item.failingSubjects.length} วิชา)</option>`
-      ).join('');
+      const stOptionsHtml = failingList.map(item => {
+        const currFail = getCurrentlyFailingSubjects(item.student).length;
+        const statusLabel = currFail > 0
+          ? `(ไม่ผ่าน ${currFail} วิชา)`
+          : `(แก้ไขผ่านแล้ว ${item.failingSubjects.length} วิชา ✅)`;
+        return `<option value="${item.stIdx}" ${item.stIdx === currentStudentIndex ? 'selected' : ''}>เลขที่ ${item.student.No} ${item.student.FullName} ${statusLabel}</option>`;
+      }).join('');
 
       if (stSel) stSel.innerHTML = stOptionsHtml;
       if (docStSel) docStSel.innerHTML = stOptionsHtml;
@@ -3262,10 +3303,10 @@
         <div style="background: #fff; border: 1.5px solid #fecdd3; border-radius: 10px; padding: 0.9rem 1rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; flex-wrap: wrap; gap: 0.5rem;">
             <div style="font-weight: 700; color: #be185d; font-size: 1rem;">
-              📌 รายวิชาที่ไม่ผ่านเกณฑ์ของ ${student.FullName} (เลขที่ ${student.No}) — รวมทั้งหมด ${failingSubs.length} วิชา
+              📌 รายวิชาที่ขอแก้ไขผลการเรียนของ ${student.FullName} (เลขที่ ${student.No}) — รวมทั้งหมด ${failingSubs.length} วิชา
             </div>
-            <div style="font-size: 0.85rem; color: #64748b;">
-              ครูประจำชั้น: <b>${cls.Teacher1 || '-'}</b> | กรอกคะแนนที่ขอแก้ไขแล้วกดบันทึกหรือสั่งพิมพ์ใบคำร้อง
+            <div style="font-size: 0.85rem; color: #059669; font-weight: 600;">
+              👩‍🏫 ครูประจำชั้น: <b>${cls.Teacher1 || '-'}</b> | ✨ กรอกคะแนนแล้วระบบจะบันทึกอัตโนมัติทันที หรือกดปุ่มบันทึกยืนยันด้านล่าง
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 0.65rem;">
@@ -3278,13 +3319,27 @@
         const origC = sc.OrigCollect !== undefined ? sc.OrigCollect : sc.Collect;
         const origE = sc.OrigExam !== undefined ? sc.OrigExam : sc.Exam;
         const origTot = sc.OrigTotal !== undefined ? sc.OrigTotal : sc.Total;
+        const currTot = parseFloat(sc.Total) || 0;
+        const isPassedNow = currTot >= 25;
         const subjectTeacher = getSubjectTeacher(classIdx, subIdx);
 
+        const statusBadgeText = isPassedNow
+          ? `✅ บันทึกคะแนนที่แก้ไขแล้ว (รวม ${currTot} คะแนน - ผ่านเกณฑ์)`
+          : `⚠️ รอแก้ไขคะแนน (ปัจจุบัน ${currTot} คะแนน - ยังไม่ถึง 25 คะแนน)`;
+        const statusBadgeStyle = isPassedNow
+          ? `background: #dcfce7; color: #15803d; border: 1px solid #86efac;`
+          : `background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5;`;
+
         html += `
-          <div style="border: 1px solid #f1f5f9; background: #fdf2f8; border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <div style="border: 1.5px solid ${isPassedNow ? '#86efac' : '#f1f5f9'}; background: ${isPassedNow ? '#f0fdf4' : '#fdf2f8'}; border-radius: 8px; padding: 0.75rem 0.9rem;" id="corrSubjectCard_${subIdx}">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem; flex-wrap: wrap; gap: 0.4rem;">
-              <div style="font-weight: 700; color: #9d174d; font-size: 0.95rem;">
-                ${idx + 1}. วิชา${sc.Name} (${sc.Code || '-'})
+              <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                <div style="font-weight: 700; color: #9d174d; font-size: 0.95rem;">
+                  ${idx + 1}. วิชา${sc.Name} (${sc.Code || '-'})
+                </div>
+                <span id="corrStatusBadge_${subIdx}" style="font-size: 0.78rem; padding: 2px 10px; border-radius: 99px; font-weight: 700; ${statusBadgeStyle}">
+                  ${statusBadgeText}
+                </span>
               </div>
               <div style="font-size: 0.85rem; background: #fff; border: 1px solid #fbcfe8; padding: 2px 10px; border-radius: 99px; color: #881337; font-weight: 600;">
                 👩‍🏫 ครูประจำวิชา: ${subjectTeacher}
@@ -3305,26 +3360,42 @@
               </div>
               <div style="background: #fff; padding: 0.45rem; border-radius: 6px; border: 1.5px solid #f43f5e;">
                 <div style="font-size: 0.75rem; color: #be185d; font-weight: 700;">เก็บใหม่ (เต็ม ${maxCollect})</div>
-                <input type="number" id="corrNewCollect_${subIdx}" min="0" max="${maxCollect}" value="${sc.Collect}"
+                <input type="number" id="corrNewCollect_${subIdx}" min="0" max="${maxCollect}" step="0.5" value="${sc.Collect}"
                   style="width: 78px; text-align: center; font-size: 1rem; font-weight: 700; padding: 2px; border: 1px solid #cbd5e1; border-radius: 5px; margin-top: 2px;"
                   oninput="onCorrMultiScoreInput(${subIdx}, ${maxCollect}, ${maxExam})">
               </div>
               <div style="background: #fff; padding: 0.45rem; border-radius: 6px; border: 1.5px solid #f43f5e;">
                 <div style="font-size: 0.75rem; color: #be185d; font-weight: 700;">สอบใหม่ (เต็ม ${maxExam})</div>
-                <input type="number" id="corrNewExam_${subIdx}" min="0" max="${maxExam}" value="${sc.Exam}"
+                <input type="number" id="corrNewExam_${subIdx}" min="0" max="${maxExam}" step="0.5" value="${sc.Exam}"
                   style="width: 78px; text-align: center; font-size: 1rem; font-weight: 700; padding: 2px; border: 1px solid #cbd5e1; border-radius: 5px; margin-top: 2px;"
                   oninput="onCorrMultiScoreInput(${subIdx}, ${maxCollect}, ${maxExam})">
               </div>
               <div style="background: #f0fdf4; padding: 0.45rem; border-radius: 6px; border: 1.5px solid #86efac;">
                 <div style="font-size: 0.75rem; color: #15803d; font-weight: 700;">รวมใหม่ (เต็ม 50)</div>
-                <div id="corrNewTotal_${subIdx}" style="font-size: 1.1rem; font-weight: 700; color: #16a34a; margin-top: 3px;">${sc.Total}</div>
+                <div id="corrNewTotal_${subIdx}" style="font-size: 1.1rem; font-weight: 700; color: ${isPassedNow ? '#16a34a' : '#dc2626'}; margin-top: 3px;">${sc.Total}</div>
               </div>
             </div>
           </div>
         `;
       });
 
-      html += `</div></div>`;
+      html += `
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.85rem; padding-top: 0.75rem; border-top: 1px dashed #fbcfe8; flex-wrap: wrap; gap: 0.5rem;">
+            <div id="corrStudentScoreSummaryText" style="font-size: 0.88rem; color: #065f46; font-weight: 700;">
+              📊 คะแนนรวมทั้ง 15 วิชาของ ${student.FullName}: <b>${student.TotalScore || 0} / 750</b> (เฉลี่ย <b>${(student.AverageScore || 0).toFixed ? student.AverageScore.toFixed(2) : student.AverageScore}</b>)
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button type="button" class="btn btn-success" onclick="saveGradeCorrection()" style="padding: 0.5rem 1.2rem; font-size: 0.9rem; font-weight: 700;">
+                💾 บันทึกคะแนนที่แก้ไขลงระบบทันที
+              </button>
+              <button type="button" class="btn btn-pink-solid" onclick="printCorrectionForm()" style="padding: 0.5rem 1.2rem; font-size: 0.9rem; font-weight: 700;">
+                🖨️ พิมพ์ใบคำร้องของนักเรียนคนนี้ (A4)
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
       container.innerHTML = html;
     }
 
@@ -3351,8 +3422,79 @@
       if (newE < 0) { newE = 0; eInput.value = 0; }
 
       const newTot = Math.round((newC + newE) * 100) / 100;
+      const isPassedNow = newTot >= 25;
       totEl.innerText = newTot;
-      totEl.style.color = (newTot >= 25) ? '#16a34a' : '#dc2626';
+      totEl.style.color = isPassedNow ? '#16a34a' : '#dc2626';
+
+      const badgeEl = document.getElementById(`corrStatusBadge_${subIdx}`);
+      const cardEl = document.getElementById(`corrSubjectCard_${subIdx}`);
+      if (badgeEl) {
+        badgeEl.textContent = isPassedNow
+          ? `✅ บันทึกคะแนนที่แก้ไขแล้ว (รวม ${newTot} คะแนน - ผ่านเกณฑ์)`
+          : `⚠️ รอแก้ไขคะแนน (ปัจจุบัน ${newTot} คะแนน - ยังไม่ถึง 25 คะแนน)`;
+        badgeEl.style.background = isPassedNow ? '#dcfce7' : '#fee2e2';
+        badgeEl.style.color = isPassedNow ? '#15803d' : '#b91c1c';
+        badgeEl.style.borderColor = isPassedNow ? '#86efac' : '#fca5a5';
+      }
+      if (cardEl) {
+        cardEl.style.borderColor = isPassedNow ? '#86efac' : '#f1f5f9';
+        cardEl.style.background = isPassedNow ? '#f0fdf4' : '#fdf2f8';
+      }
+
+      // บันทึกลงข้อมูลนักเรียนและ localStorage ทันทีแบบอัตโนมัติ (Auto-Save)
+      const classIdx = currentClassIndex;
+      const stSel = document.getElementById('corrStudentSelect');
+      const stIdx = stSel ? parseInt(stSel.value, 10) : currentStudentIndex;
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[classIdx];
+      const student = (stIdx >= 0) ? cls?.Students?.[stIdx] : null;
+
+      if (student && Array.isArray(student.Scores)) {
+        const targetSub = student.Scores.find(s => Number(s.Index) === Number(subIdx));
+        if (targetSub) {
+          targetSub.Collect = newC;
+          targetSub.Exam = newE;
+          targetSub.Total = newTot;
+        }
+        if (Array.isArray(student.Subjects)) {
+          const targetSub2 = student.Subjects.find(s => Number(s.Index) === Number(subIdx));
+          if (targetSub2) {
+            targetSub2.Collect = newC;
+            targetSub2.Exam = newE;
+            targetSub2.Total = newTot;
+          }
+        }
+
+        let totC = 0, totE = 0, tot = 0;
+        student.Scores.forEach(s => {
+          totC += parseFloat(s.Collect) || 0;
+          totE += parseFloat(s.Exam) || 0;
+          tot += parseFloat(s.Total) || 0;
+        });
+        student.TotalCollect = Math.round(totC * 100) / 100;
+        student.TotalExam = Math.round(totE * 100) / 100;
+        student.TotalScore = Math.round(tot * 100) / 100;
+        student.AverageScore = Math.round((student.TotalScore / 15.0) * 100) / 100;
+
+        saveCustomScoresToStorage(student.StudentId, student);
+
+        const summaryTextEl = document.getElementById('corrStudentScoreSummaryText');
+        if (summaryTextEl) {
+          summaryTextEl.innerHTML = `📊 คะแนนรวมทั้ง 15 วิชาของ ${student.FullName}: <b>${student.TotalScore} / 750</b> (เฉลี่ย <b>${student.AverageScore.toFixed(2)}</b>) — <span style="color:#059669;">บันทึกอัตโนมัติแล้ว ✓</span>`;
+        }
+
+        // อัปเดตหน้าใบแจ้งผลการเรียน ตารางสรุปคะแนน และรายชื่อด้านซ้ายทันที
+        renderStudentList();
+        renderCurrentStudent();
+        renderOverviewTable();
+        updateQuickStudentSelect();
+
+        if (cls.Students && cls.Students.length > 0) {
+          const avgAll = cls.Students.reduce((acc, s) => acc + (s.AverageScore || 0), 0) / cls.Students.length;
+          const statAvgEl = document.getElementById('statClassAvg') || document.getElementById('statAvgScore');
+          if (statAvgEl) statAvgEl.textContent = avgAll.toFixed(2);
+        }
+      }
 
       updateCorrectionPreview();
     }
@@ -3563,6 +3705,14 @@
           sc.Collect = newC;
           sc.Exam = newE;
           sc.Total = newTot;
+          if (Array.isArray(student.Subjects)) {
+            const sub2 = student.Subjects.find(x => Number(x.Index) === Number(subIdx));
+            if (sub2) {
+              sub2.Collect = newC;
+              sub2.Exam = newE;
+              sub2.Total = newTot;
+            }
+          }
         }
       });
 
@@ -3581,14 +3731,20 @@
       // บันทึกลง localStorage
       saveCustomScoresToStorage(student.StudentId, student);
 
-      // อัปเดตหน้าจอทั้งหมด
+      if (cls.Students && cls.Students.length > 0) {
+        const avgAll = cls.Students.reduce((acc, s) => acc + (s.AverageScore || 0), 0) / cls.Students.length;
+        const statAvgEl = document.getElementById('statClassAvg') || document.getElementById('statAvgScore');
+        if (statAvgEl) statAvgEl.textContent = avgAll.toFixed(2);
+      }
+
+      // อัปเดตหน้าจอและตัวเลือกทั้งหมด
+      initCorrectionTab();
       renderStudentList();
       renderCurrentStudent();
       renderOverviewTable();
-      renderFailingSubjectsEditor();
-      updateCorrectionPreview();
+      updateQuickStudentSelect();
 
-      showToast(`บันทึกแก้ไขผลการเรียน (${failingSubs.length} วิชา) ของ ${student.FullName} เรียบร้อยแล้ว!`);
+      showToast(`✅ บันทึกคะแนนที่แก้ไขของ ${student.FullName} ลงระบบเรียบร้อยแล้ว (รวมใหม่: ${student.TotalScore} / เฉลี่ย: ${student.AverageScore.toFixed(2)})`);
     }
 
     function printCorrectionForm() {
@@ -4515,16 +4671,49 @@
 
     function recalcAdminFooterFromInputs() {
       let sumC = 0, sumE = 0, sumT = 0;
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const cls = classesList[currentClassIndex];
+      const st = cls?.Students?.[currentStudentIndex];
+      const scoresList = (cls && st) ? getAdminStudentScoresArray(cls, st) : null;
+      const updateOrig = !!document.getElementById('adminUpdateOrigCheck')?.checked;
+
       for (let i = 0; i < 15; i++) {
         const ci = parseFloat(document.getElementById(`adminSubCollect_${i}`)?.value) || 0;
         const ei = parseFloat(document.getElementById(`adminSubExam_${i}`)?.value) || 0;
         const tiEl = document.getElementById(`adminSubTotal_${i}`);
-        const ti = tiEl ? (parseFloat(tiEl.value) || 0) : (ci + ei);
+        const ti = tiEl ? (parseFloat(tiEl.value) || 0) : Math.round((ci + ei) * 100) / 100;
         sumC += ci;
         sumE += ei;
         sumT += ti;
+
+        if (scoresList && scoresList[i]) {
+          scoresList[i].Collect = ci;
+          scoresList[i].Exam = ei;
+          scoresList[i].Total = ti;
+          if (updateOrig) {
+            scoresList[i].OrigCollect = ci;
+            scoresList[i].OrigExam = ei;
+            scoresList[i].OrigTotal = ti;
+          }
+          if (Array.isArray(st.Subjects) && st.Subjects[i]) {
+            st.Subjects[i].Collect = ci;
+            st.Subjects[i].Exam = ei;
+            st.Subjects[i].Total = ti;
+          }
+        }
       }
       updateAdminScoreTotalsFooter(sumC, sumE, sumT);
+
+      if (st) {
+        st.TotalCollect = Math.round(sumC * 100) / 100;
+        st.TotalExam = Math.round(sumE * 100) / 100;
+        st.TotalScore = Math.round(sumT * 100) / 100;
+        st.AverageScore = Number((sumT / 15.0).toFixed(2));
+        saveCustomScoresToStorage(st.StudentId, st);
+        renderStudentList();
+        renderCurrentStudent();
+        renderOverviewTable();
+      }
     }
 
     function saveAdminStudentAllData() {
@@ -4753,6 +4942,38 @@
       }
       if (rowEl) {
         rowEl.style.background = isFail ? '#fff1f2' : (stIdx % 2 === 0 ? '#ffffff' : '#f8fafc');
+      }
+
+      // บันทึกอัตโนมัติลงข้อมูลนักเรียนทันที
+      const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
+      const bulkClsIdx = parseInt(document.getElementById('adminBulkClassSelect')?.value ?? currentClassIndex, 10);
+      const clsIdx = isNaN(bulkClsIdx) ? currentClassIndex : bulkClsIdx;
+      const cls = classesList[clsIdx];
+      const sIdx = parseInt(document.getElementById('adminBulkSubjectSelect')?.value ?? '0', 10) || 0;
+      const st = cls?.Students?.[stIdx];
+      if (st && st.Scores && st.Scores[sIdx]) {
+        st.Scores[sIdx].Collect = c;
+        st.Scores[sIdx].Exam = e;
+        st.Scores[sIdx].Total = t;
+        if (Array.isArray(st.Subjects) && st.Subjects[sIdx]) {
+          st.Subjects[sIdx].Collect = c;
+          st.Subjects[sIdx].Exam = e;
+          st.Subjects[sIdx].Total = t;
+        }
+        let sumC = 0, sumE = 0, sumT = 0;
+        st.Scores.forEach(s => {
+          sumC += parseFloat(s.Collect) || 0;
+          sumE += parseFloat(s.Exam) || 0;
+          sumT += parseFloat(s.Total) || 0;
+        });
+        st.TotalCollect = Math.round(sumC * 100) / 100;
+        st.TotalExam = Math.round(sumE * 100) / 100;
+        st.TotalScore = Math.round(sumT * 100) / 100;
+        st.AverageScore = Number((sumT / 15.0).toFixed(2));
+        saveCustomScoresToStorage(st.StudentId, st);
+        renderStudentList();
+        renderCurrentStudent();
+        renderOverviewTable();
       }
     }
 
