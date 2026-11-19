@@ -2515,6 +2515,9 @@
                   if (cIdx === 2 && subIndexNum === 13 && [2, 4, 11, 14].includes(Number(st.No)) && Number(sub.Total) === 24 && Number(sub.Exam) === 2) {
                     return; // คงค่าคะแนนจริงของวิชาเศรษฐกิจพอเพียง ป.3 ที่อัปเดตจากไฟล์ Excel
                   }
+                  if (cIdx === 4 && subIndexNum === 3 && Number(st.No) === 4 && Number(sub.Total) === 24 && Number(sub.Collect) === 18) {
+                    return; // คงค่าคะแนนจริงของวิชาวิทยาศาสตร์ ป.5 เลขที่ 4 (ด.ช.ศิวกร) ที่อัปเดตจากไฟล์ Excel (29, 6, 35)
+                  }
                   const targetScore = Array.isArray(st.Scores)
                     ? (st.Scores.find(x => Number(x.Index) === subIndexNum) || st.Scores[sIdx])
                     : null;
