@@ -2477,7 +2477,18 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       if (typeof PORPHOR_DATA !== 'undefined' && PORPHOR_DATA && !Array.isArray(PORPHOR_DATA) && Array.isArray(PORPHOR_DATA.value)) {
-        PORPHOR_DATA = PORPHOR_DATA.value;
+        try {
+          PORPHOR_DATA = PORPHOR_DATA.value;
+        } catch (e) {
+          const arr = PORPHOR_DATA.value;
+          arr.forEach((item, i) => { PORPHOR_DATA[i] = item; });
+          PORPHOR_DATA.length = arr.length;
+          PORPHOR_DATA.forEach = Array.prototype.forEach;
+          PORPHOR_DATA.map = Array.prototype.map;
+          PORPHOR_DATA.filter = Array.prototype.filter;
+          PORPHOR_DATA.find = Array.prototype.find;
+          PORPHOR_DATA.some = Array.prototype.some;
+        }
       }
       if (typeof PORPHOR_DATA === 'undefined' || !PORPHOR_DATA || PORPHOR_DATA.length === 0) {
         alert("ไม่พบข้อมูล PORPHOR_DATA กรุณาตรวจสอบไฟล์ data.js");
@@ -5038,11 +5049,7 @@
     function exportUpdatedDataJs() {
       try {
         const classesList = Array.isArray(PORPHOR_DATA) ? PORPHOR_DATA : (PORPHOR_DATA?.value || []);
-        const exportObj = {
-          value: classesList,
-          Count: classesList.length
-        };
-        const content = 'const PORPHOR_DATA = ' + JSON.stringify(exportObj, null, 2) + ';\n';
+        const content = 'var PORPHOR_DATA = ' + JSON.stringify(classesList, null, 2) + ';\n';
         const blob = new Blob([content], { type: 'application/javascript;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
